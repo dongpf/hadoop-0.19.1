@@ -18,6 +18,7 @@
 
 package org.apache.hadoop.conf;
 
+// NOTE 所有需要通过Configuration配置的类都继承此基类，比如各种FileSystem、JobClient、DataNode等等
 /** Base class for things that may be configured with a {@link Configuration}. */
 public class Configured implements Configurable {
 

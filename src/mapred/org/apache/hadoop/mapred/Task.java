@@ -32,13 +32,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalDirAllocator;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RawLocalFileSystem;
-import org.apache.hadoop.fs.kfs.KosmosFileSystem;
-import org.apache.hadoop.fs.s3.S3FileSystem;
+import org.apache.hadoop.hdfs.DistributedFileSystem;
 import org.apache.hadoop.io.DataInputBuffer;
 import org.apache.hadoop.io.RawComparator;
 import org.apache.hadoop.io.Text;
@@ -599,14 +597,14 @@ abstract class Task implements Writable, Configurable {
       (new FileSystemStatisticUpdater(FileSystemCounter.HDFS_READ,
                                       FileSystemCounter.HDFS_WRITE,
                                       DistributedFileSystem.class));
-    statisticUpdaters.add
-    (new FileSystemStatisticUpdater(FileSystemCounter.KFS_READ,
-                                    FileSystemCounter.KFSWRITE,
-                                    KosmosFileSystem.class));
-    statisticUpdaters.add
-    (new FileSystemStatisticUpdater(FileSystemCounter.S3_READ,
-                                    FileSystemCounter.S3_WRITE,
-                                    S3FileSystem.class));
+//    statisticUpdaters.add
+//    (new FileSystemStatisticUpdater(FileSystemCounter.KFS_READ,
+//                                    FileSystemCounter.KFSWRITE,
+//                                    KosmosFileSystem.class));
+//    statisticUpdaters.add
+//    (new FileSystemStatisticUpdater(FileSystemCounter.S3_READ,
+//                                    FileSystemCounter.S3_WRITE,
+//                                    S3FileSystem.class));
   }
 
   private synchronized void updateCounters() {

@@ -527,6 +527,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
       StringTokenizer itr = new StringTokenizer(newValue, ",");
       while (itr.hasMoreTokens()) {
         String rng = itr.nextToken().trim();
+        // NOTE split方法中的limit参数为0和负数的区别为是否保留空值
         String[] parts = rng.split("-", 3);
         if (parts.length < 1 || parts.length > 2) {
           throw new IllegalArgumentException("integer range badly formed: " + 
@@ -742,9 +743,11 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
                                          Class<U> xface) {
     try {
       Class<?> theClass = getClass(name, defaultValue);
+      // NOTE isAssignableFrom: 检测是否与参数的class类型相同，或为其父类、父接口。
       if (theClass != null && !xface.isAssignableFrom(theClass))
         throw new RuntimeException(theClass+" not "+xface.getName());
       else if (theClass != null)
+          // NOTE asSubclass: 将当前class转化为参数class的子类，并返回。
         return theClass.asSubclass(xface);
       else
         return null;
@@ -779,6 +782,8 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
    * @param dirsProp directory in which to locate the file.
    * @param path file-path.
    * @return local file under the directory with the given path.
+   * 
+   * NOTE 当dirsProp中包含多个目录时，通过path的hashcode值计算选取一个目录
    */
   public Path getLocalPath(String dirsProp, String path)
     throws IOException {
@@ -924,6 +929,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     // we could replace properties with a Map<String,String> and get rid of this
     // code.
     Map<String,String> result = new HashMap<String,String>();
+    // NOTE Map.Entry是map中的(key,value)映射对，获得entry引用的唯一方法是使用entrySet返回的collection view的iterator。可以通过iterator遍历map的过程中删除某个entry 
     for(Map.Entry<Object,Object> item: getProps().entrySet()) {
       if (item.getKey() instanceof String && 
           item.getValue() instanceof String) {
@@ -941,6 +947,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     }
   }
 
+  // NOTE 从xml配置文件中解析出各个配置项，并存入properties、finalParameters中
   private void loadResource(Properties properties, Object name, boolean quiet) {
     try {
       DocumentBuilderFactory docBuilderFactory 
@@ -1092,6 +1099,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     
       DOMSource source = new DOMSource(doc);
       StreamResult result = new StreamResult(out);
+      // NOTE 使用Transformer将xml源DOMSource写入StreamResult中
       TransformerFactory transFactory = TransformerFactory.newInstance();
       Transformer transformer = transFactory.newTransformer();
       transformer.transform(source, result);
