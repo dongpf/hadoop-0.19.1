@@ -17,6 +17,7 @@
 .classpath
 .project
 .settings
+.pydevproject
 .svn
 build/
 conf/masters
