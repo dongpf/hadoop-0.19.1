@@ -117,6 +117,7 @@ public class Text extends BinaryComparable
     if (position > this.length) return -1; // too long
     if (position < 0) return -1; // duh.
       
+    // TODO study ByteBuffer, unicode scalar value and code point.
     ByteBuffer bb = (ByteBuffer)ByteBuffer.wrap(bytes).position(position);
     return bytesToCodePoint(bb.slice());
   }
@@ -140,6 +141,8 @@ public class Text extends BinaryComparable
       ByteBuffer tgt = encode(what);
       byte b = tgt.get();
       src.position(start);
+      
+      // TODO read the loop after study ByteBuffer.
           
       while (src.hasRemaining()) {
         if (b == src.get()) { // matching first byte
@@ -202,6 +205,7 @@ public class Text extends BinaryComparable
    */
   public void set(byte[] utf8, int start, int len) {
     setCapacity(len, false);
+    // TODO read System.arraycopy details.
     System.arraycopy(utf8, start, bytes, 0, len);
     this.length = len;
   }
@@ -262,6 +266,7 @@ public class Text extends BinaryComparable
   public void readFields(DataInput in) throws IOException {
     int newLength = WritableUtils.readVInt(in);
     setCapacity(newLength, false);
+    // NOTE readFully方法会阻塞，直到读取完newLength的bytes，或者遇到EOF或IO Exception.
     in.readFully(bytes, 0, newLength);
     length = newLength;
   }
@@ -282,7 +287,7 @@ public class Text extends BinaryComparable
     out.write(bytes, 0, length);
   }
 
-  /** Returns true iff <code>o</code> is a Text with the same contents.  */
+  /** Returns true if <code>o</code> is a Text with the same contents.  */
   public boolean equals(Object o) {
     if (o instanceof Text)
       return super.equals(o);
@@ -341,6 +346,8 @@ public class Text extends BinaryComparable
   
   private static String decode(ByteBuffer utf8, boolean replace) 
     throws CharacterCodingException {
+      
+      // TODO study nio CharsetDecoder and CharsetEncoder.
     CharsetDecoder decoder = DECODER_FACTORY.get();
     if (replace) {
       decoder.onMalformedInput(

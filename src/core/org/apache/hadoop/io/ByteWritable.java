@@ -59,6 +59,7 @@ public class ByteWritable implements WritableComparable {
   public int compareTo(Object o) {
     int thisValue = this.value;
     int thatValue = ((ByteWritable)o).value;
+    // NOTE 按int值比较ByteWritable
     return (thisValue < thatValue ? -1 : (thisValue == thatValue ? 0 : 1));
   }
 

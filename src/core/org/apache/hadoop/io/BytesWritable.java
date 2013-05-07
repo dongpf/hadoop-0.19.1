@@ -143,6 +143,7 @@ public class BytesWritable extends BinaryComparable
     System.arraycopy(newData, offset, bytes, 0, size);
   }
 
+  // NOTE 每次修改不重写byte[]内容，只设置size大小。序列化反序列化时stream中首先存储size，然后是bytes。从stream中取size长度的bytes来获得有效内容。
   // inherit javadoc
   public void readFields(DataInput in) throws IOException {
     setSize(0); // clear the old data
@@ -179,6 +180,8 @@ public class BytesWritable extends BinaryComparable
       if (idx != 0) {
         sb.append(' ');
       }
+      
+      // NOTE oxff & byte[i] 得到无符号8字节整型值
       String num = Integer.toHexString(0xff & bytes[idx]);
       // if it is only one digit, add a leading 0.
       if (num.length() < 2) {

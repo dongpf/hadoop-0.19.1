@@ -37,10 +37,10 @@
                        <string>bucket_field_name</string> 
                        <string></string> 
                       </void> 
-                      <void method="put"> 
-                       <string>serialization.format</string> 
-                       <string></string> 
-                      </void> 
+<!--                       <void method="put">  -->
+<!--                        <string>serialization.format</string>  -->
+<!--                        <string></string>  -->
+<!--                       </void>  -->
                       <void method="put"> 
                        <string>columns</string> 
                        <string>key,value</string> 
