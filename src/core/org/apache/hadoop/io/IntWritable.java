@@ -42,7 +42,7 @@ public class IntWritable implements WritableComparable {
     out.writeInt(value);
   }
 
-  /** Returns true iff <code>o</code> is a IntWritable with the same value. */
+  /** Returns true if <code>o</code> is a IntWritable with the same value. */
   public boolean equals(Object o) {
     if (!(o instanceof IntWritable))
       return false;

@@ -46,7 +46,7 @@ public class VLongWritable implements WritableComparable {
     WritableUtils.writeVLong(out, value);
   }
 
-  /** Returns true iff <code>o</code> is a VLongWritable with the same value. */
+  /** Returns true if <code>o</code> is a VLongWritable with the same value. */
   public boolean equals(Object o) {
     if (!(o instanceof VLongWritable))
       return false;

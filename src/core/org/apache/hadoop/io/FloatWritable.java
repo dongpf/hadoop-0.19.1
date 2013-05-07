@@ -42,7 +42,7 @@ public class FloatWritable implements WritableComparable {
     out.writeFloat(value);
   }
 
-  /** Returns true iff <code>o</code> is a FloatWritable with the same value. */
+  /** Returns true if <code>o</code> is a FloatWritable with the same value. */
   public boolean equals(Object o) {
     if (!(o instanceof FloatWritable))
       return false;
@@ -51,6 +51,7 @@ public class FloatWritable implements WritableComparable {
   }
 
   public int hashCode() {
+      // NOTE floatToIntBits返回float的位布局的整数值
     return Float.floatToIntBits(value);
   }
 

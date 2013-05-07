@@ -50,7 +50,7 @@ public class DoubleWritable implements WritableComparable {
   public double get() { return value; }
 
   /**
-   * Returns true iff <code>o</code> is a DoubleWritable with the same value.
+   * Returns true if <code>o</code> is a DoubleWritable with the same value.
    */
   public boolean equals(Object o) {
     if (!(o instanceof DoubleWritable)) {
@@ -61,6 +61,7 @@ public class DoubleWritable implements WritableComparable {
   }
   
   public int hashCode() {
+      // NOTE 作用同floatToIntBits
     return (int)Double.doubleToLongBits(value);
   }
   

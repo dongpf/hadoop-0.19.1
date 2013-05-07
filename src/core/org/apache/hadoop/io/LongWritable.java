@@ -42,7 +42,7 @@ public class LongWritable implements WritableComparable {
     out.writeLong(value);
   }
 
-  /** Returns true iff <code>o</code> is a LongWritable with the same value. */
+  /** Returns true if <code>o</code> is a LongWritable with the same value. */
   public boolean equals(Object o) {
     if (!(o instanceof LongWritable))
       return false;
@@ -80,6 +80,7 @@ public class LongWritable implements WritableComparable {
   }
 
   /** A decreasing Comparator optimized for LongWritable. */ 
+  // NOTE 继承自WritableComparator的自定义Comparator默认是asc序的，可以通过继承自定义Comparator来实现一个desc序的Comparator
   public static class DecreasingComparator extends Comparator {
     public int compare(WritableComparable a, WritableComparable b) {
       return -super.compare(a, b);

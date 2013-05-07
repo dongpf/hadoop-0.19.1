@@ -57,6 +57,8 @@ public class NullWritable implements WritableComparable {
      */
     public int compare(byte[] b1, int s1, int l1,
                        byte[] b2, int s2, int l2) {
+        
+        // NOTE java assert关键字。如果assert表达式为true，程序继续执行；如果为false，抛出AssertionError并终止执行。details： http://lavasoft.blog.51cto.com/62575/43735
       assert 0 == l1;
       assert 0 == l2;
       return 0;
