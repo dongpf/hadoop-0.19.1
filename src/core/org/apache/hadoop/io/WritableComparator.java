@@ -91,6 +91,7 @@ public class WritableComparator implements RawComparator {
    * Writable#readFields(DataInput)}, then calls {@link
    * #compare(WritableComparable,WritableComparable)}.
    */
+  // NOTE WritableComparator.compare中比较逻辑为：首先从流中反序列化key实例，再调用key的compareTo方法比较。自定义的Writable类中可以覆盖该方法来提供更优化的比较性能。参考LongWritable
   public int compare(byte[] b1, int s1, int l1, byte[] b2, int s2, int l2) {
     try {
       buffer.reset(b1, s1, l1);                   // parse key1
@@ -125,6 +126,7 @@ public class WritableComparator implements RawComparator {
     int end1 = s1 + l1;
     int end2 = s2 + l2;
     for (int i = s1, j = s2; i < end1 && j < end2; i++, j++) {
+        // NOTE convert byte to unsigned int: byte & 0xff
       int a = (b1[i] & 0xff);
       int b = (b2[j] & 0xff);
       if (a != b) {
@@ -149,6 +151,7 @@ public class WritableComparator implements RawComparator {
   }
 
   /** Parse an integer from a byte array. */
+  // NOTE convert bytes to int
   public static int readInt(byte[] bytes, int start) {
     return (((bytes[start  ] & 0xff) << 24) +
             ((bytes[start+1] & 0xff) << 16) +
@@ -180,6 +183,8 @@ public class WritableComparator implements RawComparator {
    * @throws java.io.IOException 
    * @return deserialized long
    */
+  
+  // TODO dig deeper at hadoop zero-compressed encoded long
   public static long readVLong(byte[] bytes, int start) throws IOException {
     int len = bytes[start];
     if (len >= -112) {
