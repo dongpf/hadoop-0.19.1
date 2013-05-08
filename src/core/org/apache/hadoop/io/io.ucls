@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.2" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="false">  
+  <class id="1" language="java" name="org.apache.hadoop.io.BooleanWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/BooleanWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="245" width="152" x="41" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <interface id="2" language="java" name="org.apache.hadoop.io.Closeable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/Closeable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="-34" y="712"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </interface>  
+  <class id="3" language="java" name="org.apache.hadoop.io.BinaryComparable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/BinaryComparable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="522" y="668"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="4" language="java" name="org.apache.hadoop.io.TwoDArrayWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/TwoDArrayWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="826" y="311"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="5" language="java" name="org.apache.hadoop.io.ObjectWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/ObjectWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1124" y="401"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="6" language="java" name="org.apache.hadoop.io.SortedMapWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/SortedMapWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2550" y="241"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="7" language="java" name="org.apache.hadoop.io.GenericWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/GenericWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1425" y="347"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="8" language="java" name="org.apache.hadoop.io.IntWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/IntWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="245" width="152" x="750" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="9" language="java" name="org.apache.hadoop.io.IOUtils" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/IOUtils.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="-286" y="655"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="10" language="java" name="org.apache.hadoop.io.VersionMismatchException" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/VersionMismatchException.java" binary="false" 
+    corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="182" y="616"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="11" language="java" name="org.apache.hadoop.io.NullWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/NullWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="191" width="152" x="942" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="12" language="java" name="org.apache.hadoop.io.ArrayWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/ArrayWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1686" y="338"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <interface id="13" language="java" name="org.apache.hadoop.io.Writable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/Writable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1944" y="569"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </interface>  
+  <class id="14" language="java" name="org.apache.hadoop.io.ByteWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/ByteWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="245" width="152" x="1144" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="15" language="java" name="org.apache.hadoop.io.ObjectWritable.NullInstance" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/ObjectWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1933" y="284"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="16" language="java" name="org.apache.hadoop.io.FloatWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/FloatWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="245" width="152" x="1336" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="17" language="java" name="org.apache.hadoop.io.MapWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/MapWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2952" y="433"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="18" language="java" name="org.apache.hadoop.io.VLongWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/VLongWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="245" width="152" x="1528" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="19" language="java" name="org.apache.hadoop.io.DoubleWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/DoubleWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="245" width="152" x="1720" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="20" language="java" name="org.apache.hadoop.io.CompressedWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/CompressedWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2176" y="302"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="21" language="java" name="org.apache.hadoop.io.VIntWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/VIntWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1984" y="999"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="22" language="java" name="org.apache.hadoop.io.IOUtils.NullOutputStream" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/IOUtils.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="-18" y="613"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="23" language="java" name="org.apache.hadoop.io.WritableComparator" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/WritableComparator.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2447" y="1081"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="24" language="java" name="org.apache.hadoop.io.AbstractMapWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/AbstractMapWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2762" y="1035"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <interface id="25" language="java" name="org.apache.hadoop.io.WritableComparable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/WritableComparable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1948" y="662"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </interface>  
+  <class id="26" language="java" name="org.apache.hadoop.io.VersionedWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/VersionedWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="3201" y="325"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="27" language="java" name="org.apache.hadoop.io.BytesWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/BytesWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="407" width="152" x="558" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="28" language="java" name="org.apache.hadoop.io.LongWritable" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/LongWritable.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="2176" y="999"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <class id="29" language="java" name="org.apache.hadoop.io.Text" project="hadoop-0.19.1" 
+    file="/hadoop-0.19.1/src/core/org/apache/hadoop/io/Text.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="857" width="285" x="233" y="877"/>    
+    <display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" accessors="true" 
+      visibility="false">      
+      <attributes public="true" package="true" protected="true" private="true"/>      
+      <operations public="true" package="true" protected="true" private="true"/>    
+    </display>  
+  </class>  
+  <generalization id="30">    
+    <end type="SOURCE" refId="25"/>    
+    <end type="TARGET" refId="13"/>  
+  </generalization>  
+  <realization id="31">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <realization id="32">    
+    <end type="SOURCE" refId="18"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <association id="33">    
+    <bendpoint x="2478" y="877"/>    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="34" name="key2"/>      
+      <multiplicity id="35" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="36">    
+    <end type="SOURCE" refId="16"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <realization id="37">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <realization id="38">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <realization id="39">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <association id="40">    
+    <bendpoint x="2499" y="877"/>    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="41" name="key1"/>      
+      <multiplicity id="42" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="25" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="43">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="44" name="THIS"/>      
+      <multiplicity id="45" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="11" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="46">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <association id="47">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="48" name="instance"/>      
+      <multiplicity id="49" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="50">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="24"/>  
+  </generalization>  
+  <association id="51">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="52" name="values"/>      
+      <multiplicity id="53" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="54">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <realization id="55">    
+    <end type="SOURCE" refId="15"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <realization id="56">    
+    <end type="SOURCE" refId="21"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <realization id="57">    
+    <end type="SOURCE" refId="26"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <realization id="58">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <realization id="59">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <generalization id="60">    
+    <end type="SOURCE" refId="27"/>    
+    <end type="TARGET" refId="3"/>  
+  </generalization>  
+  <realization id="61">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <association id="62">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="63" name="values"/>      
+      <multiplicity id="64" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="65">    
+    <end type="SOURCE" refId="17" navigable="false">      
+      <attribute id="66" name="instance"/>      
+      <multiplicity id="67" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="68">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <association id="69">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="70" name="instance"/>      
+      <multiplicity id="71" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="13" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <realization id="72">    
+    <end type="SOURCE" refId="28"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <realization id="73">    
+    <end type="SOURCE" refId="29"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <association id="74">    
+    <end type="SOURCE" refId="23" navigable="false">      
+      <attribute id="75" name="comparators"/>      
+      <multiplicity id="76" minimum="0" maximum="2147483647"/>    
+    </end>    
+    <end type="TARGET" refId="23" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <generalization id="77">    
+    <end type="SOURCE" refId="29"/>    
+    <end type="TARGET" refId="3"/>  
+  </generalization>  
+  <realization id="78">    
+    <bendpoint x="2552" y="836"/>    
+    <end type="SOURCE" refId="24"/>    
+    <end type="TARGET" refId="13"/>  
+  </realization>  
+  <generalization id="79">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="24"/>  
+  </generalization>  
+  <realization id="80">    
+    <end type="SOURCE" refId="14"/>    
+    <end type="TARGET" refId="25"/>  
+  </realization>  
+  <classifier-display autosize="true" stereotype="false" package="true" initial-value="false" signature="true" 
+    accessors="true" visibility="false">    
+    <attributes public="true" package="true" protected="true" private="true"/>    
+    <operations public="true" package="true" protected="true" private="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>
