@@ -73,6 +73,10 @@ import org.apache.hadoop.util.ReflectionUtils;
  * 
  * @since Nov 8, 2006
  */
+
+// NOTE reduce中同一个key的value必须为同一类型。当需要处理不同类型的value时，可以通过继承GenericWritable实现。实现的子类中需要提供类型数组，通过type记录当前实例所属的class在类型数组中的index。
+// NOTE 和ObjectWritable不同，GenericWritable不会将实例Class序列化
+
 public abstract class GenericWritable implements Writable, Configurable {
 
   private static final byte NOT_SET = -1;

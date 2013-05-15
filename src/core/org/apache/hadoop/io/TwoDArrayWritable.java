@@ -23,6 +23,7 @@ import java.lang.reflect.Array;
 
 /** A Writable for 2D arrays containing a matrix of instances of a class. */
 public class TwoDArrayWritable implements Writable {
+    // NOTE 需要序列化、反序列化双方约定矩阵值的Class类型
   private Class valueClass;
   private Writable[][] values;
 
@@ -40,6 +41,7 @@ public class TwoDArrayWritable implements Writable {
     Object result = Array.newInstance(valueClass, dimensions);
     for (int i = 0; i < values.length; i++) {
       Object resultRow = Array.newInstance(valueClass, values[i].length);
+      // NOTE widen conversion: int -> long. narrow conversion: long -> int
       Array.set(result, i, resultRow);
       for (int j = 0; j < values[i].length; j++) {
         Array.set(resultRow, j, values[i][j]);

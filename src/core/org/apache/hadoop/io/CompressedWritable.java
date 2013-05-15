@@ -45,6 +45,7 @@ public abstract class CompressedWritable implements Writable {
     in.readFully(compressed, 0, compressed.length);
   }
 
+  // NOTE 用InflaterInputStream和DeflaterOutputStream处理压缩、解压缩流数据
   /** Must be called by all methods which access fields to ensure that the data
    * has been uncompressed. */
   protected void ensureInflated() {
