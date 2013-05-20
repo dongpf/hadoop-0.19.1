@@ -30,11 +30,11 @@ import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 
 /**
- * Abstract base class for MapWritable and SortedMapWritable
+ * Abstract base class for MapWritable and SortedMapWritable.
  * 
- * Unlike org.apache.nutch.crawl.MapWritable, this class allows creation of
+ * <p>Unlike org.apache.nutch.crawl.MapWritable, this class allows creation of
  * MapWritable&lt;Writable, MapWritable&gt; so the CLASS_TO_ID and ID_TO_CLASS
- * maps travel with the class instead of being static.
+ * maps travel with the class instead of being static.</p>
  * 
  * Class ids range from 1 to 127 so there can be at most 127 distinct classes
  * in any specific map instance.
