@@ -66,6 +66,7 @@ public class DataOutputBuffer extends DataOutputStream {
         public void write(DataInput in, int len) throws IOException {
             int newcount = count + len;
             if (newcount > buf.length) {
+                // NOTE DataInput写入字节数超过buf容量时，重新分配内存扩容并从原buf拷贝所有数据。
                 byte newbuf[] = new byte[Math.max(buf.length << 1, newcount)];
                 System.arraycopy(buf, 0, newbuf, 0, count);
                 buf = newbuf;

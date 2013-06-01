@@ -43,6 +43,8 @@ import java.io.*;
  * </pre>
  * 
  */
+
+// NOTE 组合了一个继承自ByteArrayInputStream的子类，实现复用InputStream，节约内存。
 public class DataInputBuffer extends DataInputStream {
     private static class Buffer extends ByteArrayInputStream {
         public Buffer() {
