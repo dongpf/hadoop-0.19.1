@@ -66,6 +66,7 @@ public class WritableName {
                                             ) throws IOException {
     Class<?> writableClass = NAME_TO_CLASS.get(name);
     if (writableClass != null)
+        // NOTE asSubclass 通常在向某些参数严格限制的API传递参数时，为了避免产生编译警告，适应API中方法接受的参数，这个方法比较有用
       return writableClass.asSubclass(Writable.class);
     try {
       return conf.getClassByName(name);

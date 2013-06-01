@@ -41,6 +41,7 @@ import org.apache.hadoop.util.GenericsUtil;
  * 
  * @param <T> the class of the objects to stringify
  */
+// NOTE Stringifier: object to string, get object from string. 
 public class DefaultStringifier<T> implements Stringifier<T> {
 
   private static final String SEPARATOR = ",";
