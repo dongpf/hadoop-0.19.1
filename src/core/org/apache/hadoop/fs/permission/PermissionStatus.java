@@ -27,92 +27,100 @@ import java.io.IOException;
  * Store permission related information.
  */
 public class PermissionStatus implements Writable {
-  static final WritableFactory FACTORY = new WritableFactory() {
-    public Writable newInstance() { return new PermissionStatus(); }
-  };
-  static {                                      // register a ctor
-    WritableFactories.setFactory(PermissionStatus.class, FACTORY);
-  }
-
-  /** Create an immutable {@link PermissionStatus} object. */
-  public static PermissionStatus createImmutable(
-      String user, String group, FsPermission permission) {
-    return new PermissionStatus(user, group, permission) {
-      public PermissionStatus applyUMask(FsPermission umask) {
-        throw new UnsupportedOperationException();
-      }
-      public void readFields(DataInput in) throws IOException {
-        throw new UnsupportedOperationException();
-      }
+    static final WritableFactory FACTORY = new WritableFactory() {
+        public Writable newInstance() {
+            return new PermissionStatus();
+        }
     };
-  }
+    static { // register a ctor
+        WritableFactories.setFactory(PermissionStatus.class, FACTORY);
+    }
 
-  private String username;
-  private String groupname;
-  private FsPermission permission;
+    /** Create an immutable {@link PermissionStatus} object. */
+    public static PermissionStatus createImmutable(String user, String group, FsPermission permission) {
+        return new PermissionStatus(user, group, permission) {
+            public PermissionStatus applyUMask(FsPermission umask) {
+                throw new UnsupportedOperationException();
+            }
 
-  private PermissionStatus() {}
+            public void readFields(DataInput in) throws IOException {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
 
-  /** Constructor */
-  public PermissionStatus(String user, String group, FsPermission permission) {
-    username = user;
-    groupname = group;
-    this.permission = permission;
-  }
+    private String username;
+    private String groupname;
+    private FsPermission permission;
 
-  /** Return user name */
-  public String getUserName() {return username;}
+    private PermissionStatus() {
+    }
 
-  /** Return group name */
-  public String getGroupName() {return groupname;}
+    /** Constructor */
+    public PermissionStatus(String user, String group, FsPermission permission) {
+        username = user;
+        groupname = group;
+        this.permission = permission;
+    }
 
-  /** Return permission */
-  public FsPermission getPermission() {return permission;}
+    /** Return user name */
+    public String getUserName() {
+        return username;
+    }
 
-  /**
-   * Apply umask.
-   * @see FsPermission#applyUMask(FsPermission)
-   */
-  public PermissionStatus applyUMask(FsPermission umask) {
-    permission = permission.applyUMask(umask);
-    return this;
-  }
+    /** Return group name */
+    public String getGroupName() {
+        return groupname;
+    }
 
-  /** {@inheritDoc} */
-  public void readFields(DataInput in) throws IOException {
-    username = Text.readString(in);
-    groupname = Text.readString(in);
-    permission = FsPermission.read(in);
-  }
+    /** Return permission */
+    public FsPermission getPermission() {
+        return permission;
+    }
 
-  /** {@inheritDoc} */
-  public void write(DataOutput out) throws IOException {
-    write(out, username, groupname, permission);
-  }
+    /**
+     * Apply umask.
+     * 
+     * @see FsPermission#applyUMask(FsPermission)
+     */
+    public PermissionStatus applyUMask(FsPermission umask) {
+        permission = permission.applyUMask(umask);
+        return this;
+    }
 
-  /**
-   * Create and initialize a {@link PermissionStatus} from {@link DataInput}.
-   */
-  public static PermissionStatus read(DataInput in) throws IOException {
-    PermissionStatus p = new PermissionStatus();
-    p.readFields(in);
-    return p;
-  }
+    /** {@inheritDoc} */
+    public void readFields(DataInput in) throws IOException {
+        username = Text.readString(in);
+        groupname = Text.readString(in);
+        permission = FsPermission.read(in);
+    }
 
-  /**
-   * Serialize a {@link PermissionStatus} from its base components.
-   */
-  public static void write(DataOutput out,
-                           String username, 
-                           String groupname,
-                           FsPermission permission) throws IOException {
-    Text.writeString(out, username);
-    Text.writeString(out, groupname);
-    permission.write(out);
-  }
+    /** {@inheritDoc} */
+    public void write(DataOutput out) throws IOException {
+        write(out, username, groupname, permission);
+    }
 
-  /** {@inheritDoc} */
-  public String toString() {
-    return username + ":" + groupname + ":" + permission;
-  }
+    /**
+     * Create and initialize a {@link PermissionStatus} from {@link DataInput}.
+     */
+    public static PermissionStatus read(DataInput in) throws IOException {
+        PermissionStatus p = new PermissionStatus();
+        p.readFields(in);
+        return p;
+    }
+
+    /**
+     * Serialize a {@link PermissionStatus} from its base components.
+     */
+    public static void write(DataOutput out, String username, String groupname, FsPermission permission)
+            throws IOException {
+        Text.writeString(out, username);
+        Text.writeString(out, groupname);
+        permission.write(out);
+    }
+
+    /** {@inheritDoc} */
+    public String toString() {
+        return username + ":" + groupname + ":" + permission;
+    }
 }

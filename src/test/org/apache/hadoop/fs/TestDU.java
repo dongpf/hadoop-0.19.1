@@ -24,72 +24,71 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Random;
 
-/** This test makes sure that "DU" does not get to run on each call to getUsed */ 
+/** This test makes sure that "DU" does not get to run on each call to getUsed */
 public class TestDU extends TestCase {
-  final static private File DU_DIR = new File(
-      System.getProperty("test.build.data","/tmp"), "dutmp");
+    final static private File DU_DIR = new File(System.getProperty("test.build.data", "/tmp"), "dutmp");
 
-  public void setUp() throws IOException {
-      FileUtil.fullyDelete(DU_DIR);
-      assertTrue(DU_DIR.mkdirs());
-  }
+    public void setUp() throws IOException {
+        FileUtil.fullyDelete(DU_DIR);
+        assertTrue(DU_DIR.mkdirs());
+    }
 
-  public void tearDown() throws IOException {
-      FileUtil.fullyDelete(DU_DIR);
-  }
-    
-  private void createFile(File newFile, int size) throws IOException {
-    // write random data so that filesystems with compression enabled (e.g., ZFS)
-    // can't compress the file
-    Random random = new Random();
-    byte[] data = new byte[size];
-    random.nextBytes(data);
+    public void tearDown() throws IOException {
+        FileUtil.fullyDelete(DU_DIR);
+    }
 
-    newFile.createNewFile();
-    RandomAccessFile file = new RandomAccessFile(newFile, "rws");
+    private void createFile(File newFile, int size) throws IOException {
+        // write random data so that filesystems with compression enabled (e.g.,
+        // ZFS)
+        // can't compress the file
+        Random random = new Random();
+        byte[] data = new byte[size];
+        random.nextBytes(data);
 
-    file.write(data);
-      
-    file.getFD().sync();
-    file.close();
-  }
+        newFile.createNewFile();
+        RandomAccessFile file = new RandomAccessFile(newFile, "rws");
 
-  /**
-   * Verify that du returns expected used space for a file.
-   * We assume here that if a file system crates a file of size 
-   * that is a multiple of the block size in this file system,
-   * then the used size for the file will be exactly that size.
-   * This is true for most file systems.
-   * 
-   * @throws IOException
-   * @throws InterruptedException
-   */
-  public void testDU() throws IOException, InterruptedException {
-    int writtenSize = 32*1024;   // writing 32K
-    File file = new File(DU_DIR, "data");
-    createFile(file, writtenSize);
+        file.write(data);
 
-    Thread.sleep(5000); // let the metadata updater catch up
-    
-    DU du = new DU(file, 10000);
-    du.start();
-    long duSize = du.getUsed();
-    du.shutdown();
+        file.getFD().sync();
+        file.close();
+    }
 
-    assertEquals(writtenSize, duSize);
-    
-    //test with 0 interval, will not launch thread 
-    du = new DU(file, 0);
-    du.start();
-    duSize = du.getUsed();
-    du.shutdown();
-    
-    assertEquals(writtenSize, duSize);  
-    
-    //test without launching thread 
-    du = new DU(file, 10000);
-    duSize = du.getUsed();
-    
-    assertEquals(writtenSize, duSize);     
-  }
+    /**
+     * Verify that du returns expected used space for a file. We assume here
+     * that if a file system crates a file of size that is a multiple of the
+     * block size in this file system, then the used size for the file will be
+     * exactly that size. This is true for most file systems.
+     * 
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void testDU() throws IOException, InterruptedException {
+        int writtenSize = 32 * 1024; // writing 32K
+        File file = new File(DU_DIR, "data");
+        createFile(file, writtenSize);
+
+        Thread.sleep(5000); // let the metadata updater catch up
+
+        DU du = new DU(file, 10000);
+        du.start();
+        long duSize = du.getUsed();
+        du.shutdown();
+
+        assertEquals(writtenSize, duSize);
+
+        // test with 0 interval, will not launch thread
+        du = new DU(file, 0);
+        du.start();
+        duSize = du.getUsed();
+        du.shutdown();
+
+        assertEquals(writtenSize, duSize);
+
+        // test without launching thread
+        du = new DU(file, 10000);
+        duSize = du.getUsed();
+
+        assertEquals(writtenSize, duSize);
+    }
 }

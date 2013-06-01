@@ -32,117 +32,129 @@ import org.apache.hadoop.io.WritableFactory;
  */
 public class LocatedFileStatus extends FileStatus {
 
-  static {               // register a ctor
-    WritableFactories.setFactory
-      (LocatedFileStatus.class,
-       new WritableFactory() {
-         public Writable newInstance() { return new LocatedFileStatus(); }
-       });
-  }
-  
-  private BlockLocation[] locations;
-
-  public LocatedFileStatus() {
-    this(0, false, 0, 0, 0, 0, null, null, null, null, null);
-  }
-
-  /**
-   * Constructor 
-   * @param stat a file status
-   * @param locations a file's block locations
-   */
-  public LocatedFileStatus(FileStatus stat, BlockLocation[] locations)
-  throws IOException {
-    this(stat.getLen(), stat.isDir(), stat.getReplication(),
-        stat.getBlockSize(), stat.getModificationTime(),
-        stat.getAccessTime(), stat.getPermission(), stat.getOwner(),
-        stat.getGroup(), stat.getPath(), locations);
-  }
-
-  /**
-   * Constructor
-   * 
-   * @param length a file's length
-   * @param isdir if the path is a directory
-   * @param block_replication the file's replication factor
-   * @param blocksize a file's block size
-   * @param modification_time a file's modification time
-   * @param access_time a file's access time
-   * @param permission a file's permission
-   * @param owner a file's owner
-   * @param group a file's group
-   * @param path the path's qualified name
-   * @param locations a file's block locations
-   */
-  public LocatedFileStatus(long length, boolean isdir,
-          int block_replication,
-          long blocksize, long modification_time, long access_time,
-          FsPermission permission, String owner, String group, 
-          Path path,
-          BlockLocation[] locations) {
-	  super(length, isdir, block_replication, blocksize, modification_time,
-			  access_time, permission, owner, group, path);
-	  this.locations = locations;
-  }
-
-  // Writable interface
-  @Override
-  public void readFields(DataInput in) throws IOException {
-    super.readFields(in);
-    int numEntries = in.readInt();
-    locations = new BlockLocation[numEntries];
-    for (int i=0; i<numEntries; i++) {
-      locations[i] = new BlockLocation();
-      locations[i].readFields(in);
+    static { // register a ctor
+        WritableFactories.setFactory(LocatedFileStatus.class, new WritableFactory() {
+            public Writable newInstance() {
+                return new LocatedFileStatus();
+            }
+        });
     }
-  }
 
-  @Override
-  public void write(DataOutput out) throws IOException {
-    super.write(out);
-    out.writeInt(locations.length);
-    for (BlockLocation loc : locations) {
-      loc.write(out);
+    private BlockLocation[] locations;
+
+    public LocatedFileStatus() {
+        this(0, false, 0, 0, 0, 0, null, null, null, null, null);
     }
-  }
 
-  /**
-   * Get the file's block locations
-   * @return the file's block locations
-   */
-  public BlockLocation[] getBlockLocations() {
-	  return locations;
-  }
+    /**
+     * Constructor
+     * 
+     * @param stat
+     *            a file status
+     * @param locations
+     *            a file's block locations
+     */
+    public LocatedFileStatus(FileStatus stat, BlockLocation[] locations) throws IOException {
+        this(stat.getLen(), stat.isDir(), stat.getReplication(), stat.getBlockSize(), stat.getModificationTime(), stat
+                .getAccessTime(), stat.getPermission(), stat.getOwner(), stat.getGroup(), stat.getPath(), locations);
+    }
 
-  /**
-   * Compare this object to another object
-   * 
-   * @param   o the object to be compared.
-   * @return  a negative integer, zero, or a positive integer as this object
-   *   is less than, equal to, or greater than the specified object.
-   * 
-   * @throws ClassCastException if the specified object's is not of 
-   *         type FileStatus
-   */
-  public int compareTo(Object o) {
-    return super.compareTo(o);
-  }
-  
-  /** Compare if this object is equal to another object
-   * @param   o the object to be compared.
-   * @return  true if two file status has the same path name; false if not.
-   */
-  public boolean equals(Object o) {
-    return super.equals(o);
-  }
-  
-  /**
-   * Returns a hash code value for the object, which is defined as
-   * the hash code of the path name.
-   *
-   * @return  a hash code value for the path name.
-   */
-  public int hashCode() {
-    return super.hashCode();
-  }
+    /**
+     * Constructor
+     * 
+     * @param length
+     *            a file's length
+     * @param isdir
+     *            if the path is a directory
+     * @param block_replication
+     *            the file's replication factor
+     * @param blocksize
+     *            a file's block size
+     * @param modification_time
+     *            a file's modification time
+     * @param access_time
+     *            a file's access time
+     * @param permission
+     *            a file's permission
+     * @param owner
+     *            a file's owner
+     * @param group
+     *            a file's group
+     * @param path
+     *            the path's qualified name
+     * @param locations
+     *            a file's block locations
+     */
+    public LocatedFileStatus(long length, boolean isdir, int block_replication, long blocksize, long modification_time,
+            long access_time, FsPermission permission, String owner, String group, Path path, BlockLocation[] locations) {
+        super(length, isdir, block_replication, blocksize, modification_time, access_time, permission, owner, group,
+                path);
+        this.locations = locations;
+    }
+
+    // Writable interface
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        super.readFields(in);
+        int numEntries = in.readInt();
+        locations = new BlockLocation[numEntries];
+        for (int i = 0; i < numEntries; i++) {
+            locations[i] = new BlockLocation();
+            locations[i].readFields(in);
+        }
+    }
+
+    @Override
+    public void write(DataOutput out) throws IOException {
+        super.write(out);
+        out.writeInt(locations.length);
+        for (BlockLocation loc : locations) {
+            loc.write(out);
+        }
+    }
+
+    /**
+     * Get the file's block locations
+     * 
+     * @return the file's block locations
+     */
+    public BlockLocation[] getBlockLocations() {
+        return locations;
+    }
+
+    /**
+     * Compare this object to another object
+     * 
+     * @param o
+     *            the object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object is
+     *         less than, equal to, or greater than the specified object.
+     * 
+     * @throws ClassCastException
+     *             if the specified object's is not of type FileStatus
+     */
+    public int compareTo(Object o) {
+        return super.compareTo(o);
+    }
+
+    /**
+     * Compare if this object is equal to another object
+     * 
+     * @param o
+     *            the object to be compared.
+     * @return true if two file status has the same path name; false if not.
+     */
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    /**
+     * Returns a hash code value for the object, which is defined as the hash
+     * code of the path name.
+     * 
+     * @return a hash code value for the path name.
+     */
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

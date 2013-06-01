@@ -19,25 +19,25 @@
 package org.apache.hadoop.contrib.failmon;
 
 /**********************************************************
- * This class is a wrapper for a monitoring job. 
+ * This class is a wrapper for a monitoring job.
  * 
  **********************************************************/
 
 public class MonitorJob {
-  Monitored job;
+    Monitored job;
 
-  String type;
-  int interval;
-  int counter;
+    String type;
+    int interval;
+    int counter;
 
-  public MonitorJob(Monitored _job, String _type, int _interval) {
-    job = _job;
-    type = _type;
-    interval = _interval;
-    counter = _interval;
-  }
+    public MonitorJob(Monitored _job, String _type, int _interval) {
+        job = _job;
+        type = _type;
+        interval = _interval;
+        counter = _interval;
+    }
 
-  public void reset() {
-    counter = interval;
-  }
+    public void reset() {
+        counter = interval;
+    }
 }

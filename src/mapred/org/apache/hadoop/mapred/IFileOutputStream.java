@@ -19,60 +19,59 @@
 package org.apache.hadoop.mapred;
 
 import java.io.IOException;
-import java.io.OutputStream; 
+import java.io.OutputStream;
 import java.io.FilterOutputStream;
 
 import org.apache.hadoop.util.DataChecksum;
+
 /**
- * A Checksum output stream.
- * Checksum for the contents of the file is calculated and
- * appended to the end of the file on close of the stream.
- * Used for IFiles
+ * A Checksum output stream. Checksum for the contents of the file is calculated
+ * and appended to the end of the file on close of the stream. Used for IFiles
  */
 class IFileOutputStream extends FilterOutputStream {
-  /**
-   * The output stream to be checksummed. 
-   */
-  private final DataChecksum sum;
-  private byte[] barray;
-  private boolean closed = false;
+    /**
+     * The output stream to be checksummed.
+     */
+    private final DataChecksum sum;
+    private byte[] barray;
+    private boolean closed = false;
 
-  /**
-   * Create a checksum output stream that writes
-   * the bytes to the given stream.
-   * @param out
-   */
-  public IFileOutputStream(OutputStream out) {
-    super(out);
-    sum = DataChecksum.newDataChecksum(DataChecksum.CHECKSUM_CRC32,
-        Integer.MAX_VALUE);
-    barray = new byte[sum.getChecksumSize()];
-  }
-  
-  @Override
-  public void close() throws IOException {
-    if (closed) {
-      return;
+    /**
+     * Create a checksum output stream that writes the bytes to the given
+     * stream.
+     * 
+     * @param out
+     */
+    public IFileOutputStream(OutputStream out) {
+        super(out);
+        sum = DataChecksum.newDataChecksum(DataChecksum.CHECKSUM_CRC32, Integer.MAX_VALUE);
+        barray = new byte[sum.getChecksumSize()];
     }
-    closed = true;
-    sum.writeValue(barray, 0, false);
-    out.write (barray, 0, sum.getChecksumSize());
-    out.flush();
-  }
-  
-  /**
-   * Write bytes to the stream.
-   */
-  @Override
-  public void write(byte[] b, int off, int len) throws IOException {
-    sum.update(b, off,len);
-    out.write(b,off,len);
-  }
- 
-  @Override
-  public void write(int b) throws IOException {
-    barray[0] = (byte) (b & 0xFF);
-    write(barray,0,1);
-  }
+
+    @Override
+    public void close() throws IOException {
+        if (closed) {
+            return;
+        }
+        closed = true;
+        sum.writeValue(barray, 0, false);
+        out.write(barray, 0, sum.getChecksumSize());
+        out.flush();
+    }
+
+    /**
+     * Write bytes to the stream.
+     */
+    @Override
+    public void write(byte[] b, int off, int len) throws IOException {
+        sum.update(b, off, len);
+        out.write(b, off, len);
+    }
+
+    @Override
+    public void write(int b) throws IOException {
+        barray[0] = (byte) (b & 0xFF);
+        write(barray, 0, 1);
+    }
 
 }

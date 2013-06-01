@@ -29,53 +29,56 @@ import org.apache.hadoop.fs.Path;
  * A JUnit test for checking if restarting DFS preserves integrity.
  */
 public class TestRestartDFS extends TestCase {
-  /** check if DFS remains in proper condition after a restart */
-  public void testRestartDFS() throws Exception {
-    final Configuration conf = new Configuration();
-    MiniDFSCluster cluster = null;
-    DFSTestUtil files = new DFSTestUtil("TestRestartDFS", 20, 3, 8*1024);
+    /** check if DFS remains in proper condition after a restart */
+    public void testRestartDFS() throws Exception {
+        final Configuration conf = new Configuration();
+        MiniDFSCluster cluster = null;
+        DFSTestUtil files = new DFSTestUtil("TestRestartDFS", 20, 3, 8 * 1024);
 
-    final String dir = "/srcdat";
-    final Path rootpath = new Path("/");
-    final Path dirpath = new Path(dir);
+        final String dir = "/srcdat";
+        final Path rootpath = new Path("/");
+        final Path dirpath = new Path(dir);
 
-    long rootmtime;
-    FileStatus rootstatus;
-    FileStatus dirstatus;
+        long rootmtime;
+        FileStatus rootstatus;
+        FileStatus dirstatus;
 
-    try {
-      cluster = new MiniDFSCluster(conf, 4, true, null);
-      FileSystem fs = cluster.getFileSystem();
-      files.createFiles(fs, dir);
+        try {
+            cluster = new MiniDFSCluster(conf, 4, true, null);
+            FileSystem fs = cluster.getFileSystem();
+            files.createFiles(fs, dir);
 
-      rootmtime = fs.getFileStatus(rootpath).getModificationTime();
-      rootstatus = fs.getFileStatus(dirpath);
-      dirstatus = fs.getFileStatus(dirpath);
+            rootmtime = fs.getFileStatus(rootpath).getModificationTime();
+            rootstatus = fs.getFileStatus(dirpath);
+            dirstatus = fs.getFileStatus(dirpath);
 
-      fs.setOwner(rootpath, rootstatus.getOwner() + "_XXX", null);
-      fs.setOwner(dirpath, null, dirstatus.getGroup() + "_XXX");
-    } finally {
-      if (cluster != null) { cluster.shutdown(); }
+            fs.setOwner(rootpath, rootstatus.getOwner() + "_XXX", null);
+            fs.setOwner(dirpath, null, dirstatus.getGroup() + "_XXX");
+        } finally {
+            if (cluster != null) {
+                cluster.shutdown();
+            }
+        }
+        try {
+            // Here we restart the MiniDFScluster without formatting namenode
+            cluster = new MiniDFSCluster(conf, 4, false, null);
+            FileSystem fs = cluster.getFileSystem();
+            assertTrue("Filesystem corrupted after restart.", files.checkFiles(fs, dir));
+
+            final FileStatus newrootstatus = fs.getFileStatus(rootpath);
+            assertEquals(rootmtime, newrootstatus.getModificationTime());
+            assertEquals(rootstatus.getOwner() + "_XXX", newrootstatus.getOwner());
+            assertEquals(rootstatus.getGroup(), newrootstatus.getGroup());
+
+            final FileStatus newdirstatus = fs.getFileStatus(dirpath);
+            assertEquals(dirstatus.getOwner(), newdirstatus.getOwner());
+            assertEquals(dirstatus.getGroup() + "_XXX", newdirstatus.getGroup());
+
+            files.cleanup(fs, dir);
+        } finally {
+            if (cluster != null) {
+                cluster.shutdown();
+            }
+        }
     }
-    try {
-      // Here we restart the MiniDFScluster without formatting namenode
-      cluster = new MiniDFSCluster(conf, 4, false, null);
-      FileSystem fs = cluster.getFileSystem();
-      assertTrue("Filesystem corrupted after restart.",
-                 files.checkFiles(fs, dir));
-
-      final FileStatus newrootstatus = fs.getFileStatus(rootpath);
-      assertEquals(rootmtime, newrootstatus.getModificationTime());
-      assertEquals(rootstatus.getOwner() + "_XXX", newrootstatus.getOwner());
-      assertEquals(rootstatus.getGroup(), newrootstatus.getGroup());
-
-      final FileStatus newdirstatus = fs.getFileStatus(dirpath);
-      assertEquals(dirstatus.getOwner(), newdirstatus.getOwner());
-      assertEquals(dirstatus.getGroup() + "_XXX", newdirstatus.getGroup());
-
-      files.cleanup(fs, dir);
-    } finally {
-      if (cluster != null) { cluster.shutdown(); }
-    }
-  }
 }

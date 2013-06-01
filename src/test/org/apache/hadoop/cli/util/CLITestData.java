@@ -21,87 +21,92 @@ package org.apache.hadoop.cli.util;
 import java.util.ArrayList;
 
 /**
- *
+ * 
  * Class to store CLI Test Data
  */
 public class CLITestData {
-  private String testDesc = null;
-  private ArrayList<String> testCommands = null;
-  private ArrayList<String> cleanupCommands = null;
-  private ArrayList<ComparatorData> comparatorData = null;
-  private boolean testResult = false;
-  
-  public CLITestData() {
+    private String testDesc = null;
+    private ArrayList<String> testCommands = null;
+    private ArrayList<String> cleanupCommands = null;
+    private ArrayList<ComparatorData> comparatorData = null;
+    private boolean testResult = false;
 
-  }
+    public CLITestData() {
 
-  /**
-   * @return the testDesc
-   */
-  public String getTestDesc() {
-    return testDesc;
-  }
+    }
 
-  /**
-   * @param testDesc the testDesc to set
-   */
-  public void setTestDesc(String testDesc) {
-    this.testDesc = testDesc;
-  }
+    /**
+     * @return the testDesc
+     */
+    public String getTestDesc() {
+        return testDesc;
+    }
 
-  /**
-   * @return the testCommands
-   */
-  public ArrayList<String> getTestCommands() {
-    return testCommands;
-  }
+    /**
+     * @param testDesc
+     *            the testDesc to set
+     */
+    public void setTestDesc(String testDesc) {
+        this.testDesc = testDesc;
+    }
 
-  /**
-   * @param testCommands the testCommands to set
-   */
-  public void setTestCommands(ArrayList<String> testCommands) {
-    this.testCommands = testCommands;
-  }
+    /**
+     * @return the testCommands
+     */
+    public ArrayList<String> getTestCommands() {
+        return testCommands;
+    }
 
-  /**
-   * @return the comparatorData
-   */
-  public ArrayList<ComparatorData> getComparatorData() {
-    return comparatorData;
-  }
+    /**
+     * @param testCommands
+     *            the testCommands to set
+     */
+    public void setTestCommands(ArrayList<String> testCommands) {
+        this.testCommands = testCommands;
+    }
 
-  /**
-   * @param comparatorData the comparatorData to set
-   */
-  public void setComparatorData(ArrayList<ComparatorData> comparatorData) {
-    this.comparatorData = comparatorData;
-  }
+    /**
+     * @return the comparatorData
+     */
+    public ArrayList<ComparatorData> getComparatorData() {
+        return comparatorData;
+    }
 
-  /**
-   * @return the testResult
-   */
-  public boolean getTestResult() {
-    return testResult;
-  }
+    /**
+     * @param comparatorData
+     *            the comparatorData to set
+     */
+    public void setComparatorData(ArrayList<ComparatorData> comparatorData) {
+        this.comparatorData = comparatorData;
+    }
 
-  /**
-   * @param testResult the testResult to set
-   */
-  public void setTestResult(boolean testResult) {
-    this.testResult = testResult;
-  }
+    /**
+     * @return the testResult
+     */
+    public boolean getTestResult() {
+        return testResult;
+    }
 
-  /**
-   * @return the cleanupCommands
-   */
-  public ArrayList<String> getCleanupCommands() {
-    return cleanupCommands;
-  }
+    /**
+     * @param testResult
+     *            the testResult to set
+     */
+    public void setTestResult(boolean testResult) {
+        this.testResult = testResult;
+    }
 
-  /**
-   * @param cleanupCommands the cleanupCommands to set
-   */
-  public void setCleanupCommands(ArrayList<String> cleanupCommands) {
-    this.cleanupCommands = cleanupCommands;
-  }
+    /**
+     * @return the cleanupCommands
+     */
+    public ArrayList<String> getCleanupCommands() {
+        return cleanupCommands;
+    }
+
+    /**
+     * @param cleanupCommands
+     *            the cleanupCommands to set
+     */
+    public void setCleanupCommands(ArrayList<String> cleanupCommands) {
+        this.cleanupCommands = cleanupCommands;
+    }
 }

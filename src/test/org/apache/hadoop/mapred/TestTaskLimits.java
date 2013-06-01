@@ -35,83 +35,86 @@ import org.apache.log4j.Level;
  */
 public class TestTaskLimits extends TestCase {
 
-  {     
-    ((Log4JLogger)JobInProgress.LOG).getLogger().setLevel(Level.ALL);
-  }     
-
-  private static final Log LOG =
-    LogFactory.getLog(TestMiniMRWithDFS.class.getName());
-  
-  static final int NUM_MAPS = 5;
-  static final int NUM_SAMPLES = 100;
-  
-  public static class TestResult {
-    public String output;
-    public RunningJob job;
-    TestResult(RunningJob job, String output) {
-      this.job = job;
-      this.output = output;
+    {
+        ((Log4JLogger) JobInProgress.LOG).getLogger().setLevel(Level.ALL);
     }
-  }
-  
-  static void runPI(MiniMRCluster mr, JobConf jobconf) throws IOException {
-    LOG.info("runPI");
-    double estimate = PiEstimator.launch(NUM_MAPS, NUM_SAMPLES, jobconf);
-    double error = Math.abs(Math.PI - estimate);
-    System.out.println("PI estimation " + error);
-  }
 
-  /**
-   * Run the pi test with a specifix value of 
-   * mapred.jobtracker.maxtasks.per.job. Returns true if the job succeeded.
-   */
-  private boolean runOneTest(int maxTasks) throws IOException {
-    MiniDFSCluster dfs = null;
-    MiniMRCluster mr = null;
-    FileSystem fileSys = null;
-    boolean success = false;
-    try {
-      final int taskTrackers = 2;
+    private static final Log LOG = LogFactory.getLog(TestMiniMRWithDFS.class.getName());
 
-      Configuration conf = new Configuration();
-      conf.setInt("mapred.jobtracker.maxtasks.per.job", maxTasks);
-      dfs = new MiniDFSCluster(conf, 4, true, null);
-      fileSys = dfs.getFileSystem();
-      JobConf jconf = new JobConf(conf);
-      mr = new MiniMRCluster(0, 0, taskTrackers, fileSys.getUri().toString(), 1,
-                             null, null, null, jconf);
-      
-      JobConf jc = mr.createJobConf();
-      try {
-        runPI(mr, jc);
-        success = true;
-      } catch (IOException e) {
-        success = false;
-      }
-    } finally {
-      if (dfs != null) { dfs.shutdown(); }
-      if (mr != null) { mr.shutdown(); }
+    static final int NUM_MAPS = 5;
+    static final int NUM_SAMPLES = 100;
+
+    public static class TestResult {
+        public String output;
+        public RunningJob job;
+
+        TestResult(RunningJob job, String output) {
+            this.job = job;
+            this.output = output;
+        }
     }
-    return success;
-  }
 
-  public void testTaskLimits() throws IOException {
+    static void runPI(MiniMRCluster mr, JobConf jobconf) throws IOException {
+        LOG.info("runPI");
+        double estimate = PiEstimator.launch(NUM_MAPS, NUM_SAMPLES, jobconf);
+        double error = Math.abs(Math.PI - estimate);
+        System.out.println("PI estimation " + error);
+    }
 
-    System.out.println("Job 1 running with max set to 2");
-    boolean status = runOneTest(2);
-    assertTrue(status == false);
-    System.out.println("Job 1 failed as expected.");
+    /**
+     * Run the pi test with a specifix value of
+     * mapred.jobtracker.maxtasks.per.job. Returns true if the job succeeded.
+     */
+    private boolean runOneTest(int maxTasks) throws IOException {
+        MiniDFSCluster dfs = null;
+        MiniMRCluster mr = null;
+        FileSystem fileSys = null;
+        boolean success = false;
+        try {
+            final int taskTrackers = 2;
 
-    // verify that checking this limit works well. The job
-    // needs 5 mappers and we set the limit to 7.
-    System.out.println("Job 2 running with max set to 7.");
-    status = runOneTest(7);
-    assertTrue(status == true);
-    System.out.println("Job 2 succeeded as expected.");
+            Configuration conf = new Configuration();
+            conf.setInt("mapred.jobtracker.maxtasks.per.job", maxTasks);
+            dfs = new MiniDFSCluster(conf, 4, true, null);
+            fileSys = dfs.getFileSystem();
+            JobConf jconf = new JobConf(conf);
+            mr = new MiniMRCluster(0, 0, taskTrackers, fileSys.getUri().toString(), 1, null, null, null, jconf);
 
-    System.out.println("Job 3 running with max disabled.");
-    status = runOneTest(-1);
-    assertTrue(status == true);
-    System.out.println("Job 3 succeeded as expected.");
-  }
+            JobConf jc = mr.createJobConf();
+            try {
+                runPI(mr, jc);
+                success = true;
+            } catch (IOException e) {
+                success = false;
+            }
+        } finally {
+            if (dfs != null) {
+                dfs.shutdown();
+            }
+            if (mr != null) {
+                mr.shutdown();
+            }
+        }
+        return success;
+    }
+
+    public void testTaskLimits() throws IOException {
+
+        System.out.println("Job 1 running with max set to 2");
+        boolean status = runOneTest(2);
+        assertTrue(status == false);
+        System.out.println("Job 1 failed as expected.");
+
+        // verify that checking this limit works well. The job
+        // needs 5 mappers and we set the limit to 7.
+        System.out.println("Job 2 running with max set to 7.");
+        status = runOneTest(7);
+        assertTrue(status == true);
+        System.out.println("Job 2 succeeded as expected.");
+
+        System.out.println("Job 3 running with max disabled.");
+        status = runOneTest(-1);
+        assertTrue(status == true);
+        System.out.println("Job 3 succeeded as expected.");
+    }
 }

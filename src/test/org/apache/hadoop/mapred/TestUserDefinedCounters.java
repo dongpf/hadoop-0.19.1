@@ -33,73 +33,68 @@ import org.apache.hadoop.mapred.lib.IdentityMapper;
 import org.apache.hadoop.mapred.lib.IdentityReducer;
 
 public class TestUserDefinedCounters extends ClusterMapReduceTestCase {
-  
-  enum EnumCounter { MAP_RECORDS }
-  
-  static class CountingMapper<K, V> extends IdentityMapper<K, V> {
 
-    public void map(K key, V value,
-        OutputCollector<K, V> output, Reporter reporter)
-        throws IOException {
-      output.collect(key, value);
-      reporter.incrCounter(EnumCounter.MAP_RECORDS, 1);
-      reporter.incrCounter("StringCounter", "MapRecords", 1);
+    enum EnumCounter {
+        MAP_RECORDS
     }
 
-  }
-  
-  public void testMapReduceJob() throws Exception {
-    OutputStream os = getFileSystem().create(new Path(getInputDir(), "text.txt"));
-    Writer wr = new OutputStreamWriter(os);
-    wr.write("hello1\n");
-    wr.write("hello2\n");
-    wr.write("hello3\n");
-    wr.write("hello4\n");
-    wr.close();
+    static class CountingMapper<K, V> extends IdentityMapper<K, V> {
 
-    JobConf conf = createJobConf();
-    conf.setJobName("counters");
-    
-    conf.setInputFormat(TextInputFormat.class);
+        public void map(K key, V value, OutputCollector<K, V> output, Reporter reporter) throws IOException {
+            output.collect(key, value);
+            reporter.incrCounter(EnumCounter.MAP_RECORDS, 1);
+            reporter.incrCounter("StringCounter", "MapRecords", 1);
+        }
 
-    conf.setMapOutputKeyClass(LongWritable.class);
-    conf.setMapOutputValueClass(Text.class);
-
-    conf.setOutputFormat(TextOutputFormat.class);
-    conf.setOutputKeyClass(LongWritable.class);
-    conf.setOutputValueClass(Text.class);
-
-    conf.setMapperClass(CountingMapper.class);
-    conf.setReducerClass(IdentityReducer.class);
-
-    FileInputFormat.setInputPaths(conf, getInputDir());
-
-    FileOutputFormat.setOutputPath(conf, getOutputDir());
-
-    RunningJob runningJob = JobClient.runJob(conf);
-
-    Path[] outputFiles = FileUtil.stat2Paths(
-                           getFileSystem().listStatus(getOutputDir(),
-                           new OutputLogFilter()));
-    if (outputFiles.length > 0) {
-      InputStream is = getFileSystem().open(outputFiles[0]);
-      BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-      String line = reader.readLine();
-      int counter = 0;
-      while (line != null) {
-        counter++;
-        assertTrue(line.contains("hello"));
-        line = reader.readLine();
-      }
-      reader.close();
-      assertEquals(4, counter);
     }
-    
-    assertEquals(4,
-        runningJob.getCounters().getCounter(EnumCounter.MAP_RECORDS));
-    assertEquals(4,
-        runningJob.getCounters().getGroup("StringCounter")
-        .getCounter("MapRecords"));
-  }
+
+    public void testMapReduceJob() throws Exception {
+        OutputStream os = getFileSystem().create(new Path(getInputDir(), "text.txt"));
+        Writer wr = new OutputStreamWriter(os);
+        wr.write("hello1\n");
+        wr.write("hello2\n");
+        wr.write("hello3\n");
+        wr.write("hello4\n");
+        wr.close();
+
+        JobConf conf = createJobConf();
+        conf.setJobName("counters");
+
+        conf.setInputFormat(TextInputFormat.class);
+
+        conf.setMapOutputKeyClass(LongWritable.class);
+        conf.setMapOutputValueClass(Text.class);
+
+        conf.setOutputFormat(TextOutputFormat.class);
+        conf.setOutputKeyClass(LongWritable.class);
+        conf.setOutputValueClass(Text.class);
+
+        conf.setMapperClass(CountingMapper.class);
+        conf.setReducerClass(IdentityReducer.class);
+
+        FileInputFormat.setInputPaths(conf, getInputDir());
+
+        FileOutputFormat.setOutputPath(conf, getOutputDir());
+
+        RunningJob runningJob = JobClient.runJob(conf);
+
+        Path[] outputFiles = FileUtil.stat2Paths(getFileSystem().listStatus(getOutputDir(), new OutputLogFilter()));
+        if (outputFiles.length > 0) {
+            InputStream is = getFileSystem().open(outputFiles[0]);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String line = reader.readLine();
+            int counter = 0;
+            while (line != null) {
+                counter++;
+                assertTrue(line.contains("hello"));
+                line = reader.readLine();
+            }
+            reader.close();
+            assertEquals(4, counter);
+        }
+
+        assertEquals(4, runningJob.getCounters().getCounter(EnumCounter.MAP_RECORDS));
+        assertEquals(4, runningJob.getCounters().getGroup("StringCounter").getCounter("MapRecords"));
+    }
 
 }

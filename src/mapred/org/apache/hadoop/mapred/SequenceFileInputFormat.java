@@ -31,34 +31,30 @@ import org.apache.hadoop.io.MapFile;
 /** An {@link InputFormat} for {@link SequenceFile}s. */
 public class SequenceFileInputFormat<K, V> extends FileInputFormat<K, V> {
 
-  public SequenceFileInputFormat() {
-    setMinSplitSize(SequenceFile.SYNC_INTERVAL);
-  }
-  
-  @Override
-  protected LocatedFileStatus[] listLocatedStatus(JobConf job)
-      throws IOException {
-    LocatedFileStatus[] files = super.listLocatedStatus(job);
-    for (int i = 0; i < files.length; i++) {
-      LocatedFileStatus file = files[i];
-      if (file.isDir()) { // it's a MapFile
-        Path dataFile = new Path(file.getPath(), MapFile.DATA_FILE_NAME);
-        FileSystem fs = file.getPath().getFileSystem(job);
-        // use the data file
-        files[i] = fs.listLocatedStatus(dataFile)[0];
-      }
+    public SequenceFileInputFormat() {
+        setMinSplitSize(SequenceFile.SYNC_INTERVAL);
     }
-    return files;
-  }
 
-  public RecordReader<K, V> getRecordReader(InputSplit split,
-                                      JobConf job, Reporter reporter)
-    throws IOException {
+    @Override
+    protected LocatedFileStatus[] listLocatedStatus(JobConf job) throws IOException {
+        LocatedFileStatus[] files = super.listLocatedStatus(job);
+        for (int i = 0; i < files.length; i++) {
+            LocatedFileStatus file = files[i];
+            if (file.isDir()) { // it's a MapFile
+                Path dataFile = new Path(file.getPath(), MapFile.DATA_FILE_NAME);
+                FileSystem fs = file.getPath().getFileSystem(job);
+                // use the data file
+                files[i] = fs.listLocatedStatus(dataFile)[0];
+            }
+        }
+        return files;
+    }
 
-    reporter.setStatus(split.toString());
+    public RecordReader<K, V> getRecordReader(InputSplit split, JobConf job, Reporter reporter) throws IOException {
 
-    return new SequenceFileRecordReader<K, V>(job, (FileSplit) split);
-  }
+        reporter.setStatus(split.toString());
+
+        return new SequenceFileRecordReader<K, V>(job, (FileSplit) split);
+    }
 
 }
-

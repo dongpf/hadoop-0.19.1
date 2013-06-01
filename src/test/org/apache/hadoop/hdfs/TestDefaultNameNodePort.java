@@ -29,32 +29,25 @@ import org.apache.hadoop.hdfs.server.namenode.NameNode;
 /** Test NameNode port defaulting code. */
 public class TestDefaultNameNodePort extends TestCase {
 
-  public void testGetAddressFromString() throws Exception {
-    assertEquals(NameNode.getAddress("foo").getPort(),
-                 NameNode.DEFAULT_PORT);
-    assertEquals(NameNode.getAddress("hdfs://foo/").getPort(),
-                 NameNode.DEFAULT_PORT);
-    assertEquals(NameNode.getAddress("hdfs://foo:555").getPort(),
-                 555);
-    assertEquals(NameNode.getAddress("foo:555").getPort(),
-                 555);
-  }
+    public void testGetAddressFromString() throws Exception {
+        assertEquals(NameNode.getAddress("foo").getPort(), NameNode.DEFAULT_PORT);
+        assertEquals(NameNode.getAddress("hdfs://foo/").getPort(), NameNode.DEFAULT_PORT);
+        assertEquals(NameNode.getAddress("hdfs://foo:555").getPort(), 555);
+        assertEquals(NameNode.getAddress("foo:555").getPort(), 555);
+    }
 
-  public void testGetAddressFromConf() throws Exception {
-    Configuration conf = new Configuration();
-    FileSystem.setDefaultUri(conf, "hdfs://foo/");
-    assertEquals(NameNode.getAddress(conf).getPort(), NameNode.DEFAULT_PORT);
-    FileSystem.setDefaultUri(conf, "hdfs://foo:555/");
-    assertEquals(NameNode.getAddress(conf).getPort(), 555);
-    FileSystem.setDefaultUri(conf, "foo");
-    assertEquals(NameNode.getAddress(conf).getPort(), NameNode.DEFAULT_PORT);
-  }
+    public void testGetAddressFromConf() throws Exception {
+        Configuration conf = new Configuration();
+        FileSystem.setDefaultUri(conf, "hdfs://foo/");
+        assertEquals(NameNode.getAddress(conf).getPort(), NameNode.DEFAULT_PORT);
+        FileSystem.setDefaultUri(conf, "hdfs://foo:555/");
+        assertEquals(NameNode.getAddress(conf).getPort(), 555);
+        FileSystem.setDefaultUri(conf, "foo");
+        assertEquals(NameNode.getAddress(conf).getPort(), NameNode.DEFAULT_PORT);
+    }
 
-  public void testGetUri() {
-    assertEquals(NameNode.getUri(new InetSocketAddress("foo", 555)),
-                 URI.create("hdfs://foo:555"));
-    assertEquals(NameNode.getUri(new InetSocketAddress("foo",
-                                                       NameNode.DEFAULT_PORT)),
-                 URI.create("hdfs://foo"));
-  }
+    public void testGetUri() {
+        assertEquals(NameNode.getUri(new InetSocketAddress("foo", 555)), URI.create("hdfs://foo:555"));
+        assertEquals(NameNode.getUri(new InetSocketAddress("foo", NameNode.DEFAULT_PORT)), URI.create("hdfs://foo"));
+    }
 }

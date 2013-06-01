@@ -24,104 +24,108 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * The MetricsIntValue class is for a metric that is not time varied
- * but changes only when it is set. 
- * Each time its value is set, it is published only *once* at the next update
- * call.
- *
+ * The MetricsIntValue class is for a metric that is not time varied but changes
+ * only when it is set. Each time its value is set, it is published only *once*
+ * at the next update call.
+ * 
  */
-public class MetricsIntValue {  
+public class MetricsIntValue {
 
-  private static final Log LOG =
-    LogFactory.getLog("org.apache.hadoop.metrics.util");
+    private static final Log LOG = LogFactory.getLog("org.apache.hadoop.metrics.util");
 
-  private String name;
-  private int value;
-  private boolean changed;
-  
-  /**
-   * Constructor - create a new metric
-   * @param nam the name of the metrics to be used to publish the metric
-   */
-  public MetricsIntValue(final String nam) {
-    name = nam;
-    value = 0;
-    changed = false;
-  }
-  
-  /**
-   * Set the value
-   * @param newValue
-   */
-  public synchronized void set(final int newValue) {
-    value = newValue;
-    changed = true;
-  }
-  
-  /**
-   * Get value
-   * @return the value last set
-   */
-  public synchronized int get() { 
-    return value;
-  } 
+    private String name;
+    private int value;
+    private boolean changed;
 
-  /**
-   * Inc metrics for incr vlaue
-   * @param incr - value to be added
-   */
-  public synchronized void inc(final int incr) {
-    value += incr;
-    changed = true;
-  }
-  
-  /**
-   * Inc metrics by one
-   */
-  public synchronized void inc() {
-    value++;
-    changed = true;
-  }
-
-  /**
-   * Inc metrics for incr vlaue
-   * @param decr - value to subtract
-   */
-  public synchronized void dec(final int decr) {
-    value -= decr;
-    if (value < 0)
-      value = 0;
-    changed = true;
-  }
-  
-  /**
-   * Dec metrics by one
-   */
-  public synchronized void dec() {
-    value--;
-    if (value < 0)
-      value = 0;
-    changed = true;
-  }
-
-  /**
-   * Push the metric to the mr.
-   * The metric is pushed only if it was updated since last push
-   * 
-   * Note this does NOT push to JMX
-   * (JMX gets the info via {@link #get()}
-   *
-   * @param mr
-   */
-  public synchronized void pushMetric(final MetricsRecord mr) {
-    if (changed) {
-      try {
-        mr.setMetric(name, value);
-      } catch (Exception e) {
-        LOG.info("pushMetric failed for " + name + "\n" +
-            StringUtils.stringifyException(e));
-      }
+    /**
+     * Constructor - create a new metric
+     * 
+     * @param nam
+     *            the name of the metrics to be used to publish the metric
+     */
+    public MetricsIntValue(final String nam) {
+        name = nam;
+        value = 0;
+        changed = false;
     }
-    changed = false;
-  }
+
+    /**
+     * Set the value
+     * 
+     * @param newValue
+     */
+    public synchronized void set(final int newValue) {
+        value = newValue;
+        changed = true;
+    }
+
+    /**
+     * Get value
+     * 
+     * @return the value last set
+     */
+    public synchronized int get() {
+        return value;
+    }
+
+    /**
+     * Inc metrics for incr vlaue
+     * 
+     * @param incr
+     *            - value to be added
+     */
+    public synchronized void inc(final int incr) {
+        value += incr;
+        changed = true;
+    }
+
+    /**
+     * Inc metrics by one
+     */
+    public synchronized void inc() {
+        value++;
+        changed = true;
+    }
+
+    /**
+     * Inc metrics for incr vlaue
+     * 
+     * @param decr
+     *            - value to subtract
+     */
+    public synchronized void dec(final int decr) {
+        value -= decr;
+        if (value < 0)
+            value = 0;
+        changed = true;
+    }
+
+    /**
+     * Dec metrics by one
+     */
+    public synchronized void dec() {
+        value--;
+        if (value < 0)
+            value = 0;
+        changed = true;
+    }
+
+    /**
+     * Push the metric to the mr. The metric is pushed only if it was updated
+     * since last push
+     * 
+     * Note this does NOT push to JMX (JMX gets the info via {@link #get()}
+     * 
+     * @param mr
+     */
+    public synchronized void pushMetric(final MetricsRecord mr) {
+        if (changed) {
+            try {
+                mr.setMetric(name, value);
+            } catch (Exception e) {
+                LOG.info("pushMetric failed for " + name + "\n" + StringUtils.stringifyException(e));
+            }
+        }
+        changed = false;
+    }
 }

@@ -23,83 +23,88 @@ import java.util.Calendar;
 import javax.servlet.*;
 
 public class ServletUtil {
-  /**
-   * Initial HTML header
-   */
-  public static PrintWriter initHTML(ServletResponse response, String title
-      ) throws IOException {
-    response.setContentType("text/html");
-    PrintWriter out = response.getWriter();
-    out.println("<html>\n"
-        + "<link rel='stylesheet' type='text/css' href='/static/hadoop.css'>\n"
-        + "<title>" + title + "</title>\n"
-        + "<body>\n"
-        + "<h1>" + title + "</h1>\n");
-    return out;
-  }
-
-  /**
-   * Get a parameter from a ServletRequest.
-   * Return null if the parameter contains only white spaces.
-   */
-  public static String getParameter(ServletRequest request, String name) {
-    String s = request.getParameter(name);
-    if (s == null) {
-      return null;
+    /**
+     * Initial HTML header
+     */
+    public static PrintWriter initHTML(ServletResponse response, String title) throws IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<html>\n" + "<link rel='stylesheet' type='text/css' href='/static/hadoop.css'>\n" + "<title>"
+                + title + "</title>\n" + "<body>\n" + "<h1>" + title + "</h1>\n");
+        return out;
     }
-    s = s.trim();
-    return s.length() == 0? null: s;
-  }
 
-  public static final String HTML_TAIL = "<hr />\n"
-    + "<a href='http://hadoop.apache.org/core'>Hadoop</a>, " 
-    + Calendar.getInstance().get(Calendar.YEAR) + ".\n"
-    + "</body></html>";
-  
-  /**
-   * HTML footer to be added in the jsps.
-   * @return the HTML footer.
-   */
-  public static String htmlFooter() {
-    return HTML_TAIL;
-  }
-  
-  /**
-   * Generate the percentage graph and returns HTML representation string
-   * of the same.
-   * 
-   * @param perc The percentage value for which graph is to be generated
-   * @param width The width of the display table
-   * @return HTML String representation of the percentage graph
-   * @throws IOException
-   */
-  public static String percentageGraph(int perc, int width) throws IOException {
-    assert perc >= 0; assert perc <= 100;
-
-    StringBuilder builder = new StringBuilder();
-
-    builder.append("<table border=\"1px\" width=\""); builder.append(width);
-    builder.append("px\"><tr>");
-    if(perc > 0) {
-      builder.append("<td cellspacing=\"0\" class=\"perc_filled\" width=\"");
-      builder.append(perc); builder.append("%\"></td>");
-    }if(perc < 100) {
-      builder.append("<td cellspacing=\"0\" class=\"perc_nonfilled\" width=\"");
-      builder.append(100 - perc); builder.append("%\"></td>");
+    /**
+     * Get a parameter from a ServletRequest. Return null if the parameter
+     * contains only white spaces.
+     */
+    public static String getParameter(ServletRequest request, String name) {
+        String s = request.getParameter(name);
+        if (s == null) {
+            return null;
+        }
+        s = s.trim();
+        return s.length() == 0 ? null : s;
     }
-    builder.append("</tr></table>");
-    return builder.toString();
-  }
-  
-  /**
-   * Generate the percentage graph and returns HTML representation string
-   * of the same.
-   * @param perc The percentage value for which graph is to be generated
-   * @param width The width of the display table
-   * @return HTML String representation of the percentage graph
-   * @throws IOException
-   */
-  public static String percentageGraph(float perc, int width) throws IOException {
-    return percentageGraph((int)perc, width);
-  }
+
+    public static final String HTML_TAIL = "<hr />\n" + "<a href='http://hadoop.apache.org/core'>Hadoop</a>, "
+            + Calendar.getInstance().get(Calendar.YEAR) + ".\n" + "</body></html>";
+
+    /**
+     * HTML footer to be added in the jsps.
+     * 
+     * @return the HTML footer.
+     */
+    public static String htmlFooter() {
+        return HTML_TAIL;
+    }
+
+    /**
+     * Generate the percentage graph and returns HTML representation string of
+     * the same.
+     * 
+     * @param perc
+     *            The percentage value for which graph is to be generated
+     * @param width
+     *            The width of the display table
+     * @return HTML String representation of the percentage graph
+     * @throws IOException
+     */
+    public static String percentageGraph(int perc, int width) throws IOException {
+        assert perc >= 0;
+        assert perc <= 100;
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("<table border=\"1px\" width=\"");
+        builder.append(width);
+        builder.append("px\"><tr>");
+        if (perc > 0) {
+            builder.append("<td cellspacing=\"0\" class=\"perc_filled\" width=\"");
+            builder.append(perc);
+            builder.append("%\"></td>");
+        }
+        if (perc < 100) {
+            builder.append("<td cellspacing=\"0\" class=\"perc_nonfilled\" width=\"");
+            builder.append(100 - perc);
+            builder.append("%\"></td>");
+        }
+        builder.append("</tr></table>");
+        return builder.toString();
+    }
+
+    /**
+     * Generate the percentage graph and returns HTML representation string of
+     * the same.
+     * 
+     * @param perc
+     *            The percentage value for which graph is to be generated
+     * @param width
+     *            The width of the display table
+     * @return HTML String representation of the percentage graph
+     * @throws IOException
+     */
+    public static String percentageGraph(float perc, int width) throws IOException {
+        return percentageGraph((int) perc, width);
+    }
 }

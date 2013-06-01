@@ -37,107 +37,116 @@ import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
 
 /**
- * This reducer applies to a shard the changes for it. A "new version" of
- * a shard is created at the end of a reduce. It is important to note that
- * the new version of the shard is not derived from scratch. By leveraging
- * Lucene's update algorithm, the new version of each Lucene instance will
- * share as many files as possible as the previous version. 
+ * This reducer applies to a shard the changes for it. A "new version" of a
+ * shard is created at the end of a reduce. It is important to note that the new
+ * version of the shard is not derived from scratch. By leveraging Lucene's
+ * update algorithm, the new version of each Lucene instance will share as many
+ * files as possible as the previous version.
  */
-public class IndexUpdateReducer extends MapReduceBase implements
-    Reducer<Shard, IntermediateForm, Shard, Text> {
-  static final Log LOG = LogFactory.getLog(IndexUpdateReducer.class);
-  static final Text DONE = new Text("done");
+public class IndexUpdateReducer extends MapReduceBase implements Reducer<Shard, IntermediateForm, Shard, Text> {
+    static final Log LOG = LogFactory.getLog(IndexUpdateReducer.class);
+    static final Text DONE = new Text("done");
 
-  /**
-   * Get the reduce output key class.
-   * @return the reduce output key class
-   */
-  public static Class<? extends WritableComparable> getOutputKeyClass() {
-    return Shard.class;
-  }
-
-  /**
-   * Get the reduce output value class.
-   * @return the reduce output value class
-   */
-  public static Class<? extends Writable> getOutputValueClass() {
-    return Text.class;
-  }
-
-  private IndexUpdateConfiguration iconf;
-  private String mapredTempDir;
-
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.mapred.Reducer#reduce(java.lang.Object, java.util.Iterator, org.apache.hadoop.mapred.OutputCollector, org.apache.hadoop.mapred.Reporter)
-   */
-  public void reduce(Shard key, Iterator<IntermediateForm> values,
-      OutputCollector<Shard, Text> output, Reporter reporter)
-      throws IOException {
-
-    LOG.info("Construct a shard writer for " + key);
-    FileSystem fs = FileSystem.get(iconf.getConfiguration());
-    String temp =
-        mapredTempDir + Path.SEPARATOR + "shard_" + System.currentTimeMillis();
-    final ShardWriter writer = new ShardWriter(fs, key, temp, iconf);
-
-    // update the shard
-    while (values.hasNext()) {
-      IntermediateForm form = values.next();
-      writer.process(form);
-      reporter.progress();
+    /**
+     * Get the reduce output key class.
+     * 
+     * @return the reduce output key class
+     */
+    public static Class<? extends WritableComparable> getOutputKeyClass() {
+        return Shard.class;
     }
 
-    // close the shard
-    final Reporter fReporter = reporter;
-    new Closeable() {
-      boolean closed = false;
+    /**
+     * Get the reduce output value class.
+     * 
+     * @return the reduce output value class
+     */
+    public static Class<? extends Writable> getOutputValueClass() {
+        return Text.class;
+    }
 
-      public void close() throws IOException {
-        // spawn a thread to give progress heartbeats
-        Thread prog = new Thread() {
-          public void run() {
-            while (!closed) {
-              try {
-                fReporter.setStatus("closing");
-                Thread.sleep(1000);
-              } catch (InterruptedException e) {
-                continue;
-              } catch (Throwable e) {
-                return;
-              }
-            }
-          }
-        };
+    private IndexUpdateConfiguration iconf;
+    private String mapredTempDir;
 
-        try {
-          prog.start();
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.hadoop.mapred.Reducer#reduce(java.lang.Object,
+     * java.util.Iterator, org.apache.hadoop.mapred.OutputCollector,
+     * org.apache.hadoop.mapred.Reporter)
+     */
+    public void reduce(Shard key, Iterator<IntermediateForm> values, OutputCollector<Shard, Text> output,
+            Reporter reporter) throws IOException {
 
-          if (writer != null) {
-            writer.close();
-          }
-        } finally {
-          closed = true;
+        LOG.info("Construct a shard writer for " + key);
+        FileSystem fs = FileSystem.get(iconf.getConfiguration());
+        String temp = mapredTempDir + Path.SEPARATOR + "shard_" + System.currentTimeMillis();
+        final ShardWriter writer = new ShardWriter(fs, key, temp, iconf);
+
+        // update the shard
+        while (values.hasNext()) {
+            IntermediateForm form = values.next();
+            writer.process(form);
+            reporter.progress();
         }
-      }
-    }.close();
-    LOG.info("Closed the shard writer for " + key + ", writer = " + writer);
 
-    output.collect(key, DONE);
-  }
+        // close the shard
+        final Reporter fReporter = reporter;
+        new Closeable() {
+            boolean closed = false;
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.mapred.MapReduceBase#configure(org.apache.hadoop.mapred.JobConf)
-   */
-  public void configure(JobConf job) {
-    iconf = new IndexUpdateConfiguration(job);
-    mapredTempDir = iconf.getMapredTempDir();
-    mapredTempDir = Shard.normalizePath(mapredTempDir);
-  }
+            public void close() throws IOException {
+                // spawn a thread to give progress heartbeats
+                Thread prog = new Thread() {
+                    public void run() {
+                        while (!closed) {
+                            try {
+                                fReporter.setStatus("closing");
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                continue;
+                            } catch (Throwable e) {
+                                return;
+                            }
+                        }
+                    }
+                };
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.mapred.MapReduceBase#close()
-   */
-  public void close() throws IOException {
-  }
+                try {
+                    prog.start();
+
+                    if (writer != null) {
+                        writer.close();
+                    }
+                } finally {
+                    closed = true;
+                }
+            }
+        }.close();
+        LOG.info("Closed the shard writer for " + key + ", writer = " + writer);
+
+        output.collect(key, DONE);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.hadoop.mapred.MapReduceBase#configure(org.apache.hadoop.mapred
+     * .JobConf)
+     */
+    public void configure(JobConf job) {
+        iconf = new IndexUpdateConfiguration(job);
+        mapredTempDir = iconf.getMapredTempDir();
+        mapredTempDir = Shard.normalizePath(mapredTempDir);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.hadoop.mapred.MapReduceBase#close()
+     */
+    public void close() throws IOException {
+    }
 
 }

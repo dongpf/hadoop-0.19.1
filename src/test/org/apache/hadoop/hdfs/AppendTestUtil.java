@@ -33,87 +33,93 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.security.UnixUserGroupInformation;
 import org.apache.hadoop.security.UserGroupInformation;
 
-/** Utilities for append-related tests */ 
+/** Utilities for append-related tests */
 class AppendTestUtil {
-  /** For specifying the random number generator seed,
-   *  change the following value:
-   */
-  static final Long RANDOM_NUMBER_GENERATOR_SEED = null;
+    /**
+     * For specifying the random number generator seed, change the following
+     * value:
+     */
+    static final Long RANDOM_NUMBER_GENERATOR_SEED = null;
 
-  static final Log LOG = LogFactory.getLog(AppendTestUtil.class);
+    static final Log LOG = LogFactory.getLog(AppendTestUtil.class);
 
-  private static final Random SEED = new Random();
-  static {
-    final long seed = RANDOM_NUMBER_GENERATOR_SEED == null?
-        SEED.nextLong(): RANDOM_NUMBER_GENERATOR_SEED;
-    LOG.info("seed=" + seed);
-    SEED.setSeed(seed);
-  }
-
-  private static final ThreadLocal<Random> RANDOM = new ThreadLocal<Random>() {
-    protected Random initialValue() {
-      final Random r =  new Random();
-      synchronized(SEED) { 
-        final long seed = SEED.nextLong();
-        r.setSeed(seed);
-        LOG.info(Thread.currentThread().getName() + ": seed=" + seed);
-      }
-      return r;
+    private static final Random SEED = new Random();
+    static {
+        final long seed = RANDOM_NUMBER_GENERATOR_SEED == null ? SEED.nextLong() : RANDOM_NUMBER_GENERATOR_SEED;
+        LOG.info("seed=" + seed);
+        SEED.setSeed(seed);
     }
-  };
-  
-  static int nextInt() {return RANDOM.get().nextInt();}
-  static int nextInt(int n) {return RANDOM.get().nextInt(n);}
-  static int nextLong() {return RANDOM.get().nextInt();}
 
-  static byte[] randomBytes(long seed, int size) {
-    LOG.info("seed=" + seed + ", size=" + size);
-    final byte[] b = new byte[size];
-    final Random rand = new Random(seed);
-    rand.nextBytes(b);
-    return b;
-  }
+    private static final ThreadLocal<Random> RANDOM = new ThreadLocal<Random>() {
+        protected Random initialValue() {
+            final Random r = new Random();
+            synchronized (SEED) {
+                final long seed = SEED.nextLong();
+                r.setSeed(seed);
+                LOG.info(Thread.currentThread().getName() + ": seed=" + seed);
+            }
+            return r;
+        }
+    };
 
-  static void sleep(long ms) {
-    try {
-      Thread.sleep(ms);
-    } catch (InterruptedException e) {
-      LOG.info("ms=" + ms, e);
+    static int nextInt() {
+        return RANDOM.get().nextInt();
     }
-  }
 
-  static FileSystem createHdfsWithDifferentUsername(Configuration conf
-      ) throws IOException {
-    Configuration conf2 = new Configuration(conf);
-    String username = UserGroupInformation.getCurrentUGI().getUserName()+"_XXX";
-    UnixUserGroupInformation.saveToConf(conf2,
-        UnixUserGroupInformation.UGI_PROPERTY_NAME,
-        new UnixUserGroupInformation(username, new String[]{"supergroup"}));
-    return FileSystem.get(conf2);
-  }
+    static int nextInt(int n) {
+        return RANDOM.get().nextInt(n);
+    }
 
-  static void write(OutputStream out, int offset, int length) throws IOException {
-    final byte[] bytes = new byte[length];
-    for(int i = 0; i < length; i++) {
-      bytes[i] = (byte)(offset + i);
+    static int nextLong() {
+        return RANDOM.get().nextInt();
     }
-    out.write(bytes);
-  }
-  
-  static void check(FileSystem fs, Path p, long length) throws IOException {
-    int i = -1;
-    try {
-      final FileStatus status = fs.getFileStatus(p);
-      TestCase.assertEquals(length, status.getLen());
-      InputStream in = fs.open(p);
-      for(i++; i < length; i++) {
-        TestCase.assertEquals((byte)i, (byte)in.read());  
-      }
-      i = -(int)length;
-      TestCase.assertEquals(-1, in.read()); //EOF  
-      in.close();
-    } catch(IOException ioe) {
-      throw new IOException("p=" + p + ", length=" + length + ", i=" + i, ioe);
+
+    static byte[] randomBytes(long seed, int size) {
+        LOG.info("seed=" + seed + ", size=" + size);
+        final byte[] b = new byte[size];
+        final Random rand = new Random(seed);
+        rand.nextBytes(b);
+        return b;
     }
-  }
+
+    static void sleep(long ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            LOG.info("ms=" + ms, e);
+        }
+    }
+
+    static FileSystem createHdfsWithDifferentUsername(Configuration conf) throws IOException {
+        Configuration conf2 = new Configuration(conf);
+        String username = UserGroupInformation.getCurrentUGI().getUserName() + "_XXX";
+        UnixUserGroupInformation.saveToConf(conf2, UnixUserGroupInformation.UGI_PROPERTY_NAME,
+                new UnixUserGroupInformation(username, new String[] { "supergroup" }));
+        return FileSystem.get(conf2);
+    }
+
+    static void write(OutputStream out, int offset, int length) throws IOException {
+        final byte[] bytes = new byte[length];
+        for (int i = 0; i < length; i++) {
+            bytes[i] = (byte) (offset + i);
+        }
+        out.write(bytes);
+    }
+
+    static void check(FileSystem fs, Path p, long length) throws IOException {
+        int i = -1;
+        try {
+            final FileStatus status = fs.getFileStatus(p);
+            TestCase.assertEquals(length, status.getLen());
+            InputStream in = fs.open(p);
+            for (i++; i < length; i++) {
+                TestCase.assertEquals((byte) i, (byte) in.read());
+            }
+            i = -(int) length;
+            TestCase.assertEquals(-1, in.read()); // EOF
+            in.close();
+        } catch (IOException ioe) {
+            throw new IOException("p=" + p + ", length=" + length + ", i=" + i, ioe);
+        }
+    }
 }

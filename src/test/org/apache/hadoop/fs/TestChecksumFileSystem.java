@@ -27,43 +27,42 @@ import org.apache.hadoop.conf.Configuration;
 import junit.framework.TestCase;
 
 public class TestChecksumFileSystem extends TestCase {
-  public void testgetChecksumLength() throws Exception {
-    assertEquals(8, ChecksumFileSystem.getChecksumLength(0L, 512));
-    assertEquals(12, ChecksumFileSystem.getChecksumLength(1L, 512));
-    assertEquals(12, ChecksumFileSystem.getChecksumLength(512L, 512));
-    assertEquals(16, ChecksumFileSystem.getChecksumLength(513L, 512));
-    assertEquals(16, ChecksumFileSystem.getChecksumLength(1023L, 512));
-    assertEquals(16, ChecksumFileSystem.getChecksumLength(1024L, 512));
-    assertEquals(408, ChecksumFileSystem.getChecksumLength(100L, 1));
-    assertEquals(4000000000008L,
-                 ChecksumFileSystem.getChecksumLength(10000000000000L, 10));    
-  } 
-  
-  // cehck that the checksum file is deleted for Checksum file system.
-  public void testDeletionOfCheckSum() throws Exception {
-    Configuration conf = new Configuration();
-    URI uri = URI.create("ramfs://mapoutput" + "_tmp");
-    InMemoryFileSystem inMemFs =  (InMemoryFileSystem)FileSystem.get(uri, conf);
-    Path testPath = new Path("/file_1");
-    inMemFs.reserveSpaceWithCheckSum(testPath, 1024);
-    FSDataOutputStream fout = inMemFs.create(testPath);
-    fout.write("testing".getBytes());
-    fout.close();
-    assertTrue("checksum exists", inMemFs.exists(inMemFs.getChecksumFile(testPath)));
-    inMemFs.delete(testPath, true);
-    assertTrue("checksum deleted", !inMemFs.exists(inMemFs.getChecksumFile(testPath)));
-    // check for directories getting deleted.
-    testPath = new Path("/tesdir/file_1");
-    inMemFs.reserveSpaceWithCheckSum(testPath, 1024);
-    fout = inMemFs.create(testPath);
-    fout.write("testing".getBytes());
-    fout.close();
-    testPath = new Path("/testdir/file_2");
-    inMemFs.reserveSpaceWithCheckSum(testPath, 1024);
-    fout = inMemFs.create(testPath);
-    fout.write("testing".getBytes());
-    fout.close();
-    inMemFs.delete(testPath, true);
-    assertTrue("nothing in the namespace", inMemFs.listStatus(new Path("/")).length == 0);
-  }
+    public void testgetChecksumLength() throws Exception {
+        assertEquals(8, ChecksumFileSystem.getChecksumLength(0L, 512));
+        assertEquals(12, ChecksumFileSystem.getChecksumLength(1L, 512));
+        assertEquals(12, ChecksumFileSystem.getChecksumLength(512L, 512));
+        assertEquals(16, ChecksumFileSystem.getChecksumLength(513L, 512));
+        assertEquals(16, ChecksumFileSystem.getChecksumLength(1023L, 512));
+        assertEquals(16, ChecksumFileSystem.getChecksumLength(1024L, 512));
+        assertEquals(408, ChecksumFileSystem.getChecksumLength(100L, 1));
+        assertEquals(4000000000008L, ChecksumFileSystem.getChecksumLength(10000000000000L, 10));
+    }
+
+    // cehck that the checksum file is deleted for Checksum file system.
+    public void testDeletionOfCheckSum() throws Exception {
+        Configuration conf = new Configuration();
+        URI uri = URI.create("ramfs://mapoutput" + "_tmp");
+        InMemoryFileSystem inMemFs = (InMemoryFileSystem) FileSystem.get(uri, conf);
+        Path testPath = new Path("/file_1");
+        inMemFs.reserveSpaceWithCheckSum(testPath, 1024);
+        FSDataOutputStream fout = inMemFs.create(testPath);
+        fout.write("testing".getBytes());
+        fout.close();
+        assertTrue("checksum exists", inMemFs.exists(inMemFs.getChecksumFile(testPath)));
+        inMemFs.delete(testPath, true);
+        assertTrue("checksum deleted", !inMemFs.exists(inMemFs.getChecksumFile(testPath)));
+        // check for directories getting deleted.
+        testPath = new Path("/tesdir/file_1");
+        inMemFs.reserveSpaceWithCheckSum(testPath, 1024);
+        fout = inMemFs.create(testPath);
+        fout.write("testing".getBytes());
+        fout.close();
+        testPath = new Path("/testdir/file_2");
+        inMemFs.reserveSpaceWithCheckSum(testPath, 1024);
+        fout = inMemFs.create(testPath);
+        fout.write("testing".getBytes());
+        fout.close();
+        inMemFs.delete(testPath, true);
+        assertTrue("nothing in the namespace", inMemFs.listStatus(new Path("/")).length == 0);
+    }
 }

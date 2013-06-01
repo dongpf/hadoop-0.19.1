@@ -22,36 +22,32 @@ import java.io.*;
 
 import org.apache.hadoop.streaming.Environment;
 
-/** 
-    Used to test the usage of external applications without adding
-    platform-specific dependencies.
+/**
+ * Used to test the usage of external applications without adding
+ * platform-specific dependencies.
  */
-public class StreamAggregate extends TrApp
-{
+public class StreamAggregate extends TrApp {
 
-  public StreamAggregate()
-  {
-    super('.', ' ');
-  }
-
-  public void go() throws IOException
-  {
-    testParentJobConfToEnvVars();
-    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-    String line;
-
-    while ((line = in.readLine()) != null) {
-      String [] words = line.split(" ");
-      for (int i = 0; i< words.length; i++) {
-        String out = "LongValueSum:" + words[i].trim() + "\t" + "1";
-        System.out.println(out);
-      }
+    public StreamAggregate() {
+        super('.', ' ');
     }
-  }
 
-  public static void main(String[] args) throws IOException
-  {
-    TrApp app = new StreamAggregate();
-    app.go();
-  }
+    public void go() throws IOException {
+        testParentJobConfToEnvVars();
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+
+        while ((line = in.readLine()) != null) {
+            String[] words = line.split(" ");
+            for (int i = 0; i < words.length; i++) {
+                String out = "LongValueSum:" + words[i].trim() + "\t" + "1";
+                System.out.println(out);
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        TrApp app = new StreamAggregate();
+        app.go();
+    }
 }

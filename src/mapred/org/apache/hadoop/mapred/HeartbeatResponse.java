@@ -30,115 +30,116 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableUtils;
 
 /**
- * The response sent by the {@link JobTracker} to the hearbeat sent
- * periodically by the {@link TaskTracker}
+ * The response sent by the {@link JobTracker} to the hearbeat sent periodically
+ * by the {@link TaskTracker}
  * 
  */
 class HeartbeatResponse implements Writable, Configurable {
-  Configuration conf = null;
-  short responseId;
-  int heartbeatInterval;
-  TaskTrackerAction[] actions;
-  Map<JobID, Integer> lastKnownIndexMap = null;
+    Configuration conf = null;
+    short responseId;
+    int heartbeatInterval;
+    TaskTrackerAction[] actions;
+    Map<JobID, Integer> lastKnownIndexMap = null;
 
-  HeartbeatResponse() {}
-  
-  HeartbeatResponse(short responseId, TaskTrackerAction[] actions) {
-    this.responseId = responseId;
-    this.actions = actions;
-    this.heartbeatInterval = MRConstants.HEARTBEAT_INTERVAL_MIN;
-  }
-  
-  public void setResponseId(short responseId) {
-    this.responseId = responseId; 
-  }
-  
-  public short getResponseId() {
-    return responseId;
-  }
-  
-  public void setLastKnownIndices(Map<JobID, Integer> lastKnownIndexMap) {
-    this.lastKnownIndexMap = lastKnownIndexMap; 
-  }
-  
-  public Map<JobID, Integer> getLastKnownIndex() {
-    return lastKnownIndexMap;
-  }
-  
-  public void setActions(TaskTrackerAction[] actions) {
-    this.actions = actions;
-  }
-  
-  public TaskTrackerAction[] getActions() {
-    return actions;
-  }
-  
-  public void setConf(Configuration conf) {
-    this.conf = conf;
-  }
+    HeartbeatResponse() {
+    }
 
-  public Configuration getConf() {
-    return conf;
-  }
+    HeartbeatResponse(short responseId, TaskTrackerAction[] actions) {
+        this.responseId = responseId;
+        this.actions = actions;
+        this.heartbeatInterval = MRConstants.HEARTBEAT_INTERVAL_MIN;
+    }
 
-  public void setHeartbeatInterval(int interval) {
-    this.heartbeatInterval = interval;
-  }
-  
-  public int getHeartbeatInterval() {
-    return heartbeatInterval;
-  }
-  
-  public void write(DataOutput out) throws IOException {
-    out.writeShort(responseId);
-    out.writeInt(heartbeatInterval);
-    if (actions == null) {
-      WritableUtils.writeVInt(out, 0);
-    } else {
-      WritableUtils.writeVInt(out, actions.length);
-      for (TaskTrackerAction action : actions) {
-        WritableUtils.writeEnum(out, action.getActionId());
-        action.write(out);
-      }
+    public void setResponseId(short responseId) {
+        this.responseId = responseId;
     }
-    // Write the last map event index for the jobs
-    if (lastKnownIndexMap != null) {
-      out.writeInt(lastKnownIndexMap.size());
-      for (Map.Entry<JobID, Integer> entry : lastKnownIndexMap.entrySet()) {
-        entry.getKey().write(out);
-        out.writeInt(entry.getValue());
-      }
-    } else {
-      out.writeInt(0);
+
+    public short getResponseId() {
+        return responseId;
     }
-    //ObjectWritable.writeObject(out, actions, actions.getClass(), conf);
-  }
-  
-  public void readFields(DataInput in) throws IOException {
-    this.responseId = in.readShort();
-    this.heartbeatInterval = in.readInt();
-    int length = WritableUtils.readVInt(in);
-    if (length > 0) {
-      actions = new TaskTrackerAction[length];
-      for (int i=0; i < length; ++i) {
-        TaskTrackerAction.ActionType actionType = 
-          WritableUtils.readEnum(in, TaskTrackerAction.ActionType.class);
-        actions[i] = TaskTrackerAction.createAction(actionType);
-        actions[i].readFields(in);
-      }
-    } else {
-      actions = null;
+
+    public void setLastKnownIndices(Map<JobID, Integer> lastKnownIndexMap) {
+        this.lastKnownIndexMap = lastKnownIndexMap;
     }
-    // Read the last map events index of the jobs
-    int size = in.readInt();
-    if (size != 0) {
-      lastKnownIndexMap = new HashMap<JobID, Integer>(size);
-      for (int i = 0; i < size; ++i) {
-        JobID id = JobID.read(in);
-        int count = in.readInt();
-        lastKnownIndexMap.put(id, count);
-      }
+
+    public Map<JobID, Integer> getLastKnownIndex() {
+        return lastKnownIndexMap;
     }
-    //actions = (TaskTrackerAction[]) ObjectWritable.readObject(in, conf);
-  }
+
+    public void setActions(TaskTrackerAction[] actions) {
+        this.actions = actions;
+    }
+
+    public TaskTrackerAction[] getActions() {
+        return actions;
+    }
+
+    public void setConf(Configuration conf) {
+        this.conf = conf;
+    }
+
+    public Configuration getConf() {
+        return conf;
+    }
+
+    public void setHeartbeatInterval(int interval) {
+        this.heartbeatInterval = interval;
+    }
+
+    public int getHeartbeatInterval() {
+        return heartbeatInterval;
+    }
+
+    public void write(DataOutput out) throws IOException {
+        out.writeShort(responseId);
+        out.writeInt(heartbeatInterval);
+        if (actions == null) {
+            WritableUtils.writeVInt(out, 0);
+        } else {
+            WritableUtils.writeVInt(out, actions.length);
+            for (TaskTrackerAction action : actions) {
+                WritableUtils.writeEnum(out, action.getActionId());
+                action.write(out);
+            }
+        }
+        // Write the last map event index for the jobs
+        if (lastKnownIndexMap != null) {
+            out.writeInt(lastKnownIndexMap.size());
+            for (Map.Entry<JobID, Integer> entry : lastKnownIndexMap.entrySet()) {
+                entry.getKey().write(out);
+                out.writeInt(entry.getValue());
+            }
+        } else {
+            out.writeInt(0);
+        }
+        // ObjectWritable.writeObject(out, actions, actions.getClass(), conf);
+    }
+
+    public void readFields(DataInput in) throws IOException {
+        this.responseId = in.readShort();
+        this.heartbeatInterval = in.readInt();
+        int length = WritableUtils.readVInt(in);
+        if (length > 0) {
+            actions = new TaskTrackerAction[length];
+            for (int i = 0; i < length; ++i) {
+                TaskTrackerAction.ActionType actionType = WritableUtils
+                        .readEnum(in, TaskTrackerAction.ActionType.class);
+                actions[i] = TaskTrackerAction.createAction(actionType);
+                actions[i].readFields(in);
+            }
+        } else {
+            actions = null;
+        }
+        // Read the last map events index of the jobs
+        int size = in.readInt();
+        if (size != 0) {
+            lastKnownIndexMap = new HashMap<JobID, Integer>(size);
+            for (int i = 0; i < size; ++i) {
+                JobID id = JobID.read(in);
+                int count = in.readInt();
+                lastKnownIndexMap.put(id, count);
+            }
+        }
+        // actions = (TaskTrackerAction[]) ObjectWritable.readObject(in, conf);
+    }
 }

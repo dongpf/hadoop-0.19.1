@@ -23,67 +23,69 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 
 /**
- * A helper to load the native hadoop code i.e. libhadoop.so.
- * This handles the fallback to either the bundled libhadoop-Linux-i386-32.so
- * or the the default java implementations where appropriate.
- *  
+ * A helper to load the native hadoop code i.e. libhadoop.so. This handles the
+ * fallback to either the bundled libhadoop-Linux-i386-32.so or the the default
+ * java implementations where appropriate.
+ * 
  */
 public class NativeCodeLoader {
 
-  private static final Log LOG =
-    LogFactory.getLog(NativeCodeLoader.class);
-  
-  private static boolean nativeCodeLoaded = false;
-  
-  static {
-    // Try to load native hadoop library and set fallback flag appropriately
-    LOG.debug("Trying to load the custom-built native-hadoop library...");
-    try {
-      System.loadLibrary("hadoop");
-      LOG.info("Loaded the native-hadoop library");
-      nativeCodeLoaded = true;
-    } catch (Throwable t) {
-      // Ignore failure to load
-      LOG.debug("Failed to load native-hadoop with error: " + t);
-      LOG.debug("java.library.path=" + System.getProperty("java.library.path"));
-    }
-    
-    if (!nativeCodeLoaded) {
-      LOG.warn("Unable to load native-hadoop library for your platform... " +
-               "using builtin-java classes where applicable");
-    }
-  }
+    private static final Log LOG = LogFactory.getLog(NativeCodeLoader.class);
 
-  /**
-   * Check if native-hadoop code is loaded for this platform.
-   * 
-   * @return <code>true</code> if native-hadoop is loaded, 
-   *         else <code>false</code>
-   */
-  public static boolean isNativeCodeLoaded() {
-    return nativeCodeLoaded;
-  }
+    private static boolean nativeCodeLoaded = false;
 
-  /**
-   * Return if native hadoop libraries, if present, can be used for this job.
-   * @param conf configuration
-   * 
-   * @return <code>true</code> if native hadoop libraries, if present, can be 
-   *         used for this job; <code>false</code> otherwise.
-   */
-  public boolean getLoadNativeLibraries(Configuration conf) {
-    return conf.getBoolean("hadoop.native.lib", true);
-  }
-  
-  /**
-   * Set if native hadoop libraries, if present, can be used for this job.
-   * 
-   * @param conf configuration
-   * @param loadNativeLibraries can native hadoop libraries be loaded
-   */
-  public void setLoadNativeLibraries(Configuration conf, 
-                                     boolean loadNativeLibraries) {
-    conf.setBoolean("hadoop.native.lib", loadNativeLibraries);
-  }
+    static {
+        // Try to load native hadoop library and set fallback flag appropriately
+        LOG.debug("Trying to load the custom-built native-hadoop library...");
+        try {
+            System.loadLibrary("hadoop");
+            LOG.info("Loaded the native-hadoop library");
+            nativeCodeLoaded = true;
+        } catch (Throwable t) {
+            // Ignore failure to load
+            LOG.debug("Failed to load native-hadoop with error: " + t);
+            LOG.debug("java.library.path=" + System.getProperty("java.library.path"));
+        }
+
+        if (!nativeCodeLoaded) {
+            LOG.warn("Unable to load native-hadoop library for your platform... "
+                    + "using builtin-java classes where applicable");
+        }
+    }
+
+    /**
+     * Check if native-hadoop code is loaded for this platform.
+     * 
+     * @return <code>true</code> if native-hadoop is loaded, else
+     *         <code>false</code>
+     */
+    public static boolean isNativeCodeLoaded() {
+        return nativeCodeLoaded;
+    }
+
+    /**
+     * Return if native hadoop libraries, if present, can be used for this job.
+     * 
+     * @param conf
+     *            configuration
+     * 
+     * @return <code>true</code> if native hadoop libraries, if present, can be
+     *         used for this job; <code>false</code> otherwise.
+     */
+    public boolean getLoadNativeLibraries(Configuration conf) {
+        return conf.getBoolean("hadoop.native.lib", true);
+    }
+
+    /**
+     * Set if native hadoop libraries, if present, can be used for this job.
+     * 
+     * @param conf
+     *            configuration
+     * @param loadNativeLibraries
+     *            can native hadoop libraries be loaded
+     */
+    public void setLoadNativeLibraries(Configuration conf, boolean loadNativeLibraries) {
+        conf.setBoolean("hadoop.native.lib", loadNativeLibraries);
+    }
 
 }

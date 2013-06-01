@@ -24,29 +24,29 @@ import org.apache.hadoop.mapred.JobConf;
 
 public class TestJobConf extends TestCase {
 
-  public void testProfileParamsDefaults() {
-    JobConf configuration = new JobConf();
+    public void testProfileParamsDefaults() {
+        JobConf configuration = new JobConf();
 
-    Assert.assertNull(configuration.get("mapred.task.profile.params"));
+        Assert.assertNull(configuration.get("mapred.task.profile.params"));
 
-    String result = configuration.getProfileParams();
+        String result = configuration.getProfileParams();
 
-    Assert.assertNotNull(result);
-    Assert.assertTrue(result.contains("file=%s"));
-    Assert.assertTrue(result.startsWith("-agentlib:hprof"));
-  }
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.contains("file=%s"));
+        Assert.assertTrue(result.startsWith("-agentlib:hprof"));
+    }
 
-  public void testProfileParamsSetter() {
-    JobConf configuration = new JobConf();
+    public void testProfileParamsSetter() {
+        JobConf configuration = new JobConf();
 
-    configuration.setProfileParams("test");
-    Assert.assertEquals("test", configuration.get("mapred.task.profile.params"));
-  }
+        configuration.setProfileParams("test");
+        Assert.assertEquals("test", configuration.get("mapred.task.profile.params"));
+    }
 
-  public void testProfileParamsGetter() {
-    JobConf configuration = new JobConf();
+    public void testProfileParamsGetter() {
+        JobConf configuration = new JobConf();
 
-    configuration.set("mapred.task.profile.params", "test");
-    Assert.assertEquals("test", configuration.getProfileParams());
-  }
+        configuration.set("mapred.task.profile.params", "test");
+        Assert.assertEquals("test", configuration.getProfileParams());
+    }
 }

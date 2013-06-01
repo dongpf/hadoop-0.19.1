@@ -17,103 +17,99 @@
  */
 package org.apache.hadoop.ipc.metrics;
 
-
 import javax.management.ObjectName;
 
 import org.apache.hadoop.ipc.Server;
 import org.apache.hadoop.metrics.util.MBeanUtil;
 
-
 /**
  * This class implements the RpcMgt MBean
- *
+ * 
  */
 class RpcMgt implements RpcMgtMBean {
-  private RpcMetrics myMetrics;
-  private Server myServer;
-  private ObjectName mbeanName;
-  
-  RpcMgt(final String serviceName, final String port,
-                final RpcMetrics metrics, Server server) {
-    myMetrics = metrics;
-    myServer = server;
-    mbeanName = MBeanUtil.registerMBean(serviceName,
-                    "RpcStatisticsForPort" + port, this);
-  }
+    private RpcMetrics myMetrics;
+    private Server myServer;
+    private ObjectName mbeanName;
 
-  public void shutdown() {
-    if (mbeanName != null)
-      MBeanUtil.unregisterMBean(mbeanName);
-  }
-  
-  /**
-   * @inheritDoc
-   */
-  public long getRpcOpsAvgProcessingTime() {
-    return myMetrics.rpcProcessingTime.getPreviousIntervalAverageTime();
-  }
-  
-  /**
-   * @inheritDoc
-   */
-  public long getRpcOpsAvgProcessingTimeMax() {
-    return myMetrics.rpcProcessingTime.getMaxTime();
-  }
+    RpcMgt(final String serviceName, final String port, final RpcMetrics metrics, Server server) {
+        myMetrics = metrics;
+        myServer = server;
+        mbeanName = MBeanUtil.registerMBean(serviceName, "RpcStatisticsForPort" + port, this);
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long getRpcOpsAvgProcessingTimeMin() {
-    return myMetrics.rpcProcessingTime.getMinTime();
-  }
+    public void shutdown() {
+        if (mbeanName != null)
+            MBeanUtil.unregisterMBean(mbeanName);
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long getRpcOpsAvgQueueTime() {
-    return myMetrics.rpcQueueTime.getPreviousIntervalAverageTime();
-  }
-  
-  /**
-   * @inheritDoc
-   */
-  public long getRpcOpsAvgQueueTimeMax() {
-    return myMetrics.rpcQueueTime.getMaxTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getRpcOpsAvgProcessingTime() {
+        return myMetrics.rpcProcessingTime.getPreviousIntervalAverageTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long getRpcOpsAvgQueueTimeMin() {
-    return myMetrics.rpcQueueTime.getMinTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getRpcOpsAvgProcessingTimeMax() {
+        return myMetrics.rpcProcessingTime.getMaxTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getRpcOpsNumber() {
-    return myMetrics.rpcProcessingTime.getPreviousIntervalNumOps() ;
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getRpcOpsAvgProcessingTimeMin() {
+        return myMetrics.rpcProcessingTime.getMinTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getNumOpenConnections() {
-    return myServer.getNumOpenConnections();
-  }
-  
-  /**
-   * @inheritDoc
-   */
-  public int getCallQueueLen() {
-    return myServer.getCallQueueLen();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getRpcOpsAvgQueueTime() {
+        return myMetrics.rpcQueueTime.getPreviousIntervalAverageTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public void resetAllMinMax() {
-    myMetrics.rpcProcessingTime.resetMinMax();
-    myMetrics.rpcQueueTime.resetMinMax();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getRpcOpsAvgQueueTimeMax() {
+        return myMetrics.rpcQueueTime.getMaxTime();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public long getRpcOpsAvgQueueTimeMin() {
+        return myMetrics.rpcQueueTime.getMinTime();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public int getRpcOpsNumber() {
+        return myMetrics.rpcProcessingTime.getPreviousIntervalNumOps();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public int getNumOpenConnections() {
+        return myServer.getNumOpenConnections();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public int getCallQueueLen() {
+        return myServer.getCallQueueLen();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public void resetAllMinMax() {
+        myMetrics.rpcProcessingTime.resetMinMax();
+        myMetrics.rpcQueueTime.resetMinMax();
+    }
 }

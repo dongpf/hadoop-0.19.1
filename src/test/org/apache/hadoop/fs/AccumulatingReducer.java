@@ -32,8 +32,8 @@ import org.apache.hadoop.mapred.Reporter;
 /**
  * Reducer that accumulates values based on their type.
  * <p>
- * The type is specified in the key part of the key-value pair 
- * as a prefix to the key in the following way
+ * The type is specified in the key part of the key-value pair as a prefix to
+ * the key in the following way
  * <p>
  * <tt>type:key</tt>
  * <p>
@@ -45,57 +45,53 @@ import org.apache.hadoop.mapred.Reporter;
  * </ul>
  * 
  */
-public class AccumulatingReducer extends MapReduceBase
-    implements Reducer<UTF8, UTF8, UTF8, UTF8> {
-  private static final Log LOG = LogFactory.getLog(AccumulatingReducer.class);
-  
-  protected String hostName;
-  
-  public AccumulatingReducer () {
-    LOG.info("Starting AccumulatingReducer !!!");
-    try {
-      hostName = java.net.InetAddress.getLocalHost().getHostName();
-    } catch(Exception e) {
-      hostName = "localhost";
-    }
-    LOG.info("Starting AccumulatingReducer on " + hostName);
-  }
-  
-  public void reduce(UTF8 key, 
-                     Iterator<UTF8> values,
-                     OutputCollector<UTF8, UTF8> output, 
-                     Reporter reporter
-                     ) throws IOException {
-    String field = key.toString();
+public class AccumulatingReducer extends MapReduceBase implements Reducer<UTF8, UTF8, UTF8, UTF8> {
+    private static final Log LOG = LogFactory.getLog(AccumulatingReducer.class);
 
-    reporter.setStatus("starting " + field + " ::host = " + hostName);
+    protected String hostName;
 
-    // concatenate strings
-    if (field.startsWith("s:")) {
-      String sSum = "";
-      while (values.hasNext())
-        sSum += values.next().toString() + ";";
-      output.collect(key, new UTF8(sSum));
-      reporter.setStatus("finished " + field + " ::host = " + hostName);
-      return;
+    public AccumulatingReducer() {
+        LOG.info("Starting AccumulatingReducer !!!");
+        try {
+            hostName = java.net.InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            hostName = "localhost";
+        }
+        LOG.info("Starting AccumulatingReducer on " + hostName);
     }
-    // sum long values
-    if (field.startsWith("f:")) {
-      float fSum = 0;
-      while (values.hasNext())
-        fSum += Float.parseFloat(values.next().toString());
-      output.collect(key, new UTF8(String.valueOf(fSum)));
-      reporter.setStatus("finished " + field + " ::host = " + hostName);
-      return;
+
+    public void reduce(UTF8 key, Iterator<UTF8> values, OutputCollector<UTF8, UTF8> output, Reporter reporter)
+            throws IOException {
+        String field = key.toString();
+
+        reporter.setStatus("starting " + field + " ::host = " + hostName);
+
+        // concatenate strings
+        if (field.startsWith("s:")) {
+            String sSum = "";
+            while (values.hasNext())
+                sSum += values.next().toString() + ";";
+            output.collect(key, new UTF8(sSum));
+            reporter.setStatus("finished " + field + " ::host = " + hostName);
+            return;
+        }
+        // sum long values
+        if (field.startsWith("f:")) {
+            float fSum = 0;
+            while (values.hasNext())
+                fSum += Float.parseFloat(values.next().toString());
+            output.collect(key, new UTF8(String.valueOf(fSum)));
+            reporter.setStatus("finished " + field + " ::host = " + hostName);
+            return;
+        }
+        // sum long values
+        if (field.startsWith("l:")) {
+            long lSum = 0;
+            while (values.hasNext()) {
+                lSum += Long.parseLong(values.next().toString());
+            }
+            output.collect(key, new UTF8(String.valueOf(lSum)));
+        }
+        reporter.setStatus("finished " + field + " ::host = " + hostName);
     }
-    // sum long values
-    if (field.startsWith("l:")) {
-      long lSum = 0;
-      while (values.hasNext()) {
-        lSum += Long.parseLong(values.next().toString());
-      }
-      output.collect(key, new UTF8(String.valueOf(lSum)));
-    }
-    reporter.setStatus("finished " + field + " ::host = " + hostName);
-  }
 }

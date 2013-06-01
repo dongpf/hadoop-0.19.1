@@ -21,37 +21,34 @@ package org.apache.hadoop.streaming;
 import java.io.*;
 import java.util.Date;
 
-/** A minimal Java implementation of /usr/bin/uniq
-    Used to test the usage of external applications without adding
-    platform-specific dependencies.
-    Uniques lines and prepends a header on the line.
+/**
+ * A minimal Java implementation of /usr/bin/uniq Used to test the usage of
+ * external applications without adding platform-specific dependencies. Uniques
+ * lines and prepends a header on the line.
  */
-public class UniqApp
-{
+public class UniqApp {
 
-  public UniqApp(String header)
-  {
-    this.header = header;
-  }
-  public void go() throws IOException
-  {
-    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-    String line;
-    String prevLine = null;
-    while ((line = in.readLine()) != null) {
-      if (!line.equals(prevLine)) {
-        System.out.println(header + line);
-      }
-      prevLine = line;
+    public UniqApp(String header) {
+        this.header = header;
     }
-  }
 
-  public static void main(String[] args) throws IOException
-  {
-    String h = (args.length < 1) ? "" : args[0];
-    UniqApp app = new UniqApp(h);
-    app.go();
-  }
+    public void go() throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        String prevLine = null;
+        while ((line = in.readLine()) != null) {
+            if (!line.equals(prevLine)) {
+                System.out.println(header + line);
+            }
+            prevLine = line;
+        }
+    }
 
-  String header;
+    public static void main(String[] args) throws IOException {
+        String h = (args.length < 1) ? "" : args[0];
+        UniqApp app = new UniqApp(h);
+        app.go();
+    }
+
+    String header;
 }

@@ -30,35 +30,34 @@ import org.apache.hadoop.fs.Path;
 import junit.framework.TestCase;
 
 /**
- * This class tests DatanodeDescriptor.getBlocksScheduled() at the
- * NameNode. This counter is supposed to keep track of blocks currently
- * scheduled to a datanode.
+ * This class tests DatanodeDescriptor.getBlocksScheduled() at the NameNode.
+ * This counter is supposed to keep track of blocks currently scheduled to a
+ * datanode.
  */
 public class TestBlocksScheduledCounter extends TestCase {
 
-  public void testBlocksScheduledCounter() throws IOException {
-    
-    MiniDFSCluster cluster = new MiniDFSCluster(new Configuration(), 1, 
-                                                true, null);
-    cluster.waitActive();
-    FileSystem fs = cluster.getFileSystem();
-    
-    //open a file an write a few bytes:
-    FSDataOutputStream out = fs.create(new Path("/testBlockScheduledCounter"));
-    for (int i=0; i<1024; i++) {
-      out.write(i);
+    public void testBlocksScheduledCounter() throws IOException {
+
+        MiniDFSCluster cluster = new MiniDFSCluster(new Configuration(), 1, true, null);
+        cluster.waitActive();
+        FileSystem fs = cluster.getFileSystem();
+
+        // open a file an write a few bytes:
+        FSDataOutputStream out = fs.create(new Path("/testBlockScheduledCounter"));
+        for (int i = 0; i < 1024; i++) {
+            out.write(i);
+        }
+        // flush to make sure a block is allocated.
+        ((DFSOutputStream) (out.getWrappedStream())).sync();
+
+        ArrayList<DatanodeDescriptor> dnList = new ArrayList<DatanodeDescriptor>();
+        cluster.getNameNode().namesystem.DFSNodesStatus(dnList, dnList);
+        DatanodeDescriptor dn = dnList.get(0);
+
+        assertEquals(1, dn.getBlocksScheduled());
+
+        // close the file and the counter should go to zero.
+        out.close();
+        assertEquals(0, dn.getBlocksScheduled());
     }
-    // flush to make sure a block is allocated.
-    ((DFSOutputStream)(out.getWrappedStream())).sync();
-    
-    ArrayList<DatanodeDescriptor> dnList = new ArrayList<DatanodeDescriptor>();
-    cluster.getNameNode().namesystem.DFSNodesStatus(dnList, dnList);
-    DatanodeDescriptor dn = dnList.get(0);
-    
-    assertEquals(1, dn.getBlocksScheduled());
-   
-    // close the file and the counter should go to zero.
-    out.close();   
-    assertEquals(0, dn.getBlocksScheduled());
-  }
 }

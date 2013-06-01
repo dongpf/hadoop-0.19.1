@@ -32,109 +32,106 @@ import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.SequenceFileInputFormat;
 
 /**
- * InputFormat reading keys, values from SequenceFiles in binary (raw)
- * format.
+ * InputFormat reading keys, values from SequenceFiles in binary (raw) format.
  */
-public class SequenceFileAsBinaryInputFormat
-    extends SequenceFileInputFormat<BytesWritable,BytesWritable> {
+public class SequenceFileAsBinaryInputFormat extends SequenceFileInputFormat<BytesWritable, BytesWritable> {
 
-  public SequenceFileAsBinaryInputFormat() {
-    super();
-  }
-
-  public RecordReader<BytesWritable,BytesWritable> getRecordReader(
-      InputSplit split, JobConf job, Reporter reporter)
-      throws IOException {
-    return new SequenceFileAsBinaryRecordReader(job, (FileSplit)split);
-  }
-
-  /**
-   * Read records from a SequenceFile as binary (raw) bytes.
-   */
-  public static class SequenceFileAsBinaryRecordReader
-      implements RecordReader<BytesWritable,BytesWritable> {
-    private SequenceFile.Reader in;
-    private long start;
-    private long end;
-    private boolean done = false;
-    private DataOutputBuffer buffer = new DataOutputBuffer();
-    private SequenceFile.ValueBytes vbytes;
-
-    public SequenceFileAsBinaryRecordReader(Configuration conf, FileSplit split)
-        throws IOException {
-      Path path = split.getPath();
-      FileSystem fs = path.getFileSystem(conf);
-      this.in = new SequenceFile.Reader(fs, path, conf);
-      this.end = split.getStart() + split.getLength();
-      if (split.getStart() > in.getPosition())
-        in.sync(split.getStart());                  // sync to start
-      this.start = in.getPosition();
-      vbytes = in.createValueBytes();
-      done = start >= end;
+    public SequenceFileAsBinaryInputFormat() {
+        super();
     }
 
-    public BytesWritable createKey() {
-      return new BytesWritable();
-    }
-
-    public BytesWritable createValue() {
-      return new BytesWritable();
+    public RecordReader<BytesWritable, BytesWritable> getRecordReader(InputSplit split, JobConf job, Reporter reporter)
+            throws IOException {
+        return new SequenceFileAsBinaryRecordReader(job, (FileSplit) split);
     }
 
     /**
-     * Retrieve the name of the key class for this SequenceFile.
-     * @see org.apache.hadoop.io.SequenceFile.Reader#getKeyClassName
+     * Read records from a SequenceFile as binary (raw) bytes.
      */
-    public String getKeyClassName() {
-      return in.getKeyClassName();
-    }
+    public static class SequenceFileAsBinaryRecordReader implements RecordReader<BytesWritable, BytesWritable> {
+        private SequenceFile.Reader in;
+        private long start;
+        private long end;
+        private boolean done = false;
+        private DataOutputBuffer buffer = new DataOutputBuffer();
+        private SequenceFile.ValueBytes vbytes;
 
-    /**
-     * Retrieve the name of the value class for this SequenceFile.
-     * @see org.apache.hadoop.io.SequenceFile.Reader#getValueClassName
-     */
-    public String getValueClassName() {
-      return in.getValueClassName();
-    }
+        public SequenceFileAsBinaryRecordReader(Configuration conf, FileSplit split) throws IOException {
+            Path path = split.getPath();
+            FileSystem fs = path.getFileSystem(conf);
+            this.in = new SequenceFile.Reader(fs, path, conf);
+            this.end = split.getStart() + split.getLength();
+            if (split.getStart() > in.getPosition())
+                in.sync(split.getStart()); // sync to start
+            this.start = in.getPosition();
+            vbytes = in.createValueBytes();
+            done = start >= end;
+        }
 
-    /**
-     * Read raw bytes from a SequenceFile.
-     */
-    public synchronized boolean next(BytesWritable key, BytesWritable val)
-        throws IOException {
-      if (done) return false;
-      long pos = in.getPosition();
-      boolean eof = -1 == in.nextRawKey(buffer);
-      if (!eof) {
-        key.set(buffer.getData(), 0, buffer.getLength());
-        buffer.reset();
-        in.nextRawValue(vbytes);
-        vbytes.writeUncompressedBytes(buffer);
-        val.set(buffer.getData(), 0, buffer.getLength());
-        buffer.reset();
-      }
-      return !(done = (eof || (pos >= end && in.syncSeen())));
-    }
+        public BytesWritable createKey() {
+            return new BytesWritable();
+        }
 
-    public long getPos() throws IOException {
-      return in.getPosition();
-    }
+        public BytesWritable createValue() {
+            return new BytesWritable();
+        }
 
-    public void close() throws IOException {
-      in.close();
-    }
+        /**
+         * Retrieve the name of the key class for this SequenceFile.
+         * 
+         * @see org.apache.hadoop.io.SequenceFile.Reader#getKeyClassName
+         */
+        public String getKeyClassName() {
+            return in.getKeyClassName();
+        }
 
-    /**
-     * Return the progress within the input split
-     * @return 0.0 to 1.0 of the input byte range
-     */
-    public float getProgress() throws IOException {
-      if (end == start) {
-        return 0.0f;
-      } else {
-        return Math.min(1.0f, (float)((in.getPosition() - start) /
-                                      (double)(end - start)));
-      }
+        /**
+         * Retrieve the name of the value class for this SequenceFile.
+         * 
+         * @see org.apache.hadoop.io.SequenceFile.Reader#getValueClassName
+         */
+        public String getValueClassName() {
+            return in.getValueClassName();
+        }
+
+        /**
+         * Read raw bytes from a SequenceFile.
+         */
+        public synchronized boolean next(BytesWritable key, BytesWritable val) throws IOException {
+            if (done)
+                return false;
+            long pos = in.getPosition();
+            boolean eof = -1 == in.nextRawKey(buffer);
+            if (!eof) {
+                key.set(buffer.getData(), 0, buffer.getLength());
+                buffer.reset();
+                in.nextRawValue(vbytes);
+                vbytes.writeUncompressedBytes(buffer);
+                val.set(buffer.getData(), 0, buffer.getLength());
+                buffer.reset();
+            }
+            return !(done = (eof || (pos >= end && in.syncSeen())));
+        }
+
+        public long getPos() throws IOException {
+            return in.getPosition();
+        }
+
+        public void close() throws IOException {
+            in.close();
+        }
+
+        /**
+         * Return the progress within the input split
+         * 
+         * @return 0.0 to 1.0 of the input byte range
+         */
+        public float getProgress() throws IOException {
+            if (end == start) {
+                return 0.0f;
+            } else {
+                return Math.min(1.0f, (float) ((in.getPosition() - start) / (double) (end - start)));
+            }
+        }
     }
-  }
 }

@@ -25,196 +25,195 @@ import org.apache.hadoop.metrics.util.MBeanUtil;
 /**
  * 
  * This is the implementation of the Name Node JMX MBean
- *
+ * 
  */
 public class NameNodeStatistics implements NameNodeStatisticsMBean {
-  private NameNodeMetrics myMetrics;
-  private ObjectName mbeanName;
+    private NameNodeMetrics myMetrics;
+    private ObjectName mbeanName;
 
-  /**
-   * This constructs and registers the NameNodeStatisticsMBean
-   * @param nameNodeMetrics - the metrics from which the mbean gets its info
-   */
-  public NameNodeStatistics(NameNodeMetrics nameNodeMetrics) {
-    myMetrics = nameNodeMetrics;
-    mbeanName = MBeanUtil.registerMBean("NameNode", "NameNodeStatistics", this);
-  }
-  
-  /**
-   * Shuts down the statistics
-   *   - unregisters the mbean
-   */
-  public void shutdown() {
-    if (mbeanName != null)
-      MBeanUtil.unregisterMBean(mbeanName);
-  }
+    /**
+     * This constructs and registers the NameNodeStatisticsMBean
+     * 
+     * @param nameNodeMetrics
+     *            - the metrics from which the mbean gets its info
+     */
+    public NameNodeStatistics(NameNodeMetrics nameNodeMetrics) {
+        myMetrics = nameNodeMetrics;
+        mbeanName = MBeanUtil.registerMBean("NameNode", "NameNodeStatistics", this);
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long  getBlockReportAverageTime() {
-    return myMetrics.blockReport.getPreviousIntervalAverageTime();
-  }
+    /**
+     * Shuts down the statistics - unregisters the mbean
+     */
+    public void shutdown() {
+        if (mbeanName != null)
+            MBeanUtil.unregisterMBean(mbeanName);
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long getBlockReportMaxTime() {
-    return myMetrics.blockReport.getMaxTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getBlockReportAverageTime() {
+        return myMetrics.blockReport.getPreviousIntervalAverageTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long getBlockReportMinTime() {
-    return myMetrics.blockReport.getMinTime();
-  }
- 
-  /**
-   * @inheritDoc
-   */
-  public int getBlockReportNum() {
-    return myMetrics.blockReport.getPreviousIntervalNumOps();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getBlockReportMaxTime() {
+        return myMetrics.blockReport.getMaxTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long  getJournalTransactionAverageTime() {
-    return myMetrics.transactions.getPreviousIntervalAverageTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getBlockReportMinTime() {
+        return myMetrics.blockReport.getMinTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getJournalTransactionNum() {
-    return myMetrics.transactions.getPreviousIntervalNumOps();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getBlockReportNum() {
+        return myMetrics.blockReport.getPreviousIntervalNumOps();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long getJournalTransactionMaxTime() {
-    return myMetrics.transactions.getMaxTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getJournalTransactionAverageTime() {
+        return myMetrics.transactions.getPreviousIntervalAverageTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public long getJournalTransactionMinTime() {
-    return myMetrics.transactions.getMinTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getJournalTransactionNum() {
+        return myMetrics.transactions.getPreviousIntervalNumOps();
+    }
 
-  /**
-   * @inheritDoc
-   */  
-  public long getJournalSyncAverageTime() {
-    return myMetrics.syncs.getPreviousIntervalAverageTime();
-  }
- 
-  /**
-   * @inheritDoc
-   */
-  public long getJournalSyncMaxTime() {
-    return myMetrics.syncs.getMaxTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getJournalTransactionMaxTime() {
+        return myMetrics.transactions.getMaxTime();
+    }
 
-  
-  /**
-   * @inheritDoc
-   */
-  public long getJournalSyncMinTime() {
-    return myMetrics.syncs.getMinTime();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getJournalTransactionMinTime() {
+        return myMetrics.transactions.getMinTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getJournalSyncNum() {
-    return myMetrics.syncs.getPreviousIntervalNumOps();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getJournalSyncAverageTime() {
+        return myMetrics.syncs.getPreviousIntervalAverageTime();
+    }
 
- 
-  /**
-   * @inheritDoc
-   */
-  public int getSafemodeTime() {
-    return myMetrics.safeModeTime.get();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getJournalSyncMaxTime() {
+        return myMetrics.syncs.getMaxTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getFSImageLoadTime() {
-    return myMetrics.fsImageLoadTime.get();
-  }
+    /**
+     * @inheritDoc
+     */
+    public long getJournalSyncMinTime() {
+        return myMetrics.syncs.getMinTime();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public void resetAllMinMax() {
-    myMetrics.resetAllMinMax();
-  }
-  
-  /**
-   * @inheritDoc
-   */
-  public int getNumFilesCreated() {
-    return myMetrics.numFilesCreated.getPreviousIntervalValue();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getJournalSyncNum() {
+        return myMetrics.syncs.getPreviousIntervalNumOps();
+    }
 
-  /** 
-   *@deprecated call getNumGetListingOps() instead
-   */
-  @Deprecated
-  public int getNumFilesListed() {
-    return getNumGetListingOps();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getSafemodeTime() {
+        return myMetrics.safeModeTime.get();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getNumGetListingOps() {
-    return myMetrics.numGetListingOps.getPreviousIntervalValue();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getFSImageLoadTime() {
+        return myMetrics.fsImageLoadTime.get();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getNumCreateFileOps() {
-    return myMetrics.numCreateFileOps.getPreviousIntervalValue();
-  }
+    /**
+     * @inheritDoc
+     */
+    public void resetAllMinMax() {
+        myMetrics.resetAllMinMax();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getNumDeleteFileOps() {
-    return myMetrics.numDeleteFileOps.getPreviousIntervalValue();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getNumFilesCreated() {
+        return myMetrics.numFilesCreated.getPreviousIntervalValue();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getNumAddBlockOps() {
-    return myMetrics.numAddBlockOps.getPreviousIntervalValue();
-  }
+    /**
+     * @deprecated call getNumGetListingOps() instead
+     */
+    @Deprecated
+    public int getNumFilesListed() {
+        return getNumGetListingOps();
+    }
 
-  /** @inheritDoc */
-  public int getNumGetBlockLocations() {
-    return myMetrics.numGetBlockLocations.getPreviousIntervalValue();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getNumGetListingOps() {
+        return myMetrics.numGetListingOps.getPreviousIntervalValue();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getNumFilesRenamed() {
-    return myMetrics.numFilesRenamed.getPreviousIntervalValue();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getNumCreateFileOps() {
+        return myMetrics.numCreateFileOps.getPreviousIntervalValue();
+    }
 
-  /**
-   * @inheritDoc
-   */
-  public int getNumFilesAppended() {
-    return myMetrics.numFilesAppended.getPreviousIntervalValue();
-  }
+    /**
+     * @inheritDoc
+     */
+    public int getNumDeleteFileOps() {
+        return myMetrics.numDeleteFileOps.getPreviousIntervalValue();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public int getNumAddBlockOps() {
+        return myMetrics.numAddBlockOps.getPreviousIntervalValue();
+    }
+
+    /** @inheritDoc */
+    public int getNumGetBlockLocations() {
+        return myMetrics.numGetBlockLocations.getPreviousIntervalValue();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public int getNumFilesRenamed() {
+        return myMetrics.numFilesRenamed.getPreviousIntervalValue();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public int getNumFilesAppended() {
+        return myMetrics.numFilesAppended.getPreviousIntervalValue();
+    }
 }

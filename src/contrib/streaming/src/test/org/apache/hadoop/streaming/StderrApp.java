@@ -21,49 +21,47 @@ package org.apache.hadoop.streaming;
 import java.io.*;
 
 /**
- * Output an arbitrary number of stderr lines before or after
- * consuming the keys/values from stdin.
+ * Output an arbitrary number of stderr lines before or after consuming the
+ * keys/values from stdin.
  */
-public class StderrApp
-{
-  /**
-   * Print preWriteLines to stderr, pausing sleep ms between each
-   * output, then consume stdin and echo it to stdout, then write
-   * postWriteLines to stderr.
-   */
-  public static void go(int preWriteLines, int sleep, int postWriteLines) throws IOException {
-    BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-    String line;
-       
-    while (preWriteLines > 0) {
-      --preWriteLines;
-      System.err.println("some stderr output before reading input, "
-                         + preWriteLines + " lines remaining, sleeping " + sleep);
-      try {
-        Thread.sleep(sleep);
-      } catch (InterruptedException e) {}
-    }
-    
-    while ((line = in.readLine()) != null) {
-      System.out.println(line);
-    }
-    
-    while (postWriteLines > 0) {
-      --postWriteLines;
-      System.err.println("some stderr output after reading input, lines remaining "
-                         + postWriteLines);
-    }
-  }
+public class StderrApp {
+    /**
+     * Print preWriteLines to stderr, pausing sleep ms between each output, then
+     * consume stdin and echo it to stdout, then write postWriteLines to stderr.
+     */
+    public static void go(int preWriteLines, int sleep, int postWriteLines) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String line;
 
-  public static void main(String[] args) throws IOException {
-    if (args.length < 3) {
-      System.err.println("Usage: StderrApp PREWRITE SLEEP POSTWRITE");
-      return;
+        while (preWriteLines > 0) {
+            --preWriteLines;
+            System.err.println("some stderr output before reading input, " + preWriteLines
+                    + " lines remaining, sleeping " + sleep);
+            try {
+                Thread.sleep(sleep);
+            } catch (InterruptedException e) {
+            }
+        }
+
+        while ((line = in.readLine()) != null) {
+            System.out.println(line);
+        }
+
+        while (postWriteLines > 0) {
+            --postWriteLines;
+            System.err.println("some stderr output after reading input, lines remaining " + postWriteLines);
+        }
     }
-    int preWriteLines = Integer.parseInt(args[0]);
-    int sleep = Integer.parseInt(args[1]);
-    int postWriteLines = Integer.parseInt(args[2]);
-    
-    go(preWriteLines, sleep, postWriteLines);
-  }
+
+    public static void main(String[] args) throws IOException {
+        if (args.length < 3) {
+            System.err.println("Usage: StderrApp PREWRITE SLEEP POSTWRITE");
+            return;
+        }
+        int preWriteLines = Integer.parseInt(args[0]);
+        int sleep = Integer.parseInt(args[1]);
+        int postWriteLines = Integer.parseInt(args[2]);
+
+        go(preWriteLines, sleep, postWriteLines);
+    }
 }

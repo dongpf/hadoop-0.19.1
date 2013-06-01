@@ -35,51 +35,42 @@ import org.apache.hadoop.mapred.TextInputFormat;
  * @see TestDelegatingInputFormat
  */
 public class TestMultipleInputs extends TestCase {
-  
-  public void testAddInputPathWithFormat() {
-    final JobConf conf = new JobConf();
-    MultipleInputs.addInputPath(conf, new Path("/foo"), TextInputFormat.class);
-    MultipleInputs.addInputPath(conf, new Path("/bar"),
-        KeyValueTextInputFormat.class);
-    final Map<Path, InputFormat> inputs = MultipleInputs
-       .getInputFormatMap(conf);
-    assertEquals(TextInputFormat.class, inputs.get(new Path("/foo")).getClass());
-    assertEquals(KeyValueTextInputFormat.class, inputs.get(new Path("/bar"))
-       .getClass());
-  }
 
-  public void testAddInputPathWithMapper() {
-    final JobConf conf = new JobConf();
-    MultipleInputs.addInputPath(conf, new Path("/foo"), TextInputFormat.class,
-       MapClass.class);
-    MultipleInputs.addInputPath(conf, new Path("/bar"),
-       KeyValueTextInputFormat.class, MapClass2.class);
-    final Map<Path, InputFormat> inputs = MultipleInputs
-       .getInputFormatMap(conf);
-    final Map<Path, Class<? extends Mapper>> maps = MultipleInputs
-       .getMapperTypeMap(conf);
-
-    assertEquals(TextInputFormat.class, inputs.get(new Path("/foo")).getClass());
-    assertEquals(KeyValueTextInputFormat.class, inputs.get(new Path("/bar"))
-       .getClass());
-    assertEquals(MapClass.class, maps.get(new Path("/foo")));
-    assertEquals(MapClass2.class, maps.get(new Path("/bar")));
-  }
-
-  static class MapClass implements Mapper<String, String, String, String> {
-
-    public void map(String key, String value,
-       OutputCollector<String, String> output, Reporter reporter)
-       throws IOException {
+    public void testAddInputPathWithFormat() {
+        final JobConf conf = new JobConf();
+        MultipleInputs.addInputPath(conf, new Path("/foo"), TextInputFormat.class);
+        MultipleInputs.addInputPath(conf, new Path("/bar"), KeyValueTextInputFormat.class);
+        final Map<Path, InputFormat> inputs = MultipleInputs.getInputFormatMap(conf);
+        assertEquals(TextInputFormat.class, inputs.get(new Path("/foo")).getClass());
+        assertEquals(KeyValueTextInputFormat.class, inputs.get(new Path("/bar")).getClass());
     }
 
-    public void configure(JobConf job) {
+    public void testAddInputPathWithMapper() {
+        final JobConf conf = new JobConf();
+        MultipleInputs.addInputPath(conf, new Path("/foo"), TextInputFormat.class, MapClass.class);
+        MultipleInputs.addInputPath(conf, new Path("/bar"), KeyValueTextInputFormat.class, MapClass2.class);
+        final Map<Path, InputFormat> inputs = MultipleInputs.getInputFormatMap(conf);
+        final Map<Path, Class<? extends Mapper>> maps = MultipleInputs.getMapperTypeMap(conf);
+
+        assertEquals(TextInputFormat.class, inputs.get(new Path("/foo")).getClass());
+        assertEquals(KeyValueTextInputFormat.class, inputs.get(new Path("/bar")).getClass());
+        assertEquals(MapClass.class, maps.get(new Path("/foo")));
+        assertEquals(MapClass2.class, maps.get(new Path("/bar")));
     }
 
-    public void close() throws IOException {
-    }
-  }
+    static class MapClass implements Mapper<String, String, String, String> {
 
-  static class MapClass2 extends MapClass {
-  }
+        public void map(String key, String value, OutputCollector<String, String> output, Reporter reporter)
+                throws IOException {
+        }
+
+        public void configure(JobConf job) {
+        }
+
+        public void close() throws IOException {
+        }
+    }
+
+    static class MapClass2 extends MapClass {
+    }
 }

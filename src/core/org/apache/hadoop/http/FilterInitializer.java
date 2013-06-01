@@ -18,12 +18,14 @@
 package org.apache.hadoop.http;
 
 /**
- * Initialize a javax.servlet.Filter. 
+ * Initialize a javax.servlet.Filter.
  */
 public abstract class FilterInitializer {
-  /**
-   * Initialize a Filter to a FilterContainer.
-   * @param container The filter container
-   */
-  abstract void initFilter(FilterContainer container);
+    /**
+     * Initialize a Filter to a FilterContainer.
+     * 
+     * @param container
+     *            The filter container
+     */
+    abstract void initFilter(FilterContainer container);
 }

@@ -26,15 +26,15 @@ import org.apache.hadoop.hdfs.server.namenode.NameNode;
 
 public class TestNNThroughputBenchmark extends TestCase {
 
-  /**
-   * This test runs all benchmarks defined in {@link NNThroughputBenchmark}.
-   */
-  public void testNNThroughput() throws Exception {
-    Configuration conf = new Configuration();
-    FileSystem.setDefaultUri(conf, "hdfs://localhost:" + 0);
-    conf.set("dfs.http.address", "0.0.0.0:0");
-    NameNode.format(conf);
-    String[] args = new String[] {"-op", "all"};
-    NNThroughputBenchmark.runBenchmark(conf, Arrays.asList(args));
-  }
+    /**
+     * This test runs all benchmarks defined in {@link NNThroughputBenchmark}.
+     */
+    public void testNNThroughput() throws Exception {
+        Configuration conf = new Configuration();
+        FileSystem.setDefaultUri(conf, "hdfs://localhost:" + 0);
+        conf.set("dfs.http.address", "0.0.0.0:0");
+        NameNode.format(conf);
+        String[] args = new String[] { "-op", "all" };
+        NNThroughputBenchmark.runBenchmark(conf, Arrays.asList(args));
+    }
 }

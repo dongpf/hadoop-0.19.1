@@ -22,49 +22,50 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Container for the Hadoop Record DDL.
- * The main components of the file are filename, list of included files,
- * and records defined in that file.
+ * Container for the Hadoop Record DDL. The main components of the file are
+ * filename, list of included files, and records defined in that file.
  */
 public class JFile {
-  /** Possibly full name of the file */
-  private String mName;
-  /** Ordered list of included files */
-  private ArrayList<JFile> mInclFiles;
-  /** Ordered list of records declared in this file */
-  private ArrayList<JRecord> mRecords;
-    
-  /** Creates a new instance of JFile
-   *
-   * @param name possibly full pathname to the file
-   * @param inclFiles included files (as JFile)
-   * @param recList List of records defined within this file
-   */
-  public JFile(String name, ArrayList<JFile> inclFiles,
-               ArrayList<JRecord> recList) {
-    mName = name;
-    mInclFiles = inclFiles;
-    mRecords = recList;
-  }
-    
-  /** Strip the other pathname components and return the basename */
-  String getName() {
-    int idx = mName.lastIndexOf('/');
-    return (idx > 0) ? mName.substring(idx) : mName; 
-  }
-    
-  /** Generate record code in given language. Language should be all
-   *  lowercase.
-   */
-  public int genCode(String language, String destDir, ArrayList<String> options)
-    throws IOException {
-    CodeGenerator gen = CodeGenerator.get(language);
-    if (gen != null) {
-      gen.genCode(mName, mInclFiles, mRecords, destDir, options);
-    } else {
-      System.err.println("Cannnot recognize language:"+language);
-      return 1;
+    /** Possibly full name of the file */
+    private String mName;
+    /** Ordered list of included files */
+    private ArrayList<JFile> mInclFiles;
+    /** Ordered list of records declared in this file */
+    private ArrayList<JRecord> mRecords;
+
+    /**
+     * Creates a new instance of JFile
+     * 
+     * @param name
+     *            possibly full pathname to the file
+     * @param inclFiles
+     *            included files (as JFile)
+     * @param recList
+     *            List of records defined within this file
+     */
+    public JFile(String name, ArrayList<JFile> inclFiles, ArrayList<JRecord> recList) {
+        mName = name;
+        mInclFiles = inclFiles;
+        mRecords = recList;
     }
-    return 0;
-  }
+
+    /** Strip the other pathname components and return the basename */
+    String getName() {
+        int idx = mName.lastIndexOf('/');
+        return (idx > 0) ? mName.substring(idx) : mName;
+    }
+
+    /**
+     * Generate record code in given language. Language should be all lowercase.
+     */
+    public int genCode(String language, String destDir, ArrayList<String> options) throws IOException {
+        CodeGenerator gen = CodeGenerator.get(language);
+        if (gen != null) {
+            gen.genCode(mName, mInclFiles, mRecords, destDir, options);
+        } else {
+            System.err.println("Cannnot recognize language:" + language);
+            return 1;
+        }
+        return 0;
+    }
 }

@@ -29,97 +29,101 @@ import java.util.TreeMap;
  */
 public class UniqValueCount implements ValueAggregator {
 
-  private TreeMap<Object, Object> uniqItems = null;
+    private TreeMap<Object, Object> uniqItems = null;
 
-  private long numItems = 0;
-  
-  private long maxNumItems = Long.MAX_VALUE;
+    private long numItems = 0;
 
-  /**
-   * the default constructor
-   * 
-   */
-  public UniqValueCount() {
-    this(Long.MAX_VALUE);
-  }
-  
-  /**
-   * constructor
-   * @param maxNum the limit in the number of unique values to keep.
-   *  
-   */
-  public UniqValueCount(long maxNum) {
-    uniqItems = new TreeMap<Object, Object>();
-    this.numItems = 0;
-    maxNumItems = Long.MAX_VALUE;
-    if (maxNum > 0 ) {
-      this.maxNumItems = maxNum;
+    private long maxNumItems = Long.MAX_VALUE;
+
+    /**
+     * the default constructor
+     * 
+     */
+    public UniqValueCount() {
+        this(Long.MAX_VALUE);
     }
-  }
 
-  /**
-   * Set the limit on the number of unique values
-   * @param n the desired limit on the number of unique values
-   * @return the new limit on the number of unique values
-   */
-  public long setMaxItems(long n) {
-    if (n >= numItems) {
-      this.maxNumItems = n;
-    } else if (this.maxNumItems >= this.numItems) {
-      this.maxNumItems = this.numItems;
+    /**
+     * constructor
+     * 
+     * @param maxNum
+     *            the limit in the number of unique values to keep.
+     * 
+     */
+    public UniqValueCount(long maxNum) {
+        uniqItems = new TreeMap<Object, Object>();
+        this.numItems = 0;
+        maxNumItems = Long.MAX_VALUE;
+        if (maxNum > 0) {
+            this.maxNumItems = maxNum;
+        }
     }
-    return this.maxNumItems;
-  }
-  
-  /**
-   * add a value to the aggregator
-   * 
-   * @param val
-   *          an object.
-   * 
-   */
-  public void addNextValue(Object val) {
-    if (this.numItems <= this.maxNumItems) {
-      uniqItems.put(val.toString(), "1");
-      this.numItems = this.uniqItems.size();
+
+    /**
+     * Set the limit on the number of unique values
+     * 
+     * @param n
+     *            the desired limit on the number of unique values
+     * @return the new limit on the number of unique values
+     */
+    public long setMaxItems(long n) {
+        if (n >= numItems) {
+            this.maxNumItems = n;
+        } else if (this.maxNumItems >= this.numItems) {
+            this.maxNumItems = this.numItems;
+        }
+        return this.maxNumItems;
     }
-  }
 
-  /**
-   * @return return the number of unique objects aggregated
-   */
-  public String getReport() {
-    return "" + uniqItems.size();
-  }
-
-  /**
-   * 
-   * @return the set of the unique objects
-   */
-  public Set getUniqueItems() {
-    return uniqItems.keySet();
-  }
-
-  /**
-   * reset the aggregator
-   */
-  public void reset() {
-    uniqItems = new TreeMap<Object, Object>();
-  }
-
-  /**
-   * @return return an array of the unique objects. The return value is
-   *         expected to be used by the a combiner.
-   */
-  public ArrayList getCombinerOutput() {
-    Object key = null;
-    Iterator iter = uniqItems.keySet().iterator();
-    ArrayList<Object> retv = new ArrayList<Object>();
-
-    while (iter.hasNext()) {
-      key = iter.next();
-      retv.add(key);
+    /**
+     * add a value to the aggregator
+     * 
+     * @param val
+     *            an object.
+     * 
+     */
+    public void addNextValue(Object val) {
+        if (this.numItems <= this.maxNumItems) {
+            uniqItems.put(val.toString(), "1");
+            this.numItems = this.uniqItems.size();
+        }
     }
-    return retv;
-  }
+
+    /**
+     * @return return the number of unique objects aggregated
+     */
+    public String getReport() {
+        return "" + uniqItems.size();
+    }
+
+    /**
+     * 
+     * @return the set of the unique objects
+     */
+    public Set getUniqueItems() {
+        return uniqItems.keySet();
+    }
+
+    /**
+     * reset the aggregator
+     */
+    public void reset() {
+        uniqItems = new TreeMap<Object, Object>();
+    }
+
+    /**
+     * @return return an array of the unique objects. The return value is
+     *         expected to be used by the a combiner.
+     */
+    public ArrayList getCombinerOutput() {
+        Object key = null;
+        Iterator iter = uniqItems.keySet().iterator();
+        ArrayList<Object> retv = new ArrayList<Object>();
+
+        while (iter.hasNext()) {
+            key = iter.next();
+            retv.add(key);
+        }
+        return retv;
+    }
 }

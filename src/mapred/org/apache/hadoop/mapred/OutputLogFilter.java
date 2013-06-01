@@ -22,14 +22,13 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 
 /**
- * This class filters log files from directory given
- * It doesnt accept paths having _logs.
- * This can be used to list paths of output directory as follows:
- *   Path[] fileList = FileUtil.stat2Paths(fs.listStatus(outDir,
- *                                   new OutputLogFilter()));
+ * This class filters log files from directory given It doesnt accept paths
+ * having _logs. This can be used to list paths of output directory as follows:
+ * Path[] fileList = FileUtil.stat2Paths(fs.listStatus(outDir, new
+ * OutputLogFilter()));
  */
 public class OutputLogFilter implements PathFilter {
-  public boolean accept(Path path) {
-    return !(path.toString().contains("_logs"));
-  }
+    public boolean accept(Path path) {
+        return !(path.toString().contains("_logs"));
+    }
 }

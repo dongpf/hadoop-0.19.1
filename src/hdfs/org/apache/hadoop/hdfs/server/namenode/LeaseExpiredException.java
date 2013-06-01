@@ -24,7 +24,7 @@ import java.io.IOException;
  * The lease that was being used to create this file has expired.
  */
 public class LeaseExpiredException extends IOException {
-  public LeaseExpiredException(String msg) {
-    super(msg);
-  }
+    public LeaseExpiredException(String msg) {
+        super(msg);
+    }
 }

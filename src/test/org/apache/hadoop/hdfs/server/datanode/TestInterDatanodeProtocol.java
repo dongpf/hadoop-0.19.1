@@ -36,79 +36,74 @@ import org.apache.hadoop.hdfs.server.protocol.BlockMetaDataInfo;
 import org.apache.hadoop.hdfs.server.protocol.InterDatanodeProtocol;
 
 /**
- * This tests InterDataNodeProtocol for block handling. 
+ * This tests InterDataNodeProtocol for block handling.
  */
 public class TestInterDatanodeProtocol extends junit.framework.TestCase {
-  public static void checkMetaInfo(Block b, InterDatanodeProtocol idp,
-      DataBlockScanner scanner) throws IOException {
-    BlockMetaDataInfo metainfo = idp.getBlockMetaDataInfo(b);
-    assertEquals(b.getBlockId(), metainfo.getBlockId());
-    assertEquals(b.getNumBytes(), metainfo.getNumBytes());
-    if (scanner != null) {
-      assertEquals(scanner.getLastScanTime(b),
-          metainfo.getLastScanTime());
+    public static void checkMetaInfo(Block b, InterDatanodeProtocol idp, DataBlockScanner scanner) throws IOException {
+        BlockMetaDataInfo metainfo = idp.getBlockMetaDataInfo(b);
+        assertEquals(b.getBlockId(), metainfo.getBlockId());
+        assertEquals(b.getNumBytes(), metainfo.getNumBytes());
+        if (scanner != null) {
+            assertEquals(scanner.getLastScanTime(b), metainfo.getLastScanTime());
+        }
     }
-  }
 
-  public static LocatedBlock getLastLocatedBlock(
-      ClientProtocol namenode, String src
-  ) throws IOException {
-    //get block info for the last block
-    LocatedBlocks locations = namenode.getBlockLocations(src, 0, Long.MAX_VALUE);
-    List<LocatedBlock> blocks = locations.getLocatedBlocks();
-    DataNode.LOG.info("blocks.size()=" + blocks.size());
-    assertTrue(blocks.size() > 0);
+    public static LocatedBlock getLastLocatedBlock(ClientProtocol namenode, String src) throws IOException {
+        // get block info for the last block
+        LocatedBlocks locations = namenode.getBlockLocations(src, 0, Long.MAX_VALUE);
+        List<LocatedBlock> blocks = locations.getLocatedBlocks();
+        DataNode.LOG.info("blocks.size()=" + blocks.size());
+        assertTrue(blocks.size() > 0);
 
-    return blocks.get(blocks.size() - 1);
-  }
-
-  /**
-   * The following test first creates a file.
-   * It verifies the block information from a datanode.
-   * Then, it updates the block with new information and verifies again. 
-   */
-  public void testBlockMetaDataInfo() throws Exception {
-    Configuration conf = new Configuration();
-    MiniDFSCluster cluster = null;
-
-    try {
-      cluster = new MiniDFSCluster(conf, 3, true, null);
-      cluster.waitActive();
-
-      //create a file
-      DistributedFileSystem dfs = (DistributedFileSystem)cluster.getFileSystem();
-      String filestr = "/foo";
-      Path filepath = new Path(filestr);
-      DFSTestUtil.createFile(dfs, filepath, 1024L, (short)3, 0L);
-      assertTrue(dfs.getClient().exists(filestr));
-
-      //get block info
-      LocatedBlock locatedblock = getLastLocatedBlock(dfs.getClient().namenode, filestr);
-      DatanodeInfo[] datanodeinfo = locatedblock.getLocations();
-      assertTrue(datanodeinfo.length > 0);
-
-      //connect to a data node
-      InterDatanodeProtocol idp = DataNode.createInterDataNodeProtocolProxy(
-          datanodeinfo[0], conf);
-      DataNode datanode = cluster.getDataNode(datanodeinfo[0].getIpcPort());
-      assertTrue(datanode != null);
-      
-      //stop block scanner, so we could compare lastScanTime
-      datanode.blockScannerThread.interrupt();
-
-      //verify BlockMetaDataInfo
-      Block b = locatedblock.getBlock();
-      InterDatanodeProtocol.LOG.info("b=" + b + ", " + b.getClass());
-      checkMetaInfo(b, idp, datanode.blockScanner);
-
-      //verify updateBlock
-      Block newblock = new Block(
-          b.getBlockId(), b.getNumBytes()/2, b.getGenerationStamp()+1);
-      idp.updateBlock(b, newblock, false);
-      checkMetaInfo(newblock, idp, datanode.blockScanner);
+        return blocks.get(blocks.size() - 1);
     }
-    finally {
-      if (cluster != null) {cluster.shutdown();}
+
+    /**
+     * The following test first creates a file. It verifies the block
+     * information from a datanode. Then, it updates the block with new
+     * information and verifies again.
+     */
+    public void testBlockMetaDataInfo() throws Exception {
+        Configuration conf = new Configuration();
+        MiniDFSCluster cluster = null;
+
+        try {
+            cluster = new MiniDFSCluster(conf, 3, true, null);
+            cluster.waitActive();
+
+            // create a file
+            DistributedFileSystem dfs = (DistributedFileSystem) cluster.getFileSystem();
+            String filestr = "/foo";
+            Path filepath = new Path(filestr);
+            DFSTestUtil.createFile(dfs, filepath, 1024L, (short) 3, 0L);
+            assertTrue(dfs.getClient().exists(filestr));
+
+            // get block info
+            LocatedBlock locatedblock = getLastLocatedBlock(dfs.getClient().namenode, filestr);
+            DatanodeInfo[] datanodeinfo = locatedblock.getLocations();
+            assertTrue(datanodeinfo.length > 0);
+
+            // connect to a data node
+            InterDatanodeProtocol idp = DataNode.createInterDataNodeProtocolProxy(datanodeinfo[0], conf);
+            DataNode datanode = cluster.getDataNode(datanodeinfo[0].getIpcPort());
+            assertTrue(datanode != null);
+
+            // stop block scanner, so we could compare lastScanTime
+            datanode.blockScannerThread.interrupt();
+
+            // verify BlockMetaDataInfo
+            Block b = locatedblock.getBlock();
+            InterDatanodeProtocol.LOG.info("b=" + b + ", " + b.getClass());
+            checkMetaInfo(b, idp, datanode.blockScanner);
+
+            // verify updateBlock
+            Block newblock = new Block(b.getBlockId(), b.getNumBytes() / 2, b.getGenerationStamp() + 1);
+            idp.updateBlock(b, newblock, false);
+            checkMetaInfo(newblock, idp, datanode.blockScanner);
+        } finally {
+            if (cluster != null) {
+                cluster.shutdown();
+            }
+        }
     }
-  }
 }

@@ -24,19 +24,18 @@ import org.apache.hadoop.examples.DBCountPageView;
 import org.apache.hadoop.mapred.HadoopTestCase;
 import org.apache.hadoop.util.ToolRunner;
 
-
 public class TestDBJob extends HadoopTestCase {
 
-  public TestDBJob() throws IOException {
-    super(CLUSTER_MR, DFS_FS, 3, 1);
-  }
-  
-  public void testRun() throws Exception {
-    
-    DBCountPageView testDriver = new DBCountPageView();
-    
-    ToolRunner.run(createJobConf(), testDriver, new String[0]);
-    
-  }
-  
+    public TestDBJob() throws IOException {
+        super(CLUSTER_MR, DFS_FS, 3, 1);
+    }
+
+    public void testRun() throws Exception {
+
+        DBCountPageView testDriver = new DBCountPageView();
+
+        ToolRunner.run(createJobConf(), testDriver, new String[0]);
+
+    }
+
 }

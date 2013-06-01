@@ -25,53 +25,56 @@ import org.apache.hadoop.fs.*;
 import org.apache.hadoop.hdfs.server.datanode.SimulatedFSDataset;
 
 public class TestSetrepIncreasing extends TestCase {
-  static void setrep(int fromREP, int toREP, boolean simulatedStorage) throws IOException {
-    Configuration conf = new Configuration();
-    if (simulatedStorage) {
-      conf.setBoolean(SimulatedFSDataset.CONFIG_PROPERTY_SIMULATED, true);
-    }
-    conf.set("dfs.replication", "" + fromREP);
-    conf.setLong("dfs.blockreport.intervalMsec", 1000L);
-    conf.set("dfs.replication.pending.timeout.sec", Integer.toString(2));
-    MiniDFSCluster cluster = new MiniDFSCluster(conf, 10, true, null);
-    FileSystem fs = cluster.getFileSystem();
-    assertTrue("Not a HDFS: "+fs.getUri(), fs instanceof DistributedFileSystem);
-
-    try {
-      Path root = TestDFSShell.mkdir(fs, 
-          new Path("/test/setrep" + fromREP + "-" + toREP));
-      Path f = TestDFSShell.writeFile(fs, new Path(root, "foo"));
-      
-      // Verify setrep for changing replication
-      {
-        String[] args = {"-setrep", "-w", "" + toREP, "" + f};
-        FsShell shell = new FsShell();
-        shell.setConf(conf);
-        try {
-          assertEquals(0, shell.run(args));
-        } catch (Exception e) {
-          assertTrue("-setrep " + e, false);
+    static void setrep(int fromREP, int toREP, boolean simulatedStorage) throws IOException {
+        Configuration conf = new Configuration();
+        if (simulatedStorage) {
+            conf.setBoolean(SimulatedFSDataset.CONFIG_PROPERTY_SIMULATED, true);
         }
-      }
+        conf.set("dfs.replication", "" + fromREP);
+        conf.setLong("dfs.blockreport.intervalMsec", 1000L);
+        conf.set("dfs.replication.pending.timeout.sec", Integer.toString(2));
+        MiniDFSCluster cluster = new MiniDFSCluster(conf, 10, true, null);
+        FileSystem fs = cluster.getFileSystem();
+        assertTrue("Not a HDFS: " + fs.getUri(), fs instanceof DistributedFileSystem);
 
-      //get fs again since the old one may be closed
-      fs = cluster.getFileSystem();
-      FileStatus file = fs.getFileStatus(f);
-      long len = file.getLen();
-      for(BlockLocation locations : fs.getFileBlockLocations(file, 0, len)) {
-        assertTrue(locations.getHosts().length == toREP);
-      }
-      TestDFSShell.show("done setrep waiting: " + root);
-    } finally {
-      try {fs.close();} catch (Exception e) {}
-      cluster.shutdown();
+        try {
+            Path root = TestDFSShell.mkdir(fs, new Path("/test/setrep" + fromREP + "-" + toREP));
+            Path f = TestDFSShell.writeFile(fs, new Path(root, "foo"));
+
+            // Verify setrep for changing replication
+            {
+                String[] args = { "-setrep", "-w", "" + toREP, "" + f };
+                FsShell shell = new FsShell();
+                shell.setConf(conf);
+                try {
+                    assertEquals(0, shell.run(args));
+                } catch (Exception e) {
+                    assertTrue("-setrep " + e, false);
+                }
+            }
+
+            // get fs again since the old one may be closed
+            fs = cluster.getFileSystem();
+            FileStatus file = fs.getFileStatus(f);
+            long len = file.getLen();
+            for (BlockLocation locations : fs.getFileBlockLocations(file, 0, len)) {
+                assertTrue(locations.getHosts().length == toREP);
+            }
+            TestDFSShell.show("done setrep waiting: " + root);
+        } finally {
+            try {
+                fs.close();
+            } catch (Exception e) {
+            }
+            cluster.shutdown();
+        }
     }
-  }
 
-  public void testSetrepIncreasing() throws IOException {
-    setrep(3, 7, false);
-  }
-  public void testSetrepIncreasingSimulatedStorage() throws IOException {
-    setrep(3, 7, true);
-  }
+    public void testSetrepIncreasing() throws IOException {
+        setrep(3, 7, false);
+    }
+
+    public void testSetrepIncreasingSimulatedStorage() throws IOException {
+        setrep(3, 7, true);
+    }
 }

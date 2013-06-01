@@ -26,138 +26,141 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**********************************************************
- * This class takes care of the information that needs to be
- * persistently stored locally on nodes. Bookkeeping is done for the
- * state of parsing of log files, so that the portion of the file that
- * has already been parsed in previous calls will not be parsed again.
- * For each log file, we maintain the byte offset of the last
- * character parsed in previous passes. Also, the first entry in the
- * log file is stored, so that FailMon can determine when a log file
- * has been rotated (and thus parsing needs to start from the
- * beginning of the file). We use a property file to store that
- * information. For each log file we create a property keyed by the
- * filename, the value of which contains the byte offset and first log
- * entry separated by a SEPARATOR.
+ * This class takes care of the information that needs to be persistently stored
+ * locally on nodes. Bookkeeping is done for the state of parsing of log files,
+ * so that the portion of the file that has already been parsed in previous
+ * calls will not be parsed again. For each log file, we maintain the byte
+ * offset of the last character parsed in previous passes. Also, the first entry
+ * in the log file is stored, so that FailMon can determine when a log file has
+ * been rotated (and thus parsing needs to start from the beginning of the
+ * file). We use a property file to store that information. For each log file we
+ * create a property keyed by the filename, the value of which contains the byte
+ * offset and first log entry separated by a SEPARATOR.
  * 
  **********************************************************/
 
 public class PersistentState {
 
-  private final static String SEPARATOR = "###";
-  
-  static String filename;
-  static Properties persData = new Properties();
-  
-  /**
-   * Read the state of parsing for all open log files from a property
-   * file.
-   * 
-   * @param fname the filename of the property file to be read
-   */
+    private final static String SEPARATOR = "###";
 
-  public static void readState(String fname) {
+    static String filename;
+    static Properties persData = new Properties();
 
-    filename = fname;
-    
-    try {
-      persData.load(new FileInputStream(filename));
-    } catch (FileNotFoundException e1) {
-      // ignore
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
+    /**
+     * Read the state of parsing for all open log files from a property file.
+     * 
+     * @param fname
+     *            the filename of the property file to be read
+     */
 
-   /**
-   * Read and return the state of parsing for a particular log file.
-   * 
-   * @param fname the log file for which to read the state
-   */
-  public static ParseState getState(String fname) {
-    String [] fields = persData.getProperty(fname, "null" + SEPARATOR + "0").split(SEPARATOR, 2);
-    String firstLine;
-    long offset;
-    
-    if (fields.length < 2) {
-      System.err.println("Malformed persistent state data found");
-      Environment.logInfo("Malformed persistent state data found");
-      firstLine = null;
-      offset = 0;
-    } else {
-      firstLine = (fields[0].equals("null") ? null : fields[0]);
-      offset = Long.parseLong(fields[1]);
+    public static void readState(String fname) {
+
+        filename = fname;
+
+        try {
+            persData.load(new FileInputStream(filename));
+        } catch (FileNotFoundException e1) {
+            // ignore
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    return new ParseState(fname, firstLine, offset);
-  }
+    /**
+     * Read and return the state of parsing for a particular log file.
+     * 
+     * @param fname
+     *            the log file for which to read the state
+     */
+    public static ParseState getState(String fname) {
+        String[] fields = persData.getProperty(fname, "null" + SEPARATOR + "0").split(SEPARATOR, 2);
+        String firstLine;
+        long offset;
 
-  /**
-   * Set the state of parsing for a particular log file.
-   * 
-   * @param state the ParseState to set
-   */
-  public static void setState(ParseState state) {
+        if (fields.length < 2) {
+            System.err.println("Malformed persistent state data found");
+            Environment.logInfo("Malformed persistent state data found");
+            firstLine = null;
+            offset = 0;
+        } else {
+            firstLine = (fields[0].equals("null") ? null : fields[0]);
+            offset = Long.parseLong(fields[1]);
+        }
 
-    if (state == null) {
-      System.err.println("Null state found");
-      Environment.logInfo("Null state found");
+        return new ParseState(fname, firstLine, offset);
     }
 
-    persData.setProperty(state.filename, state.firstLine + SEPARATOR + state.offset);
-  }
+    /**
+     * Set the state of parsing for a particular log file.
+     * 
+     * @param state
+     *            the ParseState to set
+     */
+    public static void setState(ParseState state) {
 
-  /**
-   * Upadate the state of parsing for a particular log file.
-   * 
-   * @param filename the log file for which to update the state
-   * @param firstLine the first line of the log file currently
-   * @param offset the byte offset of the last character parsed
-   */ 
-  public static void updateState(String filename, String firstLine, long offset) {
+        if (state == null) {
+            System.err.println("Null state found");
+            Environment.logInfo("Null state found");
+        }
 
-    ParseState ps = getState(filename);
-
-    if (firstLine != null)
-      ps.firstLine = firstLine;
-
-    ps.offset = offset;
-
-    setState(ps);
-  }
-
-  /**
-   * Write the state of parsing for all open log files to a property
-   * file on disk.
-   * 
-   * @param fname the filename of the property file to write to
-   */
-  public static void writeState(String fname) {
-    try {
-      persData.store(new FileOutputStream(fname), Calendar.getInstance().getTime().toString());
-    } catch (FileNotFoundException e1) {
-      e1.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+        persData.setProperty(state.filename, state.firstLine + SEPARATOR + state.offset);
     }
-  }
-  
+
+    /**
+     * Upadate the state of parsing for a particular log file.
+     * 
+     * @param filename
+     *            the log file for which to update the state
+     * @param firstLine
+     *            the first line of the log file currently
+     * @param offset
+     *            the byte offset of the last character parsed
+     */
+    public static void updateState(String filename, String firstLine, long offset) {
+
+        ParseState ps = getState(filename);
+
+        if (firstLine != null)
+            ps.firstLine = firstLine;
+
+        ps.offset = offset;
+
+        setState(ps);
+    }
+
+    /**
+     * Write the state of parsing for all open log files to a property file on
+     * disk.
+     * 
+     * @param fname
+     *            the filename of the property file to write to
+     */
+    public static void writeState(String fname) {
+        try {
+            persData.store(new FileOutputStream(fname), Calendar.getInstance().getTime().toString());
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 
 /**********************************************************
- * This class represents the state of parsing for a particular log
- * file.
+ * This class represents the state of parsing for a particular log file.
  * 
  **********************************************************/
 
 class ParseState {
 
-  public String filename;
-  public String firstLine;
-  public long offset;
+    public String filename;
+    public String firstLine;
+    public long offset;
 
-  public ParseState(String _filename, String _firstLine, long _offset) {
-    this.filename = _filename;
-    this.firstLine = _firstLine;
-    this.offset = _offset;
-  }
+    public ParseState(String _filename, String _firstLine, long _offset) {
+        this.filename = _filename;
+        this.firstLine = _firstLine;
+        this.offset = _offset;
+    }
 }

@@ -20,19 +20,20 @@ package org.apache.hadoop.streaming;
 
 import org.apache.hadoop.util.ToolRunner;
 
-/** The main entrypoint. Usually invoked with the script bin/hadoopStreaming
- * or bin/hadoop har hadoop-streaming.jar args.
- * It passes all the args to StreamJob which handles all the arguments.
+/**
+ * The main entrypoint. Usually invoked with the script bin/hadoopStreaming or
+ * bin/hadoop har hadoop-streaming.jar args. It passes all the args to StreamJob
+ * which handles all the arguments.
  */
 public class HadoopStreaming {
 
-  public static void main(String[] args) throws Exception {
-    int returnStatus = 0;
-    StreamJob job = new StreamJob();
-    returnStatus = ToolRunner.run(job, args);
-    if (returnStatus != 0) {
-      System.err.println("Streaming Job Failed!");
-      System.exit(returnStatus);
+    public static void main(String[] args) throws Exception {
+        int returnStatus = 0;
+        StreamJob job = new StreamJob();
+        returnStatus = ToolRunner.run(job, args);
+        if (returnStatus != 0) {
+            System.err.println("Streaming Job Failed!");
+            System.exit(returnStatus);
+        }
     }
-  }
 }

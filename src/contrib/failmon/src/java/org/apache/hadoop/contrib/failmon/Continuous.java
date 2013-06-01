@@ -21,21 +21,19 @@ package org.apache.hadoop.contrib.failmon;
 import java.io.IOException;
 
 /**********************************************************
- * This class runs FailMon in a continuous mode on the local
- * node.
+ * This class runs FailMon in a continuous mode on the local node.
  * 
  **********************************************************/
 
 public class Continuous {
 
-  public static void main(String[] args) {
+    public static void main(String[] args) {
 
+        Environment.prepare("failmon.properties");
 
-    Environment.prepare("failmon.properties");
+        Executor ex = new Executor(null);
+        new Thread(ex).start();
 
-    Executor ex = new Executor(null);
-    new Thread(ex).start();
-
-  }
+    }
 
 }

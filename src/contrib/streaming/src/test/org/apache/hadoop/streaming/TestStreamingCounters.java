@@ -30,43 +30,42 @@ import org.apache.hadoop.mapred.Counters.Group;
  */
 public class TestStreamingCounters extends TestStreaming {
 
-  public TestStreamingCounters() throws IOException {
-    super();
-  }
-
-  public void testCommandLine() throws IOException
-  {
-    try {
-      try {
-        OUTPUT_DIR.getAbsoluteFile().delete();
-      } catch (Exception e) {
-      }
-
-      createInput();
-      boolean mayExit = false;
-
-      // During tests, the default Configuration will use a local mapred
-      // So don't specify -config or -cluster
-      StreamJob job = new StreamJob(genArgs(), mayExit);      
-      job.go();
-      File outFile = new File(OUTPUT_DIR, "part-00000").getAbsoluteFile();
-      String output = StreamUtil.slurp(outFile);
-      outFile.delete();
-      assertEquals(outputExpect, output);
-      
-      Counters counters = job.running_.getCounters();
-      assertNotNull("Counters", counters);
-      Group group = counters.getGroup("UserCounters");
-      assertNotNull("Group", group);
-      Counter counter = group.getCounterForName("InputLines");
-      assertNotNull("Counter", counter);
-      assertEquals(3, counter.getCounter());
-    } finally {
-      File outFileCRC = new File(OUTPUT_DIR, ".part-00000.crc").getAbsoluteFile();
-      INPUT_FILE.delete();
-      outFileCRC.delete();
-      OUTPUT_DIR.getAbsoluteFile().delete();
+    public TestStreamingCounters() throws IOException {
+        super();
     }
-  }
-  
+
+    public void testCommandLine() throws IOException {
+        try {
+            try {
+                OUTPUT_DIR.getAbsoluteFile().delete();
+            } catch (Exception e) {
+            }
+
+            createInput();
+            boolean mayExit = false;
+
+            // During tests, the default Configuration will use a local mapred
+            // So don't specify -config or -cluster
+            StreamJob job = new StreamJob(genArgs(), mayExit);
+            job.go();
+            File outFile = new File(OUTPUT_DIR, "part-00000").getAbsoluteFile();
+            String output = StreamUtil.slurp(outFile);
+            outFile.delete();
+            assertEquals(outputExpect, output);
+
+            Counters counters = job.running_.getCounters();
+            assertNotNull("Counters", counters);
+            Group group = counters.getGroup("UserCounters");
+            assertNotNull("Group", group);
+            Counter counter = group.getCounterForName("InputLines");
+            assertNotNull("Counter", counter);
+            assertEquals(3, counter.getCounter());
+        } finally {
+            File outFileCRC = new File(OUTPUT_DIR, ".part-00000.crc").getAbsoluteFile();
+            INPUT_FILE.delete();
+            outFileCRC.delete();
+            OUTPUT_DIR.getAbsoluteFile().delete();
+        }
+    }
+
 }

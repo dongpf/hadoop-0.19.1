@@ -27,24 +27,23 @@ import org.apache.hadoop.mapred.JobConf;
 /**
  * Full inner join.
  */
-public class InnerJoinRecordReader<K extends WritableComparable>
-    extends JoinRecordReader<K> {
+public class InnerJoinRecordReader<K extends WritableComparable> extends JoinRecordReader<K> {
 
-  InnerJoinRecordReader(int id, JobConf conf, int capacity,
-      Class<? extends WritableComparator> cmpcl) throws IOException {
-    super(id, conf, capacity, cmpcl);
-  }
-
-  /**
-   * Return true iff the tuple is full (all data sources contain this key).
-   */
-  protected boolean combine(Object[] srcs, TupleWritable dst) {
-    assert srcs.length == dst.size();
-    for (int i = 0; i < srcs.length; ++i) {
-      if (!dst.has(i)) {
-        return false;
-      }
+    InnerJoinRecordReader(int id, JobConf conf, int capacity, Class<? extends WritableComparator> cmpcl)
+            throws IOException {
+        super(id, conf, capacity, cmpcl);
     }
-    return true;
-  }
+
+    /**
+     * Return true iff the tuple is full (all data sources contain this key).
+     */
+    protected boolean combine(Object[] srcs, TupleWritable dst) {
+        assert srcs.length == dst.size();
+        for (int i = 0; i < srcs.length; ++i) {
+            if (!dst.has(i)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

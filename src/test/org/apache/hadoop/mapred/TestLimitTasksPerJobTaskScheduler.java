@@ -19,47 +19,43 @@ package org.apache.hadoop.mapred;
 
 import java.io.IOException;
 
-public class TestLimitTasksPerJobTaskScheduler
-  extends TestJobQueueTaskScheduler{
-  
-  protected TaskScheduler createTaskScheduler() {
-    return new LimitTasksPerJobTaskScheduler();
-  }
+public class TestLimitTasksPerJobTaskScheduler extends TestJobQueueTaskScheduler {
 
-  public void testMaxRunningTasksPerJob() throws IOException {
-    jobConf.setLong(LimitTasksPerJobTaskScheduler.MAX_TASKS_PER_JOB_PROPERTY,
-        4L);
-    scheduler.setConf(jobConf);
-    submitJobs(2, JobStatus.RUNNING);
-    
-    // First 4 slots are filled with job 1, second 4 with job 2
-    checkAssignment("tt1", "attempt_test_0001_m_000001_0 on tt1");
-    checkAssignment("tt1", "attempt_test_0001_m_000002_0 on tt1");
-    checkAssignment("tt1", "attempt_test_0001_r_000003_0 on tt1");
-    checkAssignment("tt1", "attempt_test_0001_r_000004_0 on tt1");
-    checkAssignment("tt2", "attempt_test_0002_m_000005_0 on tt2");
-    checkAssignment("tt2", "attempt_test_0002_m_000006_0 on tt2");
-    checkAssignment("tt2", "attempt_test_0002_r_000007_0 on tt2");
-    checkAssignment("tt2", "attempt_test_0002_r_000008_0 on tt2");
-  }
-  
-  public void testMaxRunningTasksPerJobWithInterleavedTrackers()
-      throws IOException {
-    jobConf.setLong(LimitTasksPerJobTaskScheduler.MAX_TASKS_PER_JOB_PROPERTY,
-        4L);
-    scheduler.setConf(jobConf);
-    submitJobs(2, JobStatus.RUNNING);
-    
-    // First 4 slots are filled with job 1, second 4 with job 2
-    // even when tracker requests are interleaved
-    checkAssignment("tt1", "attempt_test_0001_m_000001_0 on tt1");
-    checkAssignment("tt1", "attempt_test_0001_m_000002_0 on tt1");
-    checkAssignment("tt2", "attempt_test_0001_m_000003_0 on tt2");
-    checkAssignment("tt1", "attempt_test_0001_r_000004_0 on tt1");
-    checkAssignment("tt2", "attempt_test_0002_m_000005_0 on tt2");
-    checkAssignment("tt1", "attempt_test_0002_r_000006_0 on tt1");
-    checkAssignment("tt2", "attempt_test_0002_r_000007_0 on tt2");
-    checkAssignment("tt2", "attempt_test_0002_r_000008_0 on tt2");
-  }
-  
+    protected TaskScheduler createTaskScheduler() {
+        return new LimitTasksPerJobTaskScheduler();
+    }
+
+    public void testMaxRunningTasksPerJob() throws IOException {
+        jobConf.setLong(LimitTasksPerJobTaskScheduler.MAX_TASKS_PER_JOB_PROPERTY, 4L);
+        scheduler.setConf(jobConf);
+        submitJobs(2, JobStatus.RUNNING);
+
+        // First 4 slots are filled with job 1, second 4 with job 2
+        checkAssignment("tt1", "attempt_test_0001_m_000001_0 on tt1");
+        checkAssignment("tt1", "attempt_test_0001_m_000002_0 on tt1");
+        checkAssignment("tt1", "attempt_test_0001_r_000003_0 on tt1");
+        checkAssignment("tt1", "attempt_test_0001_r_000004_0 on tt1");
+        checkAssignment("tt2", "attempt_test_0002_m_000005_0 on tt2");
+        checkAssignment("tt2", "attempt_test_0002_m_000006_0 on tt2");
+        checkAssignment("tt2", "attempt_test_0002_r_000007_0 on tt2");
+        checkAssignment("tt2", "attempt_test_0002_r_000008_0 on tt2");
+    }
+
+    public void testMaxRunningTasksPerJobWithInterleavedTrackers() throws IOException {
+        jobConf.setLong(LimitTasksPerJobTaskScheduler.MAX_TASKS_PER_JOB_PROPERTY, 4L);
+        scheduler.setConf(jobConf);
+        submitJobs(2, JobStatus.RUNNING);
+
+        // First 4 slots are filled with job 1, second 4 with job 2
+        // even when tracker requests are interleaved
+        checkAssignment("tt1", "attempt_test_0001_m_000001_0 on tt1");
+        checkAssignment("tt1", "attempt_test_0001_m_000002_0 on tt1");
+        checkAssignment("tt2", "attempt_test_0001_m_000003_0 on tt2");
+        checkAssignment("tt1", "attempt_test_0001_r_000004_0 on tt1");
+        checkAssignment("tt2", "attempt_test_0002_m_000005_0 on tt2");
+        checkAssignment("tt1", "attempt_test_0002_r_000006_0 on tt1");
+        checkAssignment("tt2", "attempt_test_0002_r_000007_0 on tt2");
+        checkAssignment("tt2", "attempt_test_0002_r_000008_0 on tt2");
+    }
+
 }

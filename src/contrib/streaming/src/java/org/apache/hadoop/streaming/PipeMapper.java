@@ -29,121 +29,124 @@ import org.apache.hadoop.mapred.SkipBadRecords;
 import org.apache.hadoop.mapred.TextInputFormat;
 import org.apache.hadoop.util.StringUtils;
 
-/** A generic Mapper bridge.
- *  It delegates operations to an external program via stdin and stdout.
+/**
+ * A generic Mapper bridge. It delegates operations to an external program via
+ * stdin and stdout.
  */
 public class PipeMapper extends PipeMapRed implements Mapper {
 
-  private boolean ignoreKey = false;
-  private boolean skipping = false;
+    private boolean ignoreKey = false;
+    private boolean skipping = false;
 
-  private byte[] mapOutputFieldSeparator;
-  private byte[] mapInputFieldSeparator;
-  private int numOfMapOutputKeyFields = 1;
-  
-  String getPipeCommand(JobConf job) {
-    String str = job.get("stream.map.streamprocessor");
-    if (str == null) {
-      return str;
-    }
-    try {
-      return URLDecoder.decode(str, "UTF-8");
-    }
-    catch (UnsupportedEncodingException e) {
-      System.err.println("stream.map.streamprocessor in jobconf not found");
-      return null;
-    }
-  }
+    private byte[] mapOutputFieldSeparator;
+    private byte[] mapInputFieldSeparator;
+    private int numOfMapOutputKeyFields = 1;
 
-  boolean getDoPipe() {
-    return true;
-  }
-  
-  public void configure(JobConf job) {
-    super.configure(job);
-    //disable the auto increment of the counter. For streaming, no of 
-    //processed records could be different(equal or less) than the no of 
-    //records input.
-    SkipBadRecords.setAutoIncrMapperProcCount(job, false);
-    skipping = job.getBoolean("mapred.skip.on", false);
-    String inputFormatClassName = job.getClass("mapred.input.format.class", TextInputFormat.class).getCanonicalName();
-    ignoreKey = inputFormatClassName.equals(TextInputFormat.class.getCanonicalName());
-
-    try {
-      mapOutputFieldSeparator = job.get("stream.map.output.field.separator", "\t").getBytes("UTF-8");
-      mapInputFieldSeparator = job.get("stream.map.input.field.separator", "\t").getBytes("UTF-8");
-      numOfMapOutputKeyFields = job.getInt("stream.num.map.output.key.fields", 1);
-    } catch (UnsupportedEncodingException e) {
-      throw new RuntimeException("The current system does not support UTF-8 encoding!", e);
-    }
-  }
-
-  // Do NOT declare default constructor
-  // (MapRed creates it reflectively)
-
-  public void map(Object key, Object value, OutputCollector output, Reporter reporter) throws IOException {
-    if (outerrThreadsThrowable != null) {
-      mapRedFinished();
-      throw new IOException ("MROutput/MRErrThread failed:"
-                             + StringUtils.stringifyException(
-                                                              outerrThreadsThrowable));
-    }
-    try {
-      // 1/4 Hadoop in
-      numRecRead_++;
-      maybeLogRecord();
-      if (debugFailDuring_ && numRecRead_ == 3) {
-        throw new IOException("debugFailDuring_");
-      }
-
-      // 2/4 Hadoop to Tool
-      if (numExceptions_ == 0) {
-        if (!this.ignoreKey) {
-          write(key);
-          clientOut_.write(getInputSeparator());
+    String getPipeCommand(JobConf job) {
+        String str = job.get("stream.map.streamprocessor");
+        if (str == null) {
+            return str;
         }
-        write(value);
-        clientOut_.write('\n');
-        if(skipping) {
-          //flush the streams on every record input if running in skip mode
-          //so that we don't buffer other records surrounding a bad record. 
-          clientOut_.flush();
+        try {
+            return URLDecoder.decode(str, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            System.err.println("stream.map.streamprocessor in jobconf not found");
+            return null;
         }
-      } else {
-        numRecSkipped_++;
-      }
-    } catch (IOException io) {
-      numExceptions_++;
-      if (numExceptions_ > 1 || numRecWritten_ < minRecWrittenToEnableSkip_) {
-        // terminate with failure
-        String msg = logFailure(io);
-        appendLogToJobLog("failure");
+    }
+
+    boolean getDoPipe() {
+        return true;
+    }
+
+    public void configure(JobConf job) {
+        super.configure(job);
+        // disable the auto increment of the counter. For streaming, no of
+        // processed records could be different(equal or less) than the no of
+        // records input.
+        SkipBadRecords.setAutoIncrMapperProcCount(job, false);
+        skipping = job.getBoolean("mapred.skip.on", false);
+        String inputFormatClassName = job.getClass("mapred.input.format.class", TextInputFormat.class)
+                .getCanonicalName();
+        ignoreKey = inputFormatClassName.equals(TextInputFormat.class.getCanonicalName());
+
+        try {
+            mapOutputFieldSeparator = job.get("stream.map.output.field.separator", "\t").getBytes("UTF-8");
+            mapInputFieldSeparator = job.get("stream.map.input.field.separator", "\t").getBytes("UTF-8");
+            numOfMapOutputKeyFields = job.getInt("stream.num.map.output.key.fields", 1);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("The current system does not support UTF-8 encoding!", e);
+        }
+    }
+
+    // Do NOT declare default constructor
+    // (MapRed creates it reflectively)
+
+    public void map(Object key, Object value, OutputCollector output, Reporter reporter) throws IOException {
+        if (outerrThreadsThrowable != null) {
+            mapRedFinished();
+            throw new IOException("MROutput/MRErrThread failed:"
+                    + StringUtils.stringifyException(outerrThreadsThrowable));
+        }
+        try {
+            // 1/4 Hadoop in
+            numRecRead_++;
+            maybeLogRecord();
+            if (debugFailDuring_ && numRecRead_ == 3) {
+                throw new IOException("debugFailDuring_");
+            }
+
+            // 2/4 Hadoop to Tool
+            if (numExceptions_ == 0) {
+                if (!this.ignoreKey) {
+                    write(key);
+                    clientOut_.write(getInputSeparator());
+                }
+                write(value);
+                clientOut_.write('\n');
+                if (skipping) {
+                    // flush the streams on every record input if running in
+                    // skip mode
+                    // so that we don't buffer other records surrounding a bad
+                    // record.
+                    clientOut_.flush();
+                }
+            } else {
+                numRecSkipped_++;
+            }
+        } catch (IOException io) {
+            numExceptions_++;
+            if (numExceptions_ > 1 || numRecWritten_ < minRecWrittenToEnableSkip_) {
+                // terminate with failure
+                String msg = logFailure(io);
+                appendLogToJobLog("failure");
+                mapRedFinished();
+                throw new IOException(msg);
+            } else {
+                // terminate with success:
+                // swallow input records although the stream processor
+                // failed/closed
+            }
+        }
+    }
+
+    public void close() {
+        appendLogToJobLog("success");
         mapRedFinished();
-        throw new IOException(msg);
-      } else {
-        // terminate with success:
-        // swallow input records although the stream processor failed/closed
-      }
     }
-  }
 
-  public void close() {
-    appendLogToJobLog("success");
-    mapRedFinished();
-  }
+    byte[] getInputSeparator() {
+        return mapInputFieldSeparator;
+    }
 
-  byte[] getInputSeparator() {
-    return mapInputFieldSeparator;
-  }
+    @Override
+    byte[] getFieldSeparator() {
+        return mapOutputFieldSeparator;
+    }
 
-  @Override
-  byte[] getFieldSeparator() {
-    return mapOutputFieldSeparator;
-  }
-
-  @Override
-  int getNumOfKeyFields() {
-    return numOfMapOutputKeyFields;
-  }
+    @Override
+    int getNumOfKeyFields() {
+        return numOfMapOutputKeyFields;
+    }
 
 }

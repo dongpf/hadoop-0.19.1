@@ -17,101 +17,97 @@ import com.facebook.thrift.protocol.*;
 import com.facebook.thrift.transport.*;
 
 public class ThriftHandle implements TBase, java.io.Serializable {
-  public long id;
+    public long id;
 
-  public final Isset __isset = new Isset();
-  public static final class Isset implements java.io.Serializable {
-    public boolean id = false;
-  }
+    public final Isset __isset = new Isset();
 
-  public ThriftHandle() {
-  }
+    public static final class Isset implements java.io.Serializable {
+        public boolean id = false;
+    }
 
-  public ThriftHandle(
-    long id)
-  {
-    this();
-    this.id = id;
-    this.__isset.id = true;
-  }
+    public ThriftHandle() {
+    }
 
-  public boolean equals(Object that) {
-    if (that == null)
-      return false;
-    if (that instanceof ThriftHandle)
-      return this.equals((ThriftHandle)that);
-    return false;
-  }
+    public ThriftHandle(long id) {
+        this();
+        this.id = id;
+        this.__isset.id = true;
+    }
 
-  public boolean equals(ThriftHandle that) {
-    if (that == null)
-      return false;
-
-    boolean this_present_id = true;
-    boolean that_present_id = true;
-    if (this_present_id || that_present_id) {
-      if (!(this_present_id && that_present_id))
-        return false;
-      if (this.id != that.id)
+    public boolean equals(Object that) {
+        if (that == null)
+            return false;
+        if (that instanceof ThriftHandle)
+            return this.equals((ThriftHandle) that);
         return false;
     }
 
-    return true;
-  }
+    public boolean equals(ThriftHandle that) {
+        if (that == null)
+            return false;
 
-  public int hashCode() {
-    return 0;
-  }
+        boolean this_present_id = true;
+        boolean that_present_id = true;
+        if (this_present_id || that_present_id) {
+            if (!(this_present_id && that_present_id))
+                return false;
+            if (this.id != that.id)
+                return false;
+        }
 
-  public void read(TProtocol iprot) throws TException {
-    TField field;
-    iprot.readStructBegin();
-    while (true)
-    {
-      field = iprot.readFieldBegin();
-      if (field.type == TType.STOP) { 
-        break;
-      }
-      switch (field.id)
-      {
-        case -1:
-          if (field.type == TType.I64) {
-            this.id = iprot.readI64();
-            this.__isset.id = true;
-          } else { 
-            TProtocolUtil.skip(iprot, field.type);
-          }
-          break;
-        default:
-          TProtocolUtil.skip(iprot, field.type);
-          break;
-      }
-      iprot.readFieldEnd();
+        return true;
     }
-    iprot.readStructEnd();
-  }
 
-  public void write(TProtocol oprot) throws TException {
-    TStruct struct = new TStruct("ThriftHandle");
-    oprot.writeStructBegin(struct);
-    TField field = new TField();
-    field.name = "id";
-    field.type = TType.I64;
-    field.id = -1;
-    oprot.writeFieldBegin(field);
-    oprot.writeI64(this.id);
-    oprot.writeFieldEnd();
-    oprot.writeFieldStop();
-    oprot.writeStructEnd();
-  }
+    public int hashCode() {
+        return 0;
+    }
 
-  public String toString() {
-    StringBuilder sb = new StringBuilder("ThriftHandle(");
-    sb.append("id:");
-    sb.append(this.id);
-    sb.append(")");
-    return sb.toString();
-  }
+    public void read(TProtocol iprot) throws TException {
+        TField field;
+        iprot.readStructBegin();
+        while (true) {
+            field = iprot.readFieldBegin();
+            if (field.type == TType.STOP) {
+                break;
+            }
+            switch (field.id) {
+            case -1:
+                if (field.type == TType.I64) {
+                    this.id = iprot.readI64();
+                    this.__isset.id = true;
+                } else {
+                    TProtocolUtil.skip(iprot, field.type);
+                }
+                break;
+            default:
+                TProtocolUtil.skip(iprot, field.type);
+                break;
+            }
+            iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+    }
+
+    public void write(TProtocol oprot) throws TException {
+        TStruct struct = new TStruct("ThriftHandle");
+        oprot.writeStructBegin(struct);
+        TField field = new TField();
+        field.name = "id";
+        field.type = TType.I64;
+        field.id = -1;
+        oprot.writeFieldBegin(field);
+        oprot.writeI64(this.id);
+        oprot.writeFieldEnd();
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder("ThriftHandle(");
+        sb.append("id:");
+        sb.append(this.id);
+        sb.append(")");
+        return sb.toString();
+    }
 
 }
-

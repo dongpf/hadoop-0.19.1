@@ -30,43 +30,40 @@ import org.apache.hadoop.hdfs.protocol.DatanodeInfo;
 import org.apache.hadoop.fs.BlockLocation;
 
 public class TestDFSUtil extends TestCase {
-  /**
-   * Test conversion of LocatedBlock to BlockLocation
-   */
-  public void testLocatedBlocks2Locations() {
-    DatanodeInfo d = new DatanodeInfo();
-    DatanodeInfo[] ds = new DatanodeInfo[1];
-    ds[0] = d;
+    /**
+     * Test conversion of LocatedBlock to BlockLocation
+     */
+    public void testLocatedBlocks2Locations() {
+        DatanodeInfo d = new DatanodeInfo();
+        DatanodeInfo[] ds = new DatanodeInfo[1];
+        ds[0] = d;
 
-    // ok
-    Block b1 = new Block(1, 1, 1);
-    LocatedBlock l1 = new LocatedBlock(b1, ds, 0, false);
+        // ok
+        Block b1 = new Block(1, 1, 1);
+        LocatedBlock l1 = new LocatedBlock(b1, ds, 0, false);
 
-    // corrupt
-    Block b2 = new Block(2, 1, 1);
-    LocatedBlock l2 = new LocatedBlock(b2, ds, 0, true);
+        // corrupt
+        Block b2 = new Block(2, 1, 1);
+        LocatedBlock l2 = new LocatedBlock(b2, ds, 0, true);
 
-    List<LocatedBlock> ls = Arrays.asList(l1, l2);
-    LocatedBlocks lbs = new LocatedBlocks(10, ls, false);
+        List<LocatedBlock> ls = Arrays.asList(l1, l2);
+        LocatedBlocks lbs = new LocatedBlocks(10, ls, false);
 
-    BlockLocation[] bs = DFSUtil.locatedBlocks2Locations(lbs);
+        BlockLocation[] bs = DFSUtil.locatedBlocks2Locations(lbs);
 
-    assertTrue("expected 2 blocks but got " + bs.length,
-               bs.length == 2);
+        assertTrue("expected 2 blocks but got " + bs.length, bs.length == 2);
 
-    int corruptCount = 0;
-    for (BlockLocation b: bs) {
-      if (b.isCorrupt()) {
-        corruptCount++;
-      }
+        int corruptCount = 0;
+        for (BlockLocation b : bs) {
+            if (b.isCorrupt()) {
+                corruptCount++;
+            }
+        }
+
+        assertTrue("expected 1 corrupt files but got " + corruptCount, corruptCount == 1);
+
+        // test an empty location
+        bs = DFSUtil.locatedBlocks2Locations(new LocatedBlocks());
+        assertEquals(0, bs.length);
     }
-
-    assertTrue("expected 1 corrupt files but got " + corruptCount, 
-               corruptCount == 1);
-    
-    // test an empty location
-    bs = DFSUtil.locatedBlocks2Locations(new LocatedBlocks());
-    assertEquals(0, bs.length);
-  }
 }
-

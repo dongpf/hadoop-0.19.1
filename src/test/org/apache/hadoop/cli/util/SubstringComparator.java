@@ -20,14 +20,14 @@ package org.apache.hadoop.cli.util;
 
 public class SubstringComparator extends ComparatorBase {
 
-  @Override
-  public boolean compare(String actual, String expected) {
-    int compareOutput = actual.indexOf(expected);
-    if (compareOutput == -1) {
-      return false;
-    }
+    @Override
+    public boolean compare(String actual, String expected) {
+        int compareOutput = actual.indexOf(expected);
+        if (compareOutput == -1) {
+            return false;
+        }
 
-    return true;
-  }
+        return true;
+    }
 
 }

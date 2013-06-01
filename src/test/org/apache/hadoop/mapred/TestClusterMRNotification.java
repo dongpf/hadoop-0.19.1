@@ -25,8 +25,8 @@ import java.io.IOException;
  */
 public class TestClusterMRNotification extends NotificationTestCase {
 
-  public TestClusterMRNotification() throws IOException {
-    super(HadoopTestCase.CLUSTER_MR);
-  }
+    public TestClusterMRNotification() throws IOException {
+        super(HadoopTestCase.CLUSTER_MR);
+    }
 
 }

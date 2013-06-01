@@ -29,23 +29,23 @@ import junit.framework.TestCase;
  * This class tests that methods in DatanodeDescriptor
  */
 public class TestDatanodeDescriptor extends TestCase {
-  /**
-   * Test that getInvalidateBlocks observes the maxlimit.
-   */
-  public void testGetInvalidateBlocks() throws Exception {
-    final int MAX_BLOCKS = 10;
-    final int REMAINING_BLOCKS = 2;
-    final int MAX_LIMIT = MAX_BLOCKS - REMAINING_BLOCKS;
-    
-    DatanodeDescriptor dd = new DatanodeDescriptor();
-    ArrayList<Block> blockList = new ArrayList<Block>(MAX_BLOCKS);
-    for (int i=0; i<MAX_BLOCKS; i++) {
-      blockList.add(new Block(i, 0, GenerationStamp.FIRST_VALID_STAMP));
+    /**
+     * Test that getInvalidateBlocks observes the maxlimit.
+     */
+    public void testGetInvalidateBlocks() throws Exception {
+        final int MAX_BLOCKS = 10;
+        final int REMAINING_BLOCKS = 2;
+        final int MAX_LIMIT = MAX_BLOCKS - REMAINING_BLOCKS;
+
+        DatanodeDescriptor dd = new DatanodeDescriptor();
+        ArrayList<Block> blockList = new ArrayList<Block>(MAX_BLOCKS);
+        for (int i = 0; i < MAX_BLOCKS; i++) {
+            blockList.add(new Block(i, 0, GenerationStamp.FIRST_VALID_STAMP));
+        }
+        dd.addBlocksToBeInvalidated(blockList);
+        BlockCommand bc = dd.getInvalidateBlocks(MAX_LIMIT);
+        assertEquals(bc.getBlocks().length, MAX_LIMIT);
+        bc = dd.getInvalidateBlocks(MAX_LIMIT);
+        assertEquals(bc.getBlocks().length, REMAINING_BLOCKS);
     }
-    dd.addBlocksToBeInvalidated(blockList);
-    BlockCommand bc = dd.getInvalidateBlocks(MAX_LIMIT);
-    assertEquals(bc.getBlocks().length, MAX_LIMIT);
-    bc = dd.getInvalidateBlocks(MAX_LIMIT);
-    assertEquals(bc.getBlocks().length, REMAINING_BLOCKS);
-  }
 }

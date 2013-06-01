@@ -31,19 +31,19 @@ import org.apache.lucene.index.IndexDeletionPolicy;
  */
 class MixedDeletionPolicy implements IndexDeletionPolicy {
 
-  private int keepAllFromInit = 0;
+    private int keepAllFromInit = 0;
 
-  public void onInit(List commits) throws IOException {
-    keepAllFromInit = commits.size();
-  }
-
-  public void onCommit(List commits) throws IOException {
-    int size = commits.size();
-    assert (size > keepAllFromInit);
-    // keep all from init and the latest, delete the rest
-    for (int i = keepAllFromInit; i < size - 1; i++) {
-      ((IndexCommitPoint) commits.get(i)).delete();
+    public void onInit(List commits) throws IOException {
+        keepAllFromInit = commits.size();
     }
-  }
+
+    public void onCommit(List commits) throws IOException {
+        int size = commits.size();
+        assert (size > keepAllFromInit);
+        // keep all from init and the latest, delete the rest
+        for (int i = keepAllFromInit; i < size - 1; i++) {
+            ((IndexCommitPoint) commits.get(i)).delete();
+        }
+    }
 
 }

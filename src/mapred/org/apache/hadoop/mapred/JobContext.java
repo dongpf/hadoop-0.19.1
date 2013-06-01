@@ -21,33 +21,33 @@ import org.apache.hadoop.util.Progressable;
 
 public class JobContext {
 
-  JobConf job;
-  private Progressable progress;
+    JobConf job;
+    private Progressable progress;
 
-  JobContext(JobConf conf, Progressable progress) {
-    job = conf;
-    this.progress = progress;
-  }
+    JobContext(JobConf conf, Progressable progress) {
+        job = conf;
+        this.progress = progress;
+    }
 
-  JobContext(JobConf conf) {
-    this(conf, Reporter.NULL);
-  }
-  
-  /**
-   * Get the job Configuration
-   * 
-   * @return JobConf
-   */
-  public JobConf getJobConf() {
-    return job;
-  }
-  
-  /**
-   * Get the progress mechanism for reporting progress.
-   * 
-   * @return progress mechanism 
-   */
-  public Progressable getProgressible() {
-    return progress;
-  }
+    JobContext(JobConf conf) {
+        this(conf, Reporter.NULL);
+    }
+
+    /**
+     * Get the job Configuration
+     * 
+     * @return JobConf
+     */
+    public JobConf getJobConf() {
+        return job;
+    }
+
+    /**
+     * Get the progress mechanism for reporting progress.
+     * 
+     * @return progress mechanism
+     */
+    public Progressable getProgressible() {
+        return progress;
+    }
 }

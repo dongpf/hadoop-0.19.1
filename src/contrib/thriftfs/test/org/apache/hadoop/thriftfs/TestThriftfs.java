@@ -22,30 +22,26 @@ import junit.framework.TestCase;
 import java.io.*;
 
 /**
- * This class is supposed to test ThriftHadoopFileSystem but has a long long
- * way to go.
+ * This class is supposed to test ThriftHadoopFileSystem but has a long long way
+ * to go.
  */
-public class TestThriftfs extends TestCase
-{
-  final static int numDatanodes = 1;
+public class TestThriftfs extends TestCase {
+    final static int numDatanodes = 1;
 
-  public TestThriftfs() throws IOException
-  {
-  }
+    public TestThriftfs() throws IOException {
+    }
 
-  public void testServer() throws IOException
-  {
-    Configuration conf = new Configuration();
-    MiniDFSCluster cluster = new MiniDFSCluster(conf, numDatanodes, true, null);
-    cluster.waitActive();
-    DistributedFileSystem dfs = (DistributedFileSystem)cluster.getFileSystem();
-    HadoopThriftServer server = new HadoopThriftServer();
-    server.close();
-  }
+    public void testServer() throws IOException {
+        Configuration conf = new Configuration();
+        MiniDFSCluster cluster = new MiniDFSCluster(conf, numDatanodes, true, null);
+        cluster.waitActive();
+        DistributedFileSystem dfs = (DistributedFileSystem) cluster.getFileSystem();
+        HadoopThriftServer server = new HadoopThriftServer();
+        server.close();
+    }
 
-  public static void main(String[]args) throws Exception
-  {
-    new TestThriftfs().testServer();
-  }
+    public static void main(String[] args) throws Exception {
+        new TestThriftfs().testServer();
+    }
 
 }

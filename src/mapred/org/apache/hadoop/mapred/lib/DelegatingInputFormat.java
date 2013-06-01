@@ -44,84 +44,75 @@ import org.apache.hadoop.util.ReflectionUtils;
  */
 public class DelegatingInputFormat<K, V> implements InputFormat<K, V> {
 
-  public InputSplit[] getSplits(JobConf conf, int numSplits) throws IOException {
+    public InputSplit[] getSplits(JobConf conf, int numSplits) throws IOException {
 
-    JobConf confCopy = new JobConf(conf);
-    List<InputSplit> splits = new ArrayList<InputSplit>();
-    Map<Path, InputFormat> formatMap = MultipleInputs.getInputFormatMap(conf);
-    Map<Path, Class<? extends Mapper>> mapperMap = MultipleInputs
-       .getMapperTypeMap(conf);
-    Map<Class<? extends InputFormat>, List<Path>> formatPaths
-        = new HashMap<Class<? extends InputFormat>, List<Path>>();
+        JobConf confCopy = new JobConf(conf);
+        List<InputSplit> splits = new ArrayList<InputSplit>();
+        Map<Path, InputFormat> formatMap = MultipleInputs.getInputFormatMap(conf);
+        Map<Path, Class<? extends Mapper>> mapperMap = MultipleInputs.getMapperTypeMap(conf);
+        Map<Class<? extends InputFormat>, List<Path>> formatPaths = new HashMap<Class<? extends InputFormat>, List<Path>>();
 
-    // First, build a map of InputFormats to Paths
-    for (Entry<Path, InputFormat> entry : formatMap.entrySet()) {
-      if (!formatPaths.containsKey(entry.getValue().getClass())) {
-       formatPaths.put(entry.getValue().getClass(), new LinkedList<Path>());
-      }
+        // First, build a map of InputFormats to Paths
+        for (Entry<Path, InputFormat> entry : formatMap.entrySet()) {
+            if (!formatPaths.containsKey(entry.getValue().getClass())) {
+                formatPaths.put(entry.getValue().getClass(), new LinkedList<Path>());
+            }
 
-      formatPaths.get(entry.getValue().getClass()).add(entry.getKey());
+            formatPaths.get(entry.getValue().getClass()).add(entry.getKey());
+        }
+
+        for (Entry<Class<? extends InputFormat>, List<Path>> formatEntry : formatPaths.entrySet()) {
+            Class<? extends InputFormat> formatClass = formatEntry.getKey();
+            InputFormat format = (InputFormat) ReflectionUtils.newInstance(formatClass, conf);
+            List<Path> paths = formatEntry.getValue();
+
+            Map<Class<? extends Mapper>, List<Path>> mapperPaths = new HashMap<Class<? extends Mapper>, List<Path>>();
+
+            // Now, for each set of paths that have a common InputFormat, build
+            // a map of Mappers to the paths they're used for
+            for (Path path : paths) {
+                Class<? extends Mapper> mapperClass = mapperMap.get(path);
+                if (!mapperPaths.containsKey(mapperClass)) {
+                    mapperPaths.put(mapperClass, new LinkedList<Path>());
+                }
+
+                mapperPaths.get(mapperClass).add(path);
+            }
+
+            // Now each set of paths that has a common InputFormat and Mapper
+            // can
+            // be added to the same job, and split together.
+            for (Entry<Class<? extends Mapper>, List<Path>> mapEntry : mapperPaths.entrySet()) {
+                paths = mapEntry.getValue();
+                Class<? extends Mapper> mapperClass = mapEntry.getKey();
+
+                if (mapperClass == null) {
+                    mapperClass = conf.getMapperClass();
+                }
+
+                FileInputFormat.setInputPaths(confCopy, paths.toArray(new Path[paths.size()]));
+
+                // Get splits for each input path and tag with InputFormat
+                // and Mapper types by wrapping in a TaggedInputSplit.
+                InputSplit[] pathSplits = format.getSplits(confCopy, numSplits);
+                for (InputSplit pathSplit : pathSplits) {
+                    splits.add(new TaggedInputSplit(pathSplit, conf, format.getClass(), mapperClass));
+                }
+            }
+        }
+
+        return splits.toArray(new InputSplit[splits.size()]);
     }
 
-    for (Entry<Class<? extends InputFormat>, List<Path>> formatEntry : 
-        formatPaths.entrySet()) {
-      Class<? extends InputFormat> formatClass = formatEntry.getKey();
-      InputFormat format = (InputFormat) ReflectionUtils.newInstance(
-         formatClass, conf);
-      List<Path> paths = formatEntry.getValue();
+    @SuppressWarnings("unchecked")
+    public RecordReader<K, V> getRecordReader(InputSplit split, JobConf conf, Reporter reporter) throws IOException {
 
-      Map<Class<? extends Mapper>, List<Path>> mapperPaths
-          = new HashMap<Class<? extends Mapper>, List<Path>>();
+        // Find the InputFormat and then the RecordReader from the
+        // TaggedInputSplit.
 
-      // Now, for each set of paths that have a common InputFormat, build
-      // a map of Mappers to the paths they're used for
-      for (Path path : paths) {
-       Class<? extends Mapper> mapperClass = mapperMap.get(path);
-       if (!mapperPaths.containsKey(mapperClass)) {
-         mapperPaths.put(mapperClass, new LinkedList<Path>());
-       }
-
-       mapperPaths.get(mapperClass).add(path);
-      }
-
-      // Now each set of paths that has a common InputFormat and Mapper can
-      // be added to the same job, and split together.
-      for (Entry<Class<? extends Mapper>, List<Path>> mapEntry : mapperPaths
-         .entrySet()) {
-       paths = mapEntry.getValue();
-       Class<? extends Mapper> mapperClass = mapEntry.getKey();
-
-       if (mapperClass == null) {
-         mapperClass = conf.getMapperClass();
-       }
-
-       FileInputFormat.setInputPaths(confCopy, paths.toArray(new Path[paths
-           .size()]));
-
-       // Get splits for each input path and tag with InputFormat
-       // and Mapper types by wrapping in a TaggedInputSplit.
-       InputSplit[] pathSplits = format.getSplits(confCopy, numSplits);
-       for (InputSplit pathSplit : pathSplits) {
-         splits.add(new TaggedInputSplit(pathSplit, conf, format.getClass(),
-             mapperClass));
-       }
-      }
+        TaggedInputSplit taggedInputSplit = (TaggedInputSplit) split;
+        InputFormat<K, V> inputFormat = (InputFormat<K, V>) ReflectionUtils.newInstance(
+                taggedInputSplit.getInputFormatClass(), conf);
+        return inputFormat.getRecordReader(taggedInputSplit.getInputSplit(), conf, reporter);
     }
-
-    return splits.toArray(new InputSplit[splits.size()]);
-  }
-
-  @SuppressWarnings("unchecked")
-  public RecordReader<K, V> getRecordReader(InputSplit split, JobConf conf,
-      Reporter reporter) throws IOException {
-
-    // Find the InputFormat and then the RecordReader from the
-    // TaggedInputSplit.
-
-    TaggedInputSplit taggedInputSplit = (TaggedInputSplit) split;
-    InputFormat<K, V> inputFormat = (InputFormat<K, V>) ReflectionUtils
-       .newInstance(taggedInputSplit.getInputFormatClass(), conf);
-    return inputFormat.getRecordReader(taggedInputSplit.getInputSplit(), conf,
-       reporter);
-  }
 }

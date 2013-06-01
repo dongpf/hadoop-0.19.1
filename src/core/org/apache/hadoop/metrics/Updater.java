@@ -21,13 +21,13 @@
 package org.apache.hadoop.metrics;
 
 /**
- * Call-back interface.  See <code>MetricsContext.registerUpdater()</code>.
+ * Call-back interface. See <code>MetricsContext.registerUpdater()</code>.
  */
 public interface Updater {
-    
-  /**
-   * Timer-based call-back from the metric library. 
-   */
-  public abstract void doUpdates(MetricsContext context);
+
+    /**
+     * Timer-based call-back from the metric library.
+     */
+    public abstract void doUpdates(MetricsContext context);
 
 }

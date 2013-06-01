@@ -24,26 +24,25 @@ import java.util.zip.Deflater;
 import org.apache.hadoop.io.compress.Compressor;
 
 /**
- * A wrapper around java.util.zip.Deflater to make it conform 
- * to org.apache.hadoop.io.compress.Compressor interface.
+ * A wrapper around java.util.zip.Deflater to make it conform to
+ * org.apache.hadoop.io.compress.Compressor interface.
  * 
  */
 public class BuiltInZlibDeflater extends Deflater implements Compressor {
 
-  public BuiltInZlibDeflater(int level, boolean nowrap) {
-    super(level, nowrap);
-  }
+    public BuiltInZlibDeflater(int level, boolean nowrap) {
+        super(level, nowrap);
+    }
 
-  public BuiltInZlibDeflater(int level) {
-    super(level);
-  }
+    public BuiltInZlibDeflater(int level) {
+        super(level);
+    }
 
-  public BuiltInZlibDeflater() {
-    super();
-  }
+    public BuiltInZlibDeflater() {
+        super();
+    }
 
-  public synchronized int compress(byte[] b, int off, int len) 
-    throws IOException {
-    return super.deflate(b, off, len);
-  }
+    public synchronized int compress(byte[] b, int off, int len) throws IOException {
+        return super.deflate(b, off, len);
+    }
 }

@@ -80,131 +80,127 @@ import org.apache.hadoop.util.GenericOptionsParser;
  */
 public class ValueAggregatorJob {
 
-  public static JobControl createValueAggregatorJobs(String args[]
-    , Class<? extends ValueAggregatorDescriptor>[] descriptors) throws IOException {
-    
-    JobControl theControl = new JobControl("ValueAggregatorJobs");
-    ArrayList<Job> dependingJobs = new ArrayList<Job>();
-    JobConf aJobConf = createValueAggregatorJob(args);
-    if(descriptors != null)
-      setAggregatorDescriptors(aJobConf, descriptors);
-    Job aJob = new Job(aJobConf, dependingJobs);
-    theControl.addJob(aJob);
-    return theControl;
-  }
+    public static JobControl createValueAggregatorJobs(String args[],
+            Class<? extends ValueAggregatorDescriptor>[] descriptors) throws IOException {
 
-  public static JobControl createValueAggregatorJobs(String args[]) throws IOException {
-    return createValueAggregatorJobs(args, null);
-  }
-  
-  /**
-   * Create an Aggregate based map/reduce job.
-   * 
-   * @param args the arguments used for job creation. Generic hadoop
-   * arguments are accepted.
-   * @return a JobConf object ready for submission.
-   * 
-   * @throws IOException
-   * @see GenericOptionsParser
-   */
-  public static JobConf createValueAggregatorJob(String args[])
-    throws IOException {
-
-    Configuration conf = new Configuration();
-    
-    GenericOptionsParser genericParser 
-      = new GenericOptionsParser(conf, args);
-    args = genericParser.getRemainingArgs();
-    
-    if (args.length < 2) {
-      System.out.println("usage: inputDirs outDir "
-          + "[numOfReducer [textinputformat|seq [specfile [jobName]]]]");
-      GenericOptionsParser.printGenericCommandUsage(System.out);
-      System.exit(1);
-    }
-    String inputDir = args[0];
-    String outputDir = args[1];
-    int numOfReducers = 1;
-    if (args.length > 2) {
-      numOfReducers = Integer.parseInt(args[2]);
+        JobControl theControl = new JobControl("ValueAggregatorJobs");
+        ArrayList<Job> dependingJobs = new ArrayList<Job>();
+        JobConf aJobConf = createValueAggregatorJob(args);
+        if (descriptors != null)
+            setAggregatorDescriptors(aJobConf, descriptors);
+        Job aJob = new Job(aJobConf, dependingJobs);
+        theControl.addJob(aJob);
+        return theControl;
     }
 
-    Class<? extends InputFormat> theInputFormat =
-      TextInputFormat.class;
-    if (args.length > 3 && 
-        args[3].compareToIgnoreCase("textinputformat") == 0) {
-      theInputFormat = TextInputFormat.class;
-    } else {
-      theInputFormat = SequenceFileInputFormat.class;
+    public static JobControl createValueAggregatorJobs(String args[]) throws IOException {
+        return createValueAggregatorJobs(args, null);
     }
 
-    Path specFile = null;
+    /**
+     * Create an Aggregate based map/reduce job.
+     * 
+     * @param args
+     *            the arguments used for job creation. Generic hadoop arguments
+     *            are accepted.
+     * @return a JobConf object ready for submission.
+     * 
+     * @throws IOException
+     * @see GenericOptionsParser
+     */
+    public static JobConf createValueAggregatorJob(String args[]) throws IOException {
 
-    if (args.length > 4) {
-      specFile = new Path(args[4]);
+        Configuration conf = new Configuration();
+
+        GenericOptionsParser genericParser = new GenericOptionsParser(conf, args);
+        args = genericParser.getRemainingArgs();
+
+        if (args.length < 2) {
+            System.out
+                    .println("usage: inputDirs outDir " + "[numOfReducer [textinputformat|seq [specfile [jobName]]]]");
+            GenericOptionsParser.printGenericCommandUsage(System.out);
+            System.exit(1);
+        }
+        String inputDir = args[0];
+        String outputDir = args[1];
+        int numOfReducers = 1;
+        if (args.length > 2) {
+            numOfReducers = Integer.parseInt(args[2]);
+        }
+
+        Class<? extends InputFormat> theInputFormat = TextInputFormat.class;
+        if (args.length > 3 && args[3].compareToIgnoreCase("textinputformat") == 0) {
+            theInputFormat = TextInputFormat.class;
+        } else {
+            theInputFormat = SequenceFileInputFormat.class;
+        }
+
+        Path specFile = null;
+
+        if (args.length > 4) {
+            specFile = new Path(args[4]);
+        }
+
+        String jobName = "";
+
+        if (args.length > 5) {
+            jobName = args[5];
+        }
+
+        JobConf theJob = new JobConf(conf);
+        if (specFile != null) {
+            theJob.addResource(specFile);
+        }
+        String userJarFile = theJob.get("user.jar.file");
+        if (userJarFile == null) {
+            theJob.setJarByClass(ValueAggregator.class);
+        } else {
+            theJob.setJar(userJarFile);
+        }
+        theJob.setJobName("ValueAggregatorJob: " + jobName);
+
+        FileInputFormat.addInputPaths(theJob, inputDir);
+
+        theJob.setInputFormat(theInputFormat);
+
+        theJob.setMapperClass(ValueAggregatorMapper.class);
+        FileOutputFormat.setOutputPath(theJob, new Path(outputDir));
+        theJob.setOutputFormat(TextOutputFormat.class);
+        theJob.setMapOutputKeyClass(Text.class);
+        theJob.setMapOutputValueClass(Text.class);
+        theJob.setOutputKeyClass(Text.class);
+        theJob.setOutputValueClass(Text.class);
+        theJob.setReducerClass(ValueAggregatorReducer.class);
+        theJob.setCombinerClass(ValueAggregatorCombiner.class);
+        theJob.setNumMapTasks(1);
+        theJob.setNumReduceTasks(numOfReducers);
+        return theJob;
     }
 
-    String jobName = "";
-    
-    if (args.length > 5) {
-      jobName = args[5];
+    public static JobConf createValueAggregatorJob(String args[],
+            Class<? extends ValueAggregatorDescriptor>[] descriptors) throws IOException {
+        JobConf job = createValueAggregatorJob(args);
+        setAggregatorDescriptors(job, descriptors);
+        return job;
     }
-    
-    JobConf theJob = new JobConf(conf);
-    if (specFile != null) {
-      theJob.addResource(specFile);
+
+    public static void setAggregatorDescriptors(JobConf job, Class<? extends ValueAggregatorDescriptor>[] descriptors) {
+        job.setInt("aggregator.descriptor.num", descriptors.length);
+        // specify the aggregator descriptors
+        for (int i = 0; i < descriptors.length; i++) {
+            job.set("aggregator.descriptor." + i, "UserDefined," + descriptors[i].getName());
+        }
     }
-    String userJarFile = theJob.get("user.jar.file");
-    if (userJarFile == null) {
-      theJob.setJarByClass(ValueAggregator.class);
-    } else {
-      theJob.setJar(userJarFile);
+
+    /**
+     * create and run an Aggregate based map/reduce job.
+     * 
+     * @param args
+     *            the arguments used for job creation
+     * @throws IOException
+     */
+    public static void main(String args[]) throws IOException {
+        JobConf job = ValueAggregatorJob.createValueAggregatorJob(args);
+        JobClient.runJob(job);
     }
-    theJob.setJobName("ValueAggregatorJob: " + jobName);
-
-    FileInputFormat.addInputPaths(theJob, inputDir);
-
-    theJob.setInputFormat(theInputFormat);
-    
-    theJob.setMapperClass(ValueAggregatorMapper.class);
-    FileOutputFormat.setOutputPath(theJob, new Path(outputDir));
-    theJob.setOutputFormat(TextOutputFormat.class);
-    theJob.setMapOutputKeyClass(Text.class);
-    theJob.setMapOutputValueClass(Text.class);
-    theJob.setOutputKeyClass(Text.class);
-    theJob.setOutputValueClass(Text.class);
-    theJob.setReducerClass(ValueAggregatorReducer.class);
-    theJob.setCombinerClass(ValueAggregatorCombiner.class);
-    theJob.setNumMapTasks(1);
-    theJob.setNumReduceTasks(numOfReducers);
-    return theJob;
-  }
-
-  public static JobConf createValueAggregatorJob(String args[]
-    , Class<? extends ValueAggregatorDescriptor>[] descriptors)
-  throws IOException {
-    JobConf job = createValueAggregatorJob(args);
-    setAggregatorDescriptors(job, descriptors);
-    return job;
-  }
-  
-  public static void setAggregatorDescriptors(JobConf job
-      , Class<? extends ValueAggregatorDescriptor>[] descriptors) {
-    job.setInt("aggregator.descriptor.num", descriptors.length);
-    //specify the aggregator descriptors
-    for(int i=0; i< descriptors.length; i++) {
-      job.set("aggregator.descriptor." + i, "UserDefined," + descriptors[i].getName());
-    }    
-  }
-  
-  /**
-   * create and run an Aggregate based map/reduce job.
-   * 
-   * @param args the arguments used for job creation
-   * @throws IOException
-   */
-  public static void main(String args[]) throws IOException {
-    JobConf job = ValueAggregatorJob.createValueAggregatorJob(args);
-    JobClient.runJob(job);
-  }
 }

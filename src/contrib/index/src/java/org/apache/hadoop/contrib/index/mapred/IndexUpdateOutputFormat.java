@@ -35,31 +35,32 @@ import org.apache.hadoop.util.Progressable;
  */
 public class IndexUpdateOutputFormat extends FileOutputFormat<Shard, Text> {
 
-  /* (non-Javadoc)
-   * @see FileOutputFormat#getRecordWriter(FileSystem, JobConf, String, Progressable)
-   */
-  public RecordWriter<Shard, Text> getRecordWriter(final FileSystem fs,
-      JobConf job, String name, final Progressable progress)
-      throws IOException {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see FileOutputFormat#getRecordWriter(FileSystem, JobConf, String,
+     * Progressable)
+     */
+    public RecordWriter<Shard, Text> getRecordWriter(final FileSystem fs, JobConf job, String name,
+            final Progressable progress) throws IOException {
 
-    final Path perm = new Path(getWorkOutputPath(job), name);
+        final Path perm = new Path(getWorkOutputPath(job), name);
 
-    return new RecordWriter<Shard, Text>() {
-      public void write(Shard key, Text value) throws IOException {
-        assert (IndexUpdateReducer.DONE.equals(value));
+        return new RecordWriter<Shard, Text>() {
+            public void write(Shard key, Text value) throws IOException {
+                assert (IndexUpdateReducer.DONE.equals(value));
 
-        String shardName = key.getDirectory();
-        shardName = shardName.replace("/", "_");
+                String shardName = key.getDirectory();
+                shardName = shardName.replace("/", "_");
 
-        Path doneFile =
-            new Path(perm, IndexUpdateReducer.DONE + "_" + shardName);
-        if (!fs.exists(doneFile)) {
-          fs.createNewFile(doneFile);
-        }
-      }
+                Path doneFile = new Path(perm, IndexUpdateReducer.DONE + "_" + shardName);
+                if (!fs.exists(doneFile)) {
+                    fs.createNewFile(doneFile);
+                }
+            }
 
-      public void close(final Reporter reporter) throws IOException {
-      }
-    };
-  }
+            public void close(final Reporter reporter) throws IOException {
+            }
+        };
+    }
 }

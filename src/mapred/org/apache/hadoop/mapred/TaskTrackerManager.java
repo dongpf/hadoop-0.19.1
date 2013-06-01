@@ -20,55 +20,60 @@ package org.apache.hadoop.mapred;
 import java.util.Collection;
 
 /**
- * Manages information about the {@link TaskTracker}s running on a cluster.
- * This interface exits primarily to test the {@link JobTracker}, and is not
- * intended to be implemented by users.
+ * Manages information about the {@link TaskTracker}s running on a cluster. This
+ * interface exits primarily to test the {@link JobTracker}, and is not intended
+ * to be implemented by users.
  */
 interface TaskTrackerManager {
 
-  /**
-   * @return A collection of the {@link TaskTrackerStatus} for the tasktrackers
-   * being managed.
-   */
-  public Collection<TaskTrackerStatus> taskTrackers();
-  
-  /**
-   * @return The number of unique hosts running tasktrackers.
-   */
-  public int getNumberOfUniqueHosts();
-  
-  /**
-   * @return a summary of the cluster's status.
-   */
-  public ClusterStatus getClusterStatus();
+    /**
+     * @return A collection of the {@link TaskTrackerStatus} for the
+     *         tasktrackers being managed.
+     */
+    public Collection<TaskTrackerStatus> taskTrackers();
 
-  /**
-   * Registers a {@link JobInProgressListener} for updates from this
-   * {@link TaskTrackerManager}.
-   * @param jobInProgressListener the {@link JobInProgressListener} to add
-   */
-  public void addJobInProgressListener(JobInProgressListener listener);
+    /**
+     * @return The number of unique hosts running tasktrackers.
+     */
+    public int getNumberOfUniqueHosts();
 
-  /**
-   * Unregisters a {@link JobInProgressListener} from this
-   * {@link TaskTrackerManager}.
-   * @param jobInProgressListener the {@link JobInProgressListener} to remove
-   */
-  public void removeJobInProgressListener(JobInProgressListener listener);
+    /**
+     * @return a summary of the cluster's status.
+     */
+    public ClusterStatus getClusterStatus();
 
-  /**
-   * Return the {@link QueueManager} which manages the queues in this
-   * {@link TaskTrackerManager}.
-   *
-   * @return the {@link QueueManager}
-   */
-  public QueueManager getQueueManager();
-  
-  /**
-   * Return the current heartbeat interval that's used by {@link TaskTracker}s.
-   *
-   * @return the heartbeat interval used by {@link TaskTracker}s
-   */
-  public int getNextHeartbeatInterval();
-  
+    /**
+     * Registers a {@link JobInProgressListener} for updates from this
+     * {@link TaskTrackerManager}.
+     * 
+     * @param jobInProgressListener
+     *            the {@link JobInProgressListener} to add
+     */
+    public void addJobInProgressListener(JobInProgressListener listener);
+
+    /**
+     * Unregisters a {@link JobInProgressListener} from this
+     * {@link TaskTrackerManager}.
+     * 
+     * @param jobInProgressListener
+     *            the {@link JobInProgressListener} to remove
+     */
+    public void removeJobInProgressListener(JobInProgressListener listener);
+
+    /**
+     * Return the {@link QueueManager} which manages the queues in this
+     * {@link TaskTrackerManager}.
+     * 
+     * @return the {@link QueueManager}
+     */
+    public QueueManager getQueueManager();
+
+    /**
+     * Return the current heartbeat interval that's used by {@link TaskTracker}
+     * s.
+     * 
+     * @return the heartbeat interval used by {@link TaskTracker}s
+     */
+    public int getNextHeartbeatInterval();
+
 }

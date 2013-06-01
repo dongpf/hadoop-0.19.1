@@ -21,81 +21,103 @@ package org.apache.hadoop.mapred;
 import java.io.IOException;
 import java.io.DataInput;
 import java.io.DataOutput;
-import java.io.File;                              // deprecated
+import java.io.File; // deprecated
 
 import org.apache.hadoop.io.UTF8;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-/** A section of an input file.  Returned by {@link
- * InputFormat#getSplits(JobConf, int)} and passed to
- * {@link InputFormat#getRecordReader(InputSplit,JobConf,Reporter)}. */
+/**
+ * A section of an input file. Returned by
+ * {@link InputFormat#getSplits(JobConf, int)} and passed to
+ * {@link InputFormat#getRecordReader(InputSplit,JobConf,Reporter)}.
+ */
 public class FileSplit implements InputSplit {
-  private Path file;
-  private long start;
-  private long length;
-  private String[] hosts;
-  
-  FileSplit() {}
+    private Path file;
+    private long start;
+    private long length;
+    private String[] hosts;
 
-  /** Constructs a split.
-   * @deprecated
-   * @param file the file name
-   * @param start the position of the first byte in the file to process
-   * @param length the number of bytes in the file to process
-   */
-  @Deprecated
-  public FileSplit(Path file, long start, long length, JobConf conf) {
-    this(file, start, length, (String[])null);
-  }
-
-  /** Constructs a split with host information
-   *
-   * @param file the file name
-   * @param start the position of the first byte in the file to process
-   * @param length the number of bytes in the file to process
-   * @param hosts the list of hosts containing the block, possibly null
-   */
-  public FileSplit(Path file, long start, long length, String[] hosts) {
-    this.file = file;
-    this.start = start;
-    this.length = length;
-    this.hosts = hosts;
-  }
-
-  /** The file containing this split's data. */
-  public Path getPath() { return file; }
-  
-  /** The position of the first byte in the file to process. */
-  public long getStart() { return start; }
-  
-  /** The number of bytes in the file to process. */
-  public long getLength() { return length; }
-
-  public String toString() { return file + ":" + start + "+" + length; }
-
-  ////////////////////////////////////////////
-  // Writable methods
-  ////////////////////////////////////////////
-
-  public void write(DataOutput out) throws IOException {
-    UTF8.writeString(out, file.toString());
-    out.writeLong(start);
-    out.writeLong(length);
-  }
-  public void readFields(DataInput in) throws IOException {
-    file = new Path(UTF8.readString(in));
-    start = in.readLong();
-    length = in.readLong();
-    hosts = null;
-  }
-
-  public String[] getLocations() throws IOException {
-    if (this.hosts == null) {
-      return new String[]{};
-    } else {
-      return this.hosts;
+    FileSplit() {
     }
-  }
-  
+
+    /**
+     * Constructs a split.
+     * 
+     * @deprecated
+     * @param file
+     *            the file name
+     * @param start
+     *            the position of the first byte in the file to process
+     * @param length
+     *            the number of bytes in the file to process
+     */
+    @Deprecated
+    public FileSplit(Path file, long start, long length, JobConf conf) {
+        this(file, start, length, (String[]) null);
+    }
+
+    /**
+     * Constructs a split with host information
+     * 
+     * @param file
+     *            the file name
+     * @param start
+     *            the position of the first byte in the file to process
+     * @param length
+     *            the number of bytes in the file to process
+     * @param hosts
+     *            the list of hosts containing the block, possibly null
+     */
+    public FileSplit(Path file, long start, long length, String[] hosts) {
+        this.file = file;
+        this.start = start;
+        this.length = length;
+        this.hosts = hosts;
+    }
+
+    /** The file containing this split's data. */
+    public Path getPath() {
+        return file;
+    }
+
+    /** The position of the first byte in the file to process. */
+    public long getStart() {
+        return start;
+    }
+
+    /** The number of bytes in the file to process. */
+    public long getLength() {
+        return length;
+    }
+
+    public String toString() {
+        return file + ":" + start + "+" + length;
+    }
+
+    // //////////////////////////////////////////
+    // Writable methods
+    // //////////////////////////////////////////
+
+    public void write(DataOutput out) throws IOException {
+        UTF8.writeString(out, file.toString());
+        out.writeLong(start);
+        out.writeLong(length);
+    }
+
+    public void readFields(DataInput in) throws IOException {
+        file = new Path(UTF8.readString(in));
+        start = in.readLong();
+        length = in.readLong();
+        hosts = null;
+    }
+
+    public String[] getLocations() throws IOException {
+        if (this.hosts == null) {
+            return new String[] {};
+        } else {
+            return this.hosts;
+        }
+    }
+
 }

@@ -32,70 +32,77 @@ import org.apache.hadoop.conf.Configuration;
  * can take this into account in its calculations.
  */
 public abstract class TaskSelector implements Configurable {
-  protected Configuration conf;
-  protected TaskTrackerManager taskTrackerManager;
-  
-  public Configuration getConf() {
-    return conf;
-  }
+    protected Configuration conf;
+    protected TaskTrackerManager taskTrackerManager;
 
-  public void setConf(Configuration conf) {
-    this.conf = conf;
-  }
+    public Configuration getConf() {
+        return conf;
+    }
 
-  public synchronized void setTaskTrackerManager(
-      TaskTrackerManager taskTrackerManager) {
-    this.taskTrackerManager = taskTrackerManager;
-  }
-  
-  /**
-   * Lifecycle method to allow the TaskSelector to start any work in separate
-   * threads.
-   */
-  public void start() throws IOException {
-    // do nothing
-  }
-  
-  /**
-   * Lifecycle method to allow the TaskSelector to stop any work it is doing.
-   */
-  public void terminate() throws IOException {
-    // do nothing
-  }
-  
-  /**
-   * How many speculative map tasks does the given job want to launch?
-   * @param job The job to count speculative maps for
-   * @return Number of speculative maps that can be launched for job
-   */
-  public abstract int neededSpeculativeMaps(JobInProgress job);
+    public void setConf(Configuration conf) {
+        this.conf = conf;
+    }
 
-  /**
-   * How many speculative reduce tasks does the given job want to launch?
-   * @param job The job to count speculative reduces for
-   * @return Number of speculative reduces that can be launched for job
-   */
-  public abstract int neededSpeculativeReduces(JobInProgress job);
-  
-  /**
-   * Choose a map task to run from the given job on the given TaskTracker.
-   * @param taskTracker {@link TaskTrackerStatus} of machine to run on
-   * @param job Job to select a task for
-   * @return A {@link Task} to run on the machine, or <code>null</code> if
-   *         no map should be launched from this job on the task tracker.
-   * @throws IOException 
-   */
-  public abstract Task obtainNewMapTask(TaskTrackerStatus taskTracker,
-      JobInProgress job) throws IOException;
+    public synchronized void setTaskTrackerManager(TaskTrackerManager taskTrackerManager) {
+        this.taskTrackerManager = taskTrackerManager;
+    }
 
-  /**
-   * Choose a reduce task to run from the given job on the given TaskTracker.
-   * @param taskTracker {@link TaskTrackerStatus} of machine to run on
-   * @param job Job to select a task for
-   * @return A {@link Task} to run on the machine, or <code>null</code> if
-   *         no reduce should be launched from this job on the task tracker.
-   * @throws IOException 
-   */
-  public abstract Task obtainNewReduceTask(TaskTrackerStatus taskTracker,
-      JobInProgress job) throws IOException;
+    /**
+     * Lifecycle method to allow the TaskSelector to start any work in separate
+     * threads.
+     */
+    public void start() throws IOException {
+        // do nothing
+    }
+
+    /**
+     * Lifecycle method to allow the TaskSelector to stop any work it is doing.
+     */
+    public void terminate() throws IOException {
+        // do nothing
+    }
+
+    /**
+     * How many speculative map tasks does the given job want to launch?
+     * 
+     * @param job
+     *            The job to count speculative maps for
+     * @return Number of speculative maps that can be launched for job
+     */
+    public abstract int neededSpeculativeMaps(JobInProgress job);
+
+    /**
+     * How many speculative reduce tasks does the given job want to launch?
+     * 
+     * @param job
+     *            The job to count speculative reduces for
+     * @return Number of speculative reduces that can be launched for job
+     */
+    public abstract int neededSpeculativeReduces(JobInProgress job);
+
+    /**
+     * Choose a map task to run from the given job on the given TaskTracker.
+     * 
+     * @param taskTracker
+     *            {@link TaskTrackerStatus} of machine to run on
+     * @param job
+     *            Job to select a task for
+     * @return A {@link Task} to run on the machine, or <code>null</code> if no
+     *         map should be launched from this job on the task tracker.
+     * @throws IOException
+     */
+    public abstract Task obtainNewMapTask(TaskTrackerStatus taskTracker, JobInProgress job) throws IOException;
+
+    /**
+     * Choose a reduce task to run from the given job on the given TaskTracker.
+     * 
+     * @param taskTracker
+     *            {@link TaskTrackerStatus} of machine to run on
+     * @param job
+     *            Job to select a task for
+     * @return A {@link Task} to run on the machine, or <code>null</code> if no
+     *         reduce should be launched from this job on the task tracker.
+     * @throws IOException
+     */
+    public abstract Task obtainNewReduceTask(TaskTrackerStatus taskTracker, JobInProgress job) throws IOException;
 }

@@ -23,57 +23,70 @@ import org.apache.hadoop.conf.Configurable;
 /**
  * A tool interface that supports handling of generic command-line options.
  * 
- * <p><code>Tool</code>, is the standard for any Map-Reduce tool/application. 
+ * <p>
+ * <code>Tool</code>, is the standard for any Map-Reduce tool/application. 
  * The tool/application should delegate the handling of 
- * <a href="{@docRoot}/org/apache/hadoop/util/GenericOptionsParser.html#GenericOptions">
- * standard command-line options</a> to {@link ToolRunner#run(Tool, String[])} 
- * and only handle its custom arguments.</p>
+ * <a href="{@docRoot}, is the standard for any Map-Reduce tool/application. The
+ * tool/application should delegate the handling of <a href="{@docRoot}
+ * /org/apache/hadoop/util/GenericOptionsParser.html#GenericOptions"> standard
+ * command-line options</a> to {@link ToolRunner#run(Tool, String[])} and only
+ * handle its custom arguments.
+ * </p>
  * 
- * <p>Here is how a typical <code>Tool</code> is implemented:</p>
- * <p><blockquote><pre>
- *     public class MyApp extends Configured implements Tool {
- *     
- *       public int run(String[] args) throws Exception {
- *         // <code>Configuration</code> processed by <code>ToolRunner</code>
+ * <p>
+ * Here is how a typical <code>Tool</code> is implemented:
+ * </p>
+ * <p>
+ * <blockquote>
+ * 
+ * <pre>
+ * public class MyApp extends Configured implements Tool {
+ * 
+ *     public int run(String[] args) throws Exception {
+ *         // &lt;code&gt;Configuration&lt;/code&gt; processed by &lt;code&gt;ToolRunner&lt;/code&gt;
  *         Configuration conf = getConf();
- *         
- *         // Create a JobConf using the processed <code>conf</code>
+ * 
+ *         // Create a JobConf using the processed &lt;code&gt;conf&lt;/code&gt;
  *         JobConf job = new JobConf(conf, MyApp.class);
- *         
+ * 
  *         // Process custom command-line options
  *         Path in = new Path(args[1]);
  *         Path out = new Path(args[2]);
- *         
- *         // Specify various job-specific parameters     
- *         job.setJobName("my-app");
+ * 
+ *         // Specify various job-specific parameters
+ *         job.setJobName(&quot;my-app&quot;);
  *         job.setInputPath(in);
  *         job.setOutputPath(out);
  *         job.setMapperClass(MyApp.MyMapper.class);
  *         job.setReducerClass(MyApp.MyReducer.class);
- *
+ * 
  *         // Submit the job, then poll for progress until the job is complete
  *         JobClient.runJob(job);
- *       }
- *       
- *       public static void main(String[] args) throws Exception {
- *         // Let <code>ToolRunner</code> handle generic command-line options 
- *         int res = ToolRunner.run(new Configuration(), new Sort(), args);
- *         
- *         System.exit(res);
- *       }
  *     }
- * </pre></blockquote></p>
+ * 
+ *     public static void main(String[] args) throws Exception {
+ *         // Let &lt;code&gt;ToolRunner&lt;/code&gt; handle generic command-line options
+ *         int res = ToolRunner.run(new Configuration(), new Sort(), args);
+ * 
+ *         System.exit(res);
+ *     }
+ * }
+ * </pre>
+ * 
+ * </blockquote>
+ * </p>
  * 
  * @see GenericOptionsParser
  * @see ToolRunner
  */
 public interface Tool extends Configurable {
-  /**
-   * Execute the command with the given arguments.
-   * 
-   * @param args command specific arguments.
-   * @return exit code.
-   * @throws Exception
-   */
-  int run(String [] args) throws Exception;
+    /**
+     * Execute the command with the given arguments.
+     * 
+     * @param args
+     *            command specific arguments.
+     * @return exit code.
+     * @throws Exception
+     */
+    int run(String[] args) throws Exception;
 }

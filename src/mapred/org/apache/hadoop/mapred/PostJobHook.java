@@ -21,12 +21,15 @@ package org.apache.hadoop.mapred;
  * PostJobHook is a hook which is called after job completed.
  */
 public interface PostJobHook {
-  /**
-   * Run the Post-Job Hook
-   * 
-   * @param jobId JobID of current job
-   * @param job The current configuration of the job
-   * @param runningJob RunningJob object which keep information of a running job
-   */
-  public void run(JobID jobId, JobConf job, RunningJob runningJob) throws Exception;
+    /**
+     * Run the Post-Job Hook
+     * 
+     * @param jobId
+     *            JobID of current job
+     * @param job
+     *            The current configuration of the job
+     * @param runningJob
+     *            RunningJob object which keep information of a running job
+     */
+    public void run(JobID jobId, JobConf job, RunningJob runningJob) throws Exception;
 }

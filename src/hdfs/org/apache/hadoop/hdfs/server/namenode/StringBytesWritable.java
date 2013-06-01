@@ -24,42 +24,41 @@ import org.apache.hadoop.io.WritableComparator;
 
 class StringBytesWritable extends BytesWritable {
 
-  StringBytesWritable() {
-    super();
-  }
-
-  /*StringBytesWritable(byte[] bytes) {
-    super(bytes);
-  }*/
-
-  /**
-   * Create a BytesWritable by extracting bytes from the input string.
-   */
-  StringBytesWritable(String str) throws IOException {
-    super(str.getBytes("UTF8"));
-  }
-
-  /**
-   * Convert BytesWritable to a String.
-   */
-  String getString() throws IOException {
-    return new String(getBytes(),"UTF8");
-  }
-
-  /** {@inheritDoc} */
-  public String toString() {
-    try {
-      return getString();
-    } catch (IOException e) {
-      throw (RuntimeException)new RuntimeException().initCause(e);
+    StringBytesWritable() {
+        super();
     }
-  }
 
-  /**
-   * Compare to a String.
-   */
-  boolean equals(String str) throws IOException {
-    return WritableComparator.compareBytes(getBytes(), 0, getLength(), 
-                                   str.getBytes("UTF8"), 0, str.length()) == 0;
-  }
+    /*
+     * StringBytesWritable(byte[] bytes) { super(bytes); }
+     */
+
+    /**
+     * Create a BytesWritable by extracting bytes from the input string.
+     */
+    StringBytesWritable(String str) throws IOException {
+        super(str.getBytes("UTF8"));
+    }
+
+    /**
+     * Convert BytesWritable to a String.
+     */
+    String getString() throws IOException {
+        return new String(getBytes(), "UTF8");
+    }
+
+    /** {@inheritDoc} */
+    public String toString() {
+        try {
+            return getString();
+        } catch (IOException e) {
+            throw (RuntimeException) new RuntimeException().initCause(e);
+        }
+    }
+
+    /**
+     * Compare to a String.
+     */
+    boolean equals(String str) throws IOException {
+        return WritableComparator.compareBytes(getBytes(), 0, getLength(), str.getBytes("UTF8"), 0, str.length()) == 0;
+    }
 }

@@ -18,10 +18,12 @@
 
 package org.apache.hadoop.fs;
 
-/** Thrown for unexpected filesystem errors, presumed to reflect disk errors
- * in the native filesystem. */
+/**
+ * Thrown for unexpected filesystem errors, presumed to reflect disk errors in
+ * the native filesystem.
+ */
 public class FSError extends Error {
-  FSError(Throwable cause) {
-    super(cause);
-  }
+    FSError(Throwable cause) {
+        super(cause);
+    }
 }

@@ -28,6 +28,5 @@ import org.apache.hadoop.conf.Configurable;
  * May implement {@link Configurable} to access configuration parameters.
  */
 public interface WeightAdjuster {
-  public double adjustWeight(JobInProgress job, TaskType taskType,
-      double curWeight);
+    public double adjustWeight(JobInProgress job, TaskType taskType, double curWeight);
 }

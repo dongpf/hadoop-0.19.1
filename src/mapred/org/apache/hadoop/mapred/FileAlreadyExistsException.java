@@ -21,17 +21,16 @@ package org.apache.hadoop.mapred;
 import java.io.IOException;
 
 /**
- * Used when target file already exists for any operation and 
- * is not configured to be overwritten.  
+ * Used when target file already exists for any operation and is not configured
+ * to be overwritten.
  */
-public class FileAlreadyExistsException
-    extends IOException {
+public class FileAlreadyExistsException extends IOException {
 
-  public FileAlreadyExistsException() {
-    super();
-  }
+    public FileAlreadyExistsException() {
+        super();
+    }
 
-  public FileAlreadyExistsException(String msg) {
-    super(msg);
-  }
+    public FileAlreadyExistsException(String msg) {
+        super(msg);
+    }
 }

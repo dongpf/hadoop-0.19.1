@@ -25,57 +25,62 @@ import org.apache.hadoop.conf.Configuration;
 
 /**
  * A pluggable object that manages the load on each {@link TaskTracker}, telling
- * the {@link TaskScheduler} when it can launch new tasks. 
+ * the {@link TaskScheduler} when it can launch new tasks.
  */
 public abstract class LoadManager implements Configurable {
-  protected Configuration conf;
-  protected TaskTrackerManager taskTrackerManager;
-  
-  public Configuration getConf() {
-    return conf;
-  }
+    protected Configuration conf;
+    protected TaskTrackerManager taskTrackerManager;
 
-  public void setConf(Configuration conf) {
-    this.conf = conf;
-  }
+    public Configuration getConf() {
+        return conf;
+    }
 
-  public synchronized void setTaskTrackerManager(
-      TaskTrackerManager taskTrackerManager) {
-    this.taskTrackerManager = taskTrackerManager;
-  }
-  
-  /**
-   * Lifecycle method to allow the LoadManager to start any work in separate
-   * threads.
-   */
-  public void start() throws IOException {
-    // do nothing
-  }
-  
-  /**
-   * Lifecycle method to allow the LoadManager to stop any work it is doing.
-   */
-  public void terminate() throws IOException {
-    // do nothing
-  }
-  
-  /**
-   * Can a given {@link TaskTracker} run another map task?
-   * @param tracker The machine we wish to run a new map on
-   * @param totalRunnableMaps Set of running jobs in the cluster
-   * @param totalMapSlots The total number of map slots in the cluster
-   * @return true if another map can be launched on <code>tracker</code>
-   */
-  public abstract boolean canAssignMap(TaskTrackerStatus tracker,
-      int totalRunnableMaps, int totalMapSlots);
+    public void setConf(Configuration conf) {
+        this.conf = conf;
+    }
 
-  /**
-   * Can a given {@link TaskTracker} run another reduce task?
-   * @param tracker The machine we wish to run a new map on
-   * @param totalRunnableReduces Set of running jobs in the cluster
-   * @param totalReduceSlots The total number of reduce slots in the cluster
-   * @return true if another reduce can be launched on <code>tracker</code>
-   */
-  public abstract boolean canAssignReduce(TaskTrackerStatus tracker,
-      int totalRunnableReduces, int totalReduceSlots);
+    public synchronized void setTaskTrackerManager(TaskTrackerManager taskTrackerManager) {
+        this.taskTrackerManager = taskTrackerManager;
+    }
+
+    /**
+     * Lifecycle method to allow the LoadManager to start any work in separate
+     * threads.
+     */
+    public void start() throws IOException {
+        // do nothing
+    }
+
+    /**
+     * Lifecycle method to allow the LoadManager to stop any work it is doing.
+     */
+    public void terminate() throws IOException {
+        // do nothing
+    }
+
+    /**
+     * Can a given {@link TaskTracker} run another map task?
+     * 
+     * @param tracker
+     *            The machine we wish to run a new map on
+     * @param totalRunnableMaps
+     *            Set of running jobs in the cluster
+     * @param totalMapSlots
+     *            The total number of map slots in the cluster
+     * @return true if another map can be launched on <code>tracker</code>
+     */
+    public abstract boolean canAssignMap(TaskTrackerStatus tracker, int totalRunnableMaps, int totalMapSlots);
+
+    /**
+     * Can a given {@link TaskTracker} run another reduce task?
+     * 
+     * @param tracker
+     *            The machine we wish to run a new map on
+     * @param totalRunnableReduces
+     *            Set of running jobs in the cluster
+     * @param totalReduceSlots
+     *            The total number of reduce slots in the cluster
+     * @return true if another reduce can be launched on <code>tracker</code>
+     */
+    public abstract boolean canAssignReduce(TaskTrackerStatus tracker, int totalRunnableReduces, int totalReduceSlots);
 }

@@ -44,78 +44,76 @@ import org.apache.hadoop.mapred.Reporter;
  */
 public abstract class DataJoinMapperBase extends JobBase {
 
-  protected String inputFile = null;
+    protected String inputFile = null;
 
-  protected JobConf job = null;
+    protected JobConf job = null;
 
-  protected Text inputTag = null;
+    protected Text inputTag = null;
 
-  protected Reporter reporter = null;
+    protected Reporter reporter = null;
 
-  public void configure(JobConf job) {
-    super.configure(job);
-    this.job = job;
-    this.inputFile = job.get("map.input.file");
-    this.inputTag = generateInputTag(this.inputFile);
-  }
-
-  /**
-   * Determine the source tag based on the input file name.
-   * 
-   * @param inputFile
-   * @return the source tag computed from the given file name.
-   */
-  protected abstract Text generateInputTag(String inputFile);
-
-  /**
-   * Generate a tagged map output value. The user code can also perform
-   * projection/filtering. If it decides to discard the input record when
-   * certain conditions are met,it can simply return a null.
-   * 
-   * @param value
-   * @return an object of TaggedMapOutput computed from the given value.
-   */
-  protected abstract TaggedMapOutput generateTaggedMapOutput(Object value);
-
-  /**
-   * Generate a map output key. The user code can compute the key
-   * programmatically, not just selecting the values of some fields. In this
-   * sense, it is more general than the joining capabilities of SQL.
-   * 
-   * @param aRecord
-   * @return the group key for the given record
-   */
-  protected abstract Text generateGroupKey(TaggedMapOutput aRecord);
-
-  public void map(Object key, Object value,
-                  OutputCollector output, Reporter reporter) throws IOException {
-    if (this.reporter == null) {
-      this.reporter = reporter;
+    public void configure(JobConf job) {
+        super.configure(job);
+        this.job = job;
+        this.inputFile = job.get("map.input.file");
+        this.inputTag = generateInputTag(this.inputFile);
     }
-    addLongValue("totalCount", 1);
-    TaggedMapOutput aRecord = generateTaggedMapOutput(value);
-    if (aRecord == null) {
-      addLongValue("discardedCount", 1);
-      return;
-    }
-    Text groupKey = generateGroupKey(aRecord);
-    if (groupKey == null) {
-      addLongValue("nullGroupKeyCount", 1);
-      return;
-    }
-    output.collect(groupKey, aRecord);
-    addLongValue("collectedCount", 1);
-  }
 
-  public void close() throws IOException {
-    if (this.reporter != null) {
-      this.reporter.setStatus(super.getReport());
+    /**
+     * Determine the source tag based on the input file name.
+     * 
+     * @param inputFile
+     * @return the source tag computed from the given file name.
+     */
+    protected abstract Text generateInputTag(String inputFile);
+
+    /**
+     * Generate a tagged map output value. The user code can also perform
+     * projection/filtering. If it decides to discard the input record when
+     * certain conditions are met,it can simply return a null.
+     * 
+     * @param value
+     * @return an object of TaggedMapOutput computed from the given value.
+     */
+    protected abstract TaggedMapOutput generateTaggedMapOutput(Object value);
+
+    /**
+     * Generate a map output key. The user code can compute the key
+     * programmatically, not just selecting the values of some fields. In this
+     * sense, it is more general than the joining capabilities of SQL.
+     * 
+     * @param aRecord
+     * @return the group key for the given record
+     */
+    protected abstract Text generateGroupKey(TaggedMapOutput aRecord);
+
+    public void map(Object key, Object value, OutputCollector output, Reporter reporter) throws IOException {
+        if (this.reporter == null) {
+            this.reporter = reporter;
+        }
+        addLongValue("totalCount", 1);
+        TaggedMapOutput aRecord = generateTaggedMapOutput(value);
+        if (aRecord == null) {
+            addLongValue("discardedCount", 1);
+            return;
+        }
+        Text groupKey = generateGroupKey(aRecord);
+        if (groupKey == null) {
+            addLongValue("nullGroupKeyCount", 1);
+            return;
+        }
+        output.collect(groupKey, aRecord);
+        addLongValue("collectedCount", 1);
     }
-  }
 
-  public void reduce(Object arg0, Iterator arg1,
-                     OutputCollector arg2, Reporter arg3) throws IOException {
-    // TODO Auto-generated method stub
+    public void close() throws IOException {
+        if (this.reporter != null) {
+            this.reporter.setStatus(super.getReport());
+        }
+    }
 
-  }
+    public void reduce(Object arg0, Iterator arg1, OutputCollector arg2, Reporter arg3) throws IOException {
+        // TODO Auto-generated method stub
+
+    }
 }

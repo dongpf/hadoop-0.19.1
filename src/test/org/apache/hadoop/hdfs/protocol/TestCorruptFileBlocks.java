@@ -28,51 +28,48 @@ import org.apache.hadoop.io.DataOutputBuffer;
 
 public class TestCorruptFileBlocks extends TestCase {
 
-  /**
-   * Serialize the cfb given, deserialize and return the result.
-   */
-  static CorruptFileBlocks serializeAndDeserialize(CorruptFileBlocks cfb) 
-    throws IOException {
-    DataOutputBuffer buf = new DataOutputBuffer();
-    cfb.write(buf);
+    /**
+     * Serialize the cfb given, deserialize and return the result.
+     */
+    static CorruptFileBlocks serializeAndDeserialize(CorruptFileBlocks cfb) throws IOException {
+        DataOutputBuffer buf = new DataOutputBuffer();
+        cfb.write(buf);
 
-    byte[] data = buf.getData();
-    DataInputStream input = new DataInputStream(new ByteArrayInputStream(data));
+        byte[] data = buf.getData();
+        DataInputStream input = new DataInputStream(new ByteArrayInputStream(data));
 
-    CorruptFileBlocks result = new CorruptFileBlocks();
-    result.readFields(input);
+        CorruptFileBlocks result = new CorruptFileBlocks();
+        result.readFields(input);
 
-    return result;
-  }
-
-  /**
-   * Check whether cfb is unchanged after serialization and deserialization.
-   */
-  static boolean checkSerialize(CorruptFileBlocks cfb)
-    throws IOException {
-    return cfb.equals(serializeAndDeserialize(cfb));
-  }
-
-  /**
-   * Test serialization and deserializaton of CorruptFileBlocks.
-   */
-  public void testSerialization() throws IOException {
-    {
-      CorruptFileBlocks cfb = new CorruptFileBlocks();
-      assertTrue("cannot serialize empty CFB", checkSerialize(cfb));
+        return result;
     }
 
-    {
-      String[] files = new String[0];
-      CorruptFileBlocks cfb = new CorruptFileBlocks(files, "");
-      assertTrue("cannot serialize CFB with empty cookie", checkSerialize(cfb));
+    /**
+     * Check whether cfb is unchanged after serialization and deserialization.
+     */
+    static boolean checkSerialize(CorruptFileBlocks cfb) throws IOException {
+        return cfb.equals(serializeAndDeserialize(cfb));
     }
 
-    {
-      String[] files = { "a", "bb", "ccc" };
-      CorruptFileBlocks cfb = new CorruptFileBlocks(files, "test");
-      assertTrue("cannot serialize CFB", checkSerialize(cfb));
+    /**
+     * Test serialization and deserializaton of CorruptFileBlocks.
+     */
+    public void testSerialization() throws IOException {
+        {
+            CorruptFileBlocks cfb = new CorruptFileBlocks();
+            assertTrue("cannot serialize empty CFB", checkSerialize(cfb));
+        }
+
+        {
+            String[] files = new String[0];
+            CorruptFileBlocks cfb = new CorruptFileBlocks(files, "");
+            assertTrue("cannot serialize CFB with empty cookie", checkSerialize(cfb));
+        }
+
+        {
+            String[] files = { "a", "bb", "ccc" };
+            CorruptFileBlocks cfb = new CorruptFileBlocks(files, "test");
+            assertTrue("cannot serialize CFB", checkSerialize(cfb));
+        }
     }
-  }
 }
-

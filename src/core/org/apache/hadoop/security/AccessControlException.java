@@ -20,24 +20,27 @@ package org.apache.hadoop.security;
 /**
  * An exception class for access control related issues.
  */
-public class AccessControlException 
-    extends org.apache.hadoop.fs.permission.AccessControlException {
+public class AccessControlException extends org.apache.hadoop.fs.permission.AccessControlException {
 
-  //Required by {@link java.io.Serializable}.
-  private static final long serialVersionUID = 1L;
+    // Required by {@link java.io.Serializable}.
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Default constructor is needed for unwrapping from 
-   * {@link org.apache.hadoop.ipc.RemoteException}.
-   */
-  public AccessControlException() {
-    super("Permission denied.");
-  }
+    /**
+     * Default constructor is needed for unwrapping from
+     * {@link org.apache.hadoop.ipc.RemoteException}.
+     */
+    public AccessControlException() {
+        super("Permission denied.");
+    }
 
-  /**
-   * Constructs an {@link AccessControlException}
-   * with the specified detail message.
-   * @param s the detail message.
-   */
-  public AccessControlException(String s) {super(s);}
+    /**
+     * Constructs an {@link AccessControlException} with the specified detail
+     * message.
+     * 
+     * @param s
+     *            the detail message.
+     */
+    public AccessControlException(String s) {
+        super(s);
+    }
 }

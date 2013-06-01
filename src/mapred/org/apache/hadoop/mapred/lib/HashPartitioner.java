@@ -24,12 +24,12 @@ import org.apache.hadoop.mapred.JobConf;
 /** Partition keys by their {@link Object#hashCode()}. */
 public class HashPartitioner<K2, V2> implements Partitioner<K2, V2> {
 
-  public void configure(JobConf job) {}
+    public void configure(JobConf job) {
+    }
 
-  /** Use {@link Object#hashCode()} to partition. */
-  public int getPartition(K2 key, V2 value,
-                          int numReduceTasks) {
-    return (key.hashCode() & Integer.MAX_VALUE) % numReduceTasks;
-  }
+    /** Use {@link Object#hashCode()} to partition. */
+    public int getPartition(K2 key, V2 value, int numReduceTasks) {
+        return (key.hashCode() & Integer.MAX_VALUE) % numReduceTasks;
+    }
 
 }

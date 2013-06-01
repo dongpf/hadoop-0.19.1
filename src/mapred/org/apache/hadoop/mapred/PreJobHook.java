@@ -25,40 +25,43 @@ import org.apache.hadoop.fs.Path;
  * PreJobHook is a hook which is called before job submitted.
  */
 public interface PreJobHook {
-  public enum JobFileType {
-    JOB_JAR, LIB_JAR, TMP_FILE, TMP_ARCHIVE
-  }
-  
-  public static class JobFileMD5 {
-    JobFileType type;
-    Path file;
-    String md5;
-    
-    JobFileMD5(JobFileType type, Path file, String md5) {
-      this.type = type;
-      this.file = file;
-      this.md5 = md5;
+    public enum JobFileType {
+        JOB_JAR, LIB_JAR, TMP_FILE, TMP_ARCHIVE
     }
-    
-    public JobFileType getType() {
-      return type;
+
+    public static class JobFileMD5 {
+        JobFileType type;
+        Path file;
+        String md5;
+
+        JobFileMD5(JobFileType type, Path file, String md5) {
+            this.type = type;
+            this.file = file;
+            this.md5 = md5;
+        }
+
+        public JobFileType getType() {
+            return type;
+        }
+
+        public Path getFile() {
+            return file;
+        }
+
+        public String getMd5() {
+            return md5;
+        }
     }
-    
-    public Path getFile() {
-      return file;
-    }
-    
-    public String getMd5() {
-      return md5;
-    }
-  }
-  
-  /**
-   * Run the Pre-Job Hook
-   * 
-   * @param jobId JobID of current job
-   * @param job The current configuration of the job
-   * @param md5s A list of md5 strings for all the files of current job
-   */
-  public void run(JobID jobId, JobConf job, List<JobFileMD5> md5s) throws Exception;
+
+    /**
+     * Run the Pre-Job Hook
+     * 
+     * @param jobId
+     *            JobID of current job
+     * @param job
+     *            The current configuration of the job
+     * @param md5s
+     *            A list of md5 strings for all the files of current job
+     */
+    public void run(JobID jobId, JobConf job, List<JobFileMD5> md5s) throws Exception;
 }

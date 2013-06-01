@@ -29,71 +29,70 @@ import junit.framework.TestCase;
 
 /** Unit tests for Writable. */
 public class TestWritable extends TestCase {
-  public TestWritable(String name) { super(name); }
-
-  /** Example class used in test cases below. */
-  public static class SimpleWritable implements Writable {
-    private static final Random RANDOM = new Random();
-
-    int state = RANDOM.nextInt();
-
-    public void write(DataOutput out) throws IOException {
-      out.writeInt(state);
+    public TestWritable(String name) {
+        super(name);
     }
 
-    public void readFields(DataInput in) throws IOException {
-      this.state = in.readInt();
+    /** Example class used in test cases below. */
+    public static class SimpleWritable implements Writable {
+        private static final Random RANDOM = new Random();
+
+        int state = RANDOM.nextInt();
+
+        public void write(DataOutput out) throws IOException {
+            out.writeInt(state);
+        }
+
+        public void readFields(DataInput in) throws IOException {
+            this.state = in.readInt();
+        }
+
+        public static SimpleWritable read(DataInput in) throws IOException {
+            SimpleWritable result = new SimpleWritable();
+            result.readFields(in);
+            return result;
+        }
+
+        /** Required by test code, below. */
+        public boolean equals(Object o) {
+            if (!(o instanceof SimpleWritable))
+                return false;
+            SimpleWritable other = (SimpleWritable) o;
+            return this.state == other.state;
+        }
     }
 
-    public static SimpleWritable read(DataInput in) throws IOException {
-      SimpleWritable result = new SimpleWritable();
-      result.readFields(in);
-      return result;
+    /** Test 1: Check that SimpleWritable. */
+    public void testSimpleWritable() throws Exception {
+        testWritable(new SimpleWritable());
     }
 
-    /** Required by test code, below. */
-    public boolean equals(Object o) {
-      if (!(o instanceof SimpleWritable))
-        return false;
-      SimpleWritable other = (SimpleWritable)o;
-      return this.state == other.state;
+    public void testByteWritable() throws Exception {
+        testWritable(new ByteWritable((byte) 128));
     }
-  }
 
-  /** Test 1: Check that SimpleWritable. */
-  public void testSimpleWritable() throws Exception {
-    testWritable(new SimpleWritable());
-  }
-  
-  public void testByteWritable() throws Exception {
-    testWritable(new ByteWritable((byte)128));
-  }
+    public void testDoubleWritable() throws Exception {
+        testWritable(new DoubleWritable(1.0));
+    }
 
-  public void testDoubleWritable() throws Exception {
-    testWritable(new DoubleWritable(1.0));
-  }
+    /** Utility method for testing writables. */
+    public static Writable testWritable(Writable before) throws Exception {
+        return testWritable(before, null);
+    }
 
-  /** Utility method for testing writables. */
-  public static Writable testWritable(Writable before) 
-  	throws Exception {
-  	return testWritable(before, null);
-  }
-  
-  /** Utility method for testing writables. */
-  public static Writable testWritable(Writable before
-  		, Configuration conf) throws Exception {
-    DataOutputBuffer dob = new DataOutputBuffer();
-    before.write(dob);
+    /** Utility method for testing writables. */
+    public static Writable testWritable(Writable before, Configuration conf) throws Exception {
+        DataOutputBuffer dob = new DataOutputBuffer();
+        before.write(dob);
 
-    DataInputBuffer dib = new DataInputBuffer();
-    dib.reset(dob.getData(), dob.getLength());
-    
-    Writable after = (Writable)ReflectionUtils.newInstance(
-    		before.getClass(), conf);
-    after.readFields(dib);
+        DataInputBuffer dib = new DataInputBuffer();
+        dib.reset(dob.getData(), dob.getLength());
 
-    assertEquals(before, after);
-    return after;
-  }
-	
+        Writable after = (Writable) ReflectionUtils.newInstance(before.getClass(), conf);
+        after.readFields(dib);
+
+        assertEquals(before, after);
+        return after;
+    }
+
 }

@@ -20,14 +20,18 @@ package org.apache.hadoop.http;
 import java.util.Map;
 
 /**
- * A container class for javax.servlet.Filter. 
+ * A container class for javax.servlet.Filter.
  */
 public interface FilterContainer {
-  /**
-   * Add a filter to the container.
-   * @param name Filter name
-   * @param classname Filter class name
-   * @param parameters a map from parameter names to initial values
-   */
-  void addFilter(String name, String classname, Map<String, String> parameters);
+    /**
+     * Add a filter to the container.
+     * 
+     * @param name
+     *            Filter name
+     * @param classname
+     *            Filter class name
+     * @param parameters
+     *            a map from parameter names to initial values
+     */
+    void addFilter(String name, String classname, Map<String, String> parameters);
 }

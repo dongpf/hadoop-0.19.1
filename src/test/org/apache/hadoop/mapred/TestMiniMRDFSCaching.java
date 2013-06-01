@@ -30,40 +30,35 @@ import org.apache.hadoop.mapred.MRCaching.TestResult;
  */
 public class TestMiniMRDFSCaching extends TestCase {
 
-  public void testWithDFS() throws IOException {
-    MiniMRCluster mr = null;
-    MiniDFSCluster dfs = null;
-    FileSystem fileSys = null;
-    try {
-      JobConf conf = new JobConf();
-      conf.set("fs.hdfs.impl",
-               "org.apache.hadoop.hdfs.ChecksumDistributedFileSystem");      
-      dfs = new MiniDFSCluster(conf, 1, true, null);
-      fileSys = dfs.getFileSystem();
-      mr = new MiniMRCluster(2, fileSys.getName(), 4);
-      // run the wordcount example with caching
-      TestResult ret = MRCaching.launchMRCache("/testing/wc/input",
-                                            "/testing/wc/output",
-                                            "/cachedir",
-                                            mr.createJobConf(),
-                                            "The quick brown fox\nhas many silly\n"
-                                            + "red fox sox\n");
-      assertTrue("Archives not matching", ret.isOutputOk);
-    } finally {
-      if (fileSys != null) {
-        fileSys.close();
-      }
-      if (dfs != null) {
-        dfs.shutdown();
-      }
-      if (mr != null) {
-        mr.shutdown();
-      }
+    public void testWithDFS() throws IOException {
+        MiniMRCluster mr = null;
+        MiniDFSCluster dfs = null;
+        FileSystem fileSys = null;
+        try {
+            JobConf conf = new JobConf();
+            conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.ChecksumDistributedFileSystem");
+            dfs = new MiniDFSCluster(conf, 1, true, null);
+            fileSys = dfs.getFileSystem();
+            mr = new MiniMRCluster(2, fileSys.getName(), 4);
+            // run the wordcount example with caching
+            TestResult ret = MRCaching.launchMRCache("/testing/wc/input", "/testing/wc/output", "/cachedir",
+                    mr.createJobConf(), "The quick brown fox\nhas many silly\n" + "red fox sox\n");
+            assertTrue("Archives not matching", ret.isOutputOk);
+        } finally {
+            if (fileSys != null) {
+                fileSys.close();
+            }
+            if (dfs != null) {
+                dfs.shutdown();
+            }
+            if (mr != null) {
+                mr.shutdown();
+            }
+        }
     }
-  }
 
-  public static void main(String[] argv) throws Exception {
-    TestMiniMRDFSCaching td = new TestMiniMRDFSCaching();
-    td.testWithDFS();
-  }
+    public static void main(String[] argv) throws Exception {
+        TestMiniMRDFSCaching td = new TestMiniMRDFSCaching();
+        td.testWithDFS();
+    }
 }

@@ -21,5 +21,5 @@ package testjar;
 import org.apache.hadoop.mapred.FileOutputCommitter;
 
 public class CustomOutputCommitter extends FileOutputCommitter {
-  // custom output committer with default implementation
+    // custom output committer with default implementation
 }

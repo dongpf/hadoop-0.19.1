@@ -24,41 +24,42 @@ import junit.framework.TestCase;
 
 /** Unit tests for ArrayWritable */
 public class TestArrayWritable extends TestCase {
-	
-  static class TextArrayWritable extends ArrayWritable {
-    public TextArrayWritable() {
-      super(Text.class);
-    }
-  }
-	
-  public TestArrayWritable(String name) { 
-    super(name); 
-  }
-	
-  /**
-   * If valueClass is undefined, readFields should throw an exception indicating
-   * that the field is null. Otherwise, readFields should succeed.	
-   */
-  public void testThrowUndefinedValueException() throws IOException {
-    // Get a buffer containing a simple text array
-    Text[] elements = {new Text("zero"), new Text("one"), new Text("two")};
-    TextArrayWritable sourceArray = new TextArrayWritable();
-    sourceArray.set(elements);
 
-    // Write it to a normal output buffer
-    DataOutputBuffer out = new DataOutputBuffer();
-    DataInputBuffer in = new DataInputBuffer();
-    sourceArray.write(out);
-
-    // Read the output buffer with TextReadable. Since the valueClass is defined,
-    // this should succeed
-    TextArrayWritable destArray = new TextArrayWritable();
-    in.reset(out.getData(), out.getLength());
-    destArray.readFields(in);
-    Writable[] destElements = destArray.get();
-    assertTrue(destElements.length == elements.length);
-    for (int i = 0; i < elements.length; i++) {
-      assertEquals(destElements[i],elements[i]);
+    static class TextArrayWritable extends ArrayWritable {
+        public TextArrayWritable() {
+            super(Text.class);
+        }
     }
-  }
+
+    public TestArrayWritable(String name) {
+        super(name);
+    }
+
+    /**
+     * If valueClass is undefined, readFields should throw an exception
+     * indicating that the field is null. Otherwise, readFields should succeed.
+     */
+    public void testThrowUndefinedValueException() throws IOException {
+        // Get a buffer containing a simple text array
+        Text[] elements = { new Text("zero"), new Text("one"), new Text("two") };
+        TextArrayWritable sourceArray = new TextArrayWritable();
+        sourceArray.set(elements);
+
+        // Write it to a normal output buffer
+        DataOutputBuffer out = new DataOutputBuffer();
+        DataInputBuffer in = new DataInputBuffer();
+        sourceArray.write(out);
+
+        // Read the output buffer with TextReadable. Since the valueClass is
+        // defined,
+        // this should succeed
+        TextArrayWritable destArray = new TextArrayWritable();
+        in.reset(out.getData(), out.getLength());
+        destArray.readFields(in);
+        Writable[] destElements = destArray.get();
+        assertTrue(destElements.length == elements.length);
+        for (int i = 0; i < elements.length; i++) {
+            assertEquals(destElements[i], elements[i]);
+        }
+    }
 }

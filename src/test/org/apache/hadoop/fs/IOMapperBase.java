@@ -33,99 +33,96 @@ import org.apache.hadoop.mapred.Reporter;
 /**
  * Base mapper class for IO operations.
  * <p>
- * Two abstract method {@link #doIO(Reporter, String, long)} and 
+ * Two abstract method {@link #doIO(Reporter, String, long)} and
  * {@link #collectStats(OutputCollector,String,long,Object)} should be
- * overloaded in derived classes to define the IO operation and the
- * statistics data to be collected by subsequent reducers.
+ * overloaded in derived classes to define the IO operation and the statistics
+ * data to be collected by subsequent reducers.
  * 
  */
-public abstract class IOMapperBase extends Configured
-    implements Mapper<UTF8, LongWritable, UTF8, UTF8> {
-  
-  protected byte[] buffer;
-  protected int bufferSize;
-  protected FileSystem fs;
-  protected String hostName;
+public abstract class IOMapperBase extends Configured implements Mapper<UTF8, LongWritable, UTF8, UTF8> {
 
-  public IOMapperBase(Configuration conf) { 
-    super(conf); 
-    try {
-      fs = FileSystem.get(conf);
-    } catch (Exception e) {
-      throw new RuntimeException("Cannot create file system.", e);
+    protected byte[] buffer;
+    protected int bufferSize;
+    protected FileSystem fs;
+    protected String hostName;
+
+    public IOMapperBase(Configuration conf) {
+        super(conf);
+        try {
+            fs = FileSystem.get(conf);
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot create file system.", e);
+        }
+        bufferSize = conf.getInt("test.io.file.buffer.size", 4096);
+        buffer = new byte[bufferSize];
+        try {
+            hostName = InetAddress.getLocalHost().getHostName();
+        } catch (Exception e) {
+            hostName = "localhost";
+        }
     }
-    bufferSize = conf.getInt("test.io.file.buffer.size", 4096);
-    buffer = new byte[bufferSize];
-    try {
-      hostName = InetAddress.getLocalHost().getHostName();
-    } catch(Exception e) {
-      hostName = "localhost";
+
+    public void configure(JobConf job) {
+        setConf(job);
     }
-  }
 
-  public void configure(JobConf job) {
-    setConf(job);
-  }
+    public void close() throws IOException {
+    }
 
-  public void close() throws IOException {
-  }
-  
-  /**
-   * Perform io operation, usually read or write.
-   * 
-   * @param reporter
-   * @param name file name
-   * @param value offset within the file
-   * @return object that is passed as a parameter to 
-   *          {@link #collectStats(OutputCollector,String,long,Object)}
-   * @throws IOException
-   */
-  abstract Object doIO(Reporter reporter, 
-                       String name, 
-                       long value) throws IOException;
+    /**
+     * Perform io operation, usually read or write.
+     * 
+     * @param reporter
+     * @param name
+     *            file name
+     * @param value
+     *            offset within the file
+     * @return object that is passed as a parameter to
+     *         {@link #collectStats(OutputCollector,String,long,Object)}
+     * @throws IOException
+     */
+    abstract Object doIO(Reporter reporter, String name, long value) throws IOException;
 
-  /**
-   * Collect stat data to be combined by a subsequent reducer.
-   * 
-   * @param output
-   * @param name file name
-   * @param execTime IO execution time
-   * @param doIOReturnValue value returned by {@link #doIO(Reporter,String,long)}
-   * @throws IOException
-   */
-  abstract void collectStats(OutputCollector<UTF8, UTF8> output, 
-                             String name, 
-                             long execTime, 
-                             Object doIOReturnValue) throws IOException;
-  
-  /**
-   * Map file name and offset into statistical data.
-   * <p>
-   * The map task is to get the 
-   * <tt>key</tt>, which contains the file name, and the 
-   * <tt>value</tt>, which is the offset within the file.
-   * 
-   * The parameters are passed to the abstract method 
-   * {@link #doIO(Reporter,String,long)}, which performs the io operation, 
-   * usually read or write data, and then 
-   * {@link #collectStats(OutputCollector,String,long,Object)} 
-   * is called to prepare stat data for a subsequent reducer.
-   */
-  public void map(UTF8 key, 
-                  LongWritable value,
-                  OutputCollector<UTF8, UTF8> output, 
-                  Reporter reporter) throws IOException {
-    String name = key.toString();
-    long longValue = value.get();
-    
-    reporter.setStatus("starting " + name + " ::host = " + hostName);
-    
-    long tStart = System.currentTimeMillis();
-    Object statValue = doIO(reporter, name, longValue);
-    long tEnd = System.currentTimeMillis();
-    long execTime = tEnd - tStart;
-    collectStats(output, name, execTime, statValue);
-    
-    reporter.setStatus("finished " + name + " ::host = " + hostName);
-  }
+    /**
+     * Collect stat data to be combined by a subsequent reducer.
+     * 
+     * @param output
+     * @param name
+     *            file name
+     * @param execTime
+     *            IO execution time
+     * @param doIOReturnValue
+     *            value returned by {@link #doIO(Reporter,String,long)}
+     * @throws IOException
+     */
+    abstract void collectStats(OutputCollector<UTF8, UTF8> output, String name, long execTime, Object doIOReturnValue)
+            throws IOException;
+
+    /**
+     * Map file name and offset into statistical data.
+     * <p>
+     * The map task is to get the <tt>key</tt>, which contains the file name,
+     * and the <tt>value</tt>, which is the offset within the file.
+     * 
+     * The parameters are passed to the abstract method
+     * {@link #doIO(Reporter,String,long)}, which performs the io operation,
+     * usually read or write data, and then
+     * {@link #collectStats(OutputCollector,String,long,Object)} is called to
+     * prepare stat data for a subsequent reducer.
+     */
+    public void map(UTF8 key, LongWritable value, OutputCollector<UTF8, UTF8> output, Reporter reporter)
+            throws IOException {
+        String name = key.toString();
+        long longValue = value.get();
+
+        reporter.setStatus("starting " + name + " ::host = " + hostName);
+
+        long tStart = System.currentTimeMillis();
+        Object statValue = doIO(reporter, name, longValue);
+        long tEnd = System.currentTimeMillis();
+        long execTime = tEnd - tStart;
+        collectStats(output, name, execTime, statValue);
+
+        reporter.setStatus("finished " + name + " ::host = " + hostName);
+    }
 }

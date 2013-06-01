@@ -22,45 +22,45 @@ import java.io.IOException;
 
 import org.apache.hadoop.record.RecordOutput;
 
-/** 
- * Represents typeID for vector. 
+/**
+ * Represents typeID for vector.
  */
 public class VectorTypeID extends TypeID {
-  private TypeID typeIDElement; 
-  
-  public VectorTypeID(TypeID typeIDElement) {
-    super(RIOType.VECTOR);
-    this.typeIDElement = typeIDElement;
-  }
-  
-  public TypeID getElementTypeID() {
-    return this.typeIDElement;
-  }
-  
-  void write(RecordOutput rout, String tag) throws IOException {
-    rout.writeByte(typeVal, tag);
-    typeIDElement.write(rout, tag);
-  }
-  
-  /**
-   * Two vector typeIDs are equal if their constituent elements have the 
-   * same type
-   */
-  public boolean equals(Object o) {
-    if (this == o) 
-      return true;
-    if (!(o instanceof VectorTypeID))
-      return false;
-    VectorTypeID vti = (VectorTypeID) o;
-    return this.typeIDElement.equals(vti.typeIDElement);
-  }
-  
-  /**
-   * We use a basic hashcode implementation, since this class will likely not
-   * be used as a hashmap key 
-   */
-  public int hashCode() {
-    return 37*17+typeIDElement.hashCode();
-  }
-  
+    private TypeID typeIDElement;
+
+    public VectorTypeID(TypeID typeIDElement) {
+        super(RIOType.VECTOR);
+        this.typeIDElement = typeIDElement;
+    }
+
+    public TypeID getElementTypeID() {
+        return this.typeIDElement;
+    }
+
+    void write(RecordOutput rout, String tag) throws IOException {
+        rout.writeByte(typeVal, tag);
+        typeIDElement.write(rout, tag);
+    }
+
+    /**
+     * Two vector typeIDs are equal if their constituent elements have the same
+     * type
+     */
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof VectorTypeID))
+            return false;
+        VectorTypeID vti = (VectorTypeID) o;
+        return this.typeIDElement.equals(vti.typeIDElement);
+    }
+
+    /**
+     * We use a basic hashcode implementation, since this class will likely not
+     * be used as a hashmap key
+     */
+    public int hashCode() {
+        return 37 * 17 + typeIDElement.hashCode();
+    }
+
 }

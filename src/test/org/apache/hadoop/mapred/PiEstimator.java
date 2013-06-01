@@ -31,177 +31,174 @@ import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 
 /**
- * A Map-reduce program to estimate the value of Pi using monte-carlo
- * method.
+ * A Map-reduce program to estimate the value of Pi using monte-carlo method.
  */
 public class PiEstimator {
-  
-  /**
-   * Mappper class for Pi estimation.
-   */
-  
-  public static class PiMapper extends MapReduceBase
-    implements Mapper<IntWritable, Writable, IntWritable, IntWritable> {
-    
-    static Random r = new Random();
-    
-    /** Map method.
-     * @param key
-     * @param value not-used.
-     * @param out
-     * @param reporter
+
+    /**
+     * Mappper class for Pi estimation.
      */
-    public void map(IntWritable key,
-                    Writable val,
-                    OutputCollector<IntWritable, IntWritable> out,
-                    Reporter reporter) throws IOException {
-      int nSamples = key.get();
-      for(int idx = 0; idx < nSamples; idx++) {
-        double x = r.nextDouble();
-        double y = r.nextDouble();
-        double d = (x-0.5)*(x-0.5)+(y-0.5)*(y-0.5);
-        if (d > 0.25) {
-          out.collect(new IntWritable(0), new IntWritable(1));
-        } else {
-          out.collect(new IntWritable(1), new IntWritable(1));
+
+    public static class PiMapper extends MapReduceBase implements
+            Mapper<IntWritable, Writable, IntWritable, IntWritable> {
+
+        static Random r = new Random();
+
+        /**
+         * Map method.
+         * 
+         * @param key
+         * @param value
+         *            not-used.
+         * @param out
+         * @param reporter
+         */
+        public void map(IntWritable key, Writable val, OutputCollector<IntWritable, IntWritable> out, Reporter reporter)
+                throws IOException {
+            int nSamples = key.get();
+            for (int idx = 0; idx < nSamples; idx++) {
+                double x = r.nextDouble();
+                double y = r.nextDouble();
+                double d = (x - 0.5) * (x - 0.5) + (y - 0.5) * (y - 0.5);
+                if (d > 0.25) {
+                    out.collect(new IntWritable(0), new IntWritable(1));
+                } else {
+                    out.collect(new IntWritable(1), new IntWritable(1));
+                }
+                if (idx % 100 == 1) {
+                    reporter.setStatus("Generated " + idx + " samples.");
+                }
+            }
         }
-        if (idx%100 == 1) {
-          reporter.setStatus("Generated "+idx+" samples.");
+
+        public void close() {
+            // nothing
         }
-      }
     }
-    
-    public void close() {
-      // nothing
+
+    public static class PiReducer extends MapReduceBase implements
+            Reducer<IntWritable, IntWritable, WritableComparable, Writable> {
+
+        int numInside = 0;
+        int numOutside = 0;
+        JobConf conf;
+
+        /**
+         * Reducer configuration.
+         * 
+         */
+        public void configure(JobConf job) {
+            conf = job;
+        }
+
+        /**
+         * Reduce method. @ param key
+         * 
+         * @param values
+         * @param output
+         * @param reporter
+         */
+        public void reduce(IntWritable key, Iterator<IntWritable> values,
+                OutputCollector<WritableComparable, Writable> output, Reporter reporter) throws IOException {
+            if (key.get() == 1) {
+                while (values.hasNext()) {
+                    int num = values.next().get();
+                    numInside += num;
+                }
+            } else {
+                while (values.hasNext()) {
+                    int num = values.next().get();
+                    numOutside += num;
+                }
+            }
+        }
+
+        public void close() throws IOException {
+            Path tmpDir = new Path("test-mini-mr");
+            Path outDir = new Path(tmpDir, "out");
+            Path outFile = new Path(outDir, "reduce-out");
+            FileSystem fileSys = FileSystem.get(conf);
+            SequenceFile.Writer writer = SequenceFile.createWriter(fileSys, conf, outFile, IntWritable.class,
+                    IntWritable.class, CompressionType.NONE);
+            writer.append(new IntWritable(numInside), new IntWritable(numOutside));
+            writer.close();
+        }
     }
-  }
-  
-  public static class PiReducer extends MapReduceBase 
-    implements Reducer<IntWritable, IntWritable, WritableComparable, Writable> {
-    
-    int numInside = 0;
-    int numOutside = 0;
-    JobConf conf;
-      
-    /** Reducer configuration.
-     *
+
+    /**
+     * This is the main driver for computing the value of Pi using monte-carlo
+     * method.
      */
-    public void configure(JobConf job) {
-      conf = job;
+    static double launch(int numMaps, int numPoints, JobConf jobConf) throws IOException {
+
+        jobConf.setJarByClass(PiEstimator.class);
+        jobConf.setJobName("test-mini-mr");
+
+        // turn off speculative execution, because DFS doesn't handle
+        // multiple writers to the same file.
+        jobConf.setSpeculativeExecution(false);
+        jobConf.setInputFormat(SequenceFileInputFormat.class);
+
+        jobConf.setOutputKeyClass(IntWritable.class);
+        jobConf.setOutputValueClass(IntWritable.class);
+        jobConf.setOutputFormat(SequenceFileOutputFormat.class);
+
+        jobConf.setMapperClass(PiMapper.class);
+        jobConf.setReducerClass(PiReducer.class);
+
+        jobConf.setNumReduceTasks(1);
+
+        Path tmpDir = new Path("test-mini-mr");
+        Path inDir = new Path(tmpDir, "in");
+        Path outDir = new Path(tmpDir, "out");
+        FileSystem fileSys = FileSystem.get(jobConf);
+        fileSys.delete(tmpDir, true);
+        if (!fileSys.mkdirs(inDir)) {
+            throw new IOException("Mkdirs failed to create " + inDir.toString());
+        }
+        FileInputFormat.setInputPaths(jobConf, inDir);
+        FileOutputFormat.setOutputPath(jobConf, outDir);
+
+        jobConf.setNumMapTasks(numMaps);
+
+        for (int idx = 0; idx < numMaps; ++idx) {
+            Path file = new Path(inDir, "part" + idx);
+            SequenceFile.Writer writer = SequenceFile.createWriter(fileSys, jobConf, file, IntWritable.class,
+                    IntWritable.class, CompressionType.NONE);
+            writer.append(new IntWritable(numPoints), new IntWritable(0));
+            writer.close();
+        }
+
+        double estimate = 0.0;
+
+        try {
+            JobClient.runJob(jobConf);
+            Path inFile = new Path(outDir, "reduce-out");
+            SequenceFile.Reader reader = new SequenceFile.Reader(FileSystem.get(jobConf), inFile, jobConf);
+            IntWritable numInside = new IntWritable();
+            IntWritable numOutside = new IntWritable();
+            reader.next(numInside, numOutside);
+            reader.close();
+            estimate = (double) (numInside.get() * 4.0) / (numMaps * numPoints);
+        } finally {
+            FileSystem.get(jobConf).delete(tmpDir, true);
+        }
+
+        return estimate;
     }
-    /** Reduce method.
-     * @ param key
-     * @param values
-     * @param output
-     * @param reporter
+
+    /**
+     * Launches all the tasks in order.
      */
-    public void reduce(IntWritable key,
-                       Iterator<IntWritable> values,
-                       OutputCollector<WritableComparable, Writable> output,
-                       Reporter reporter) throws IOException {
-      if (key.get() == 1) {
-        while (values.hasNext()) {
-          int num = values.next().get();
-          numInside += num;
+    public static void main(String[] argv) throws Exception {
+        if (argv.length < 2) {
+            System.err.println("Usage: TestMiniMR <nMaps> <nSamples>");
+            return;
         }
-      } else {
-        while (values.hasNext()) {
-          int num = values.next().get();
-          numOutside += num;
-        }
-      }
-    }
-      
-    public void close() throws IOException {
-      Path tmpDir = new Path("test-mini-mr");
-      Path outDir = new Path(tmpDir, "out");
-      Path outFile = new Path(outDir, "reduce-out");
-      FileSystem fileSys = FileSystem.get(conf);
-      SequenceFile.Writer writer = SequenceFile.createWriter(fileSys, conf,
-                                                             outFile, IntWritable.class, IntWritable.class, 
-                                                             CompressionType.NONE);
-      writer.append(new IntWritable(numInside), new IntWritable(numOutside));
-      writer.close();
-    }
-  }
 
-  /**
-   * This is the main driver for computing the value of Pi using
-   * monte-carlo method.
-   */
-  static double launch(int numMaps, int numPoints, JobConf jobConf)
-    throws IOException {
+        int nMaps = Integer.parseInt(argv[0]);
+        int nSamples = Integer.parseInt(argv[1]);
 
-    jobConf.setJarByClass(PiEstimator.class);
-    jobConf.setJobName("test-mini-mr");
-    
-    // turn off speculative execution, because DFS doesn't handle
-    // multiple writers to the same file.
-    jobConf.setSpeculativeExecution(false);
-    jobConf.setInputFormat(SequenceFileInputFormat.class);
-        
-    jobConf.setOutputKeyClass(IntWritable.class);
-    jobConf.setOutputValueClass(IntWritable.class);
-    jobConf.setOutputFormat(SequenceFileOutputFormat.class);
-    
-    jobConf.setMapperClass(PiMapper.class);
-    jobConf.setReducerClass(PiReducer.class);
-    
-    jobConf.setNumReduceTasks(1);
-
-    Path tmpDir = new Path("test-mini-mr");
-    Path inDir = new Path(tmpDir, "in");
-    Path outDir = new Path(tmpDir, "out");
-    FileSystem fileSys = FileSystem.get(jobConf);
-    fileSys.delete(tmpDir, true);
-    if (!fileSys.mkdirs(inDir)) {
-      throw new IOException("Mkdirs failed to create " + inDir.toString());
+        System.out.println("Estimated value of PI is " + launch(nMaps, nSamples, new JobConf()));
     }
-    FileInputFormat.setInputPaths(jobConf, inDir);
-    FileOutputFormat.setOutputPath(jobConf, outDir);
-    
-    jobConf.setNumMapTasks(numMaps);
-    
-    for(int idx=0; idx < numMaps; ++idx) {
-      Path file = new Path(inDir, "part"+idx);
-      SequenceFile.Writer writer = SequenceFile.createWriter(fileSys, jobConf, 
-                                                             file, IntWritable.class, IntWritable.class, CompressionType.NONE);
-      writer.append(new IntWritable(numPoints), new IntWritable(0));
-      writer.close();
-    }
-    
-    double estimate = 0.0;
-    
-    try {
-      JobClient.runJob(jobConf);
-      Path inFile = new Path(outDir, "reduce-out");
-      SequenceFile.Reader reader = new SequenceFile.Reader(
-          FileSystem.get(jobConf), inFile, jobConf);
-      IntWritable numInside = new IntWritable();
-      IntWritable numOutside = new IntWritable();
-      reader.next(numInside, numOutside);
-      reader.close();
-      estimate = (double) (numInside.get()*4.0)/(numMaps*numPoints);
-    } finally {
-      FileSystem.get(jobConf).delete(tmpDir, true);
-    }
-    
-    return estimate;
-  }
-  
-  /**
-   * Launches all the tasks in order.
-   */
-  public static void main(String[] argv) throws Exception {
-    if (argv.length < 2) {
-      System.err.println("Usage: TestMiniMR <nMaps> <nSamples>");
-      return;
-    }
-
-    int nMaps = Integer.parseInt(argv[0]);
-    int nSamples = Integer.parseInt(argv[1]);
-        
-    System.out.println("Estimated value of PI is "+
-                       launch(nMaps, nSamples, new JobConf()));
-  }
 }

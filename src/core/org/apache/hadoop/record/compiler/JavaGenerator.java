@@ -26,25 +26,28 @@ import java.util.Iterator;
  * Java Code generator front-end for Hadoop record I/O.
  */
 class JavaGenerator extends CodeGenerator {
-  
-  JavaGenerator() {
-  }
-  
-  /**
-   * Generate Java code for records. This method is only a front-end to
-   * JRecord, since one file is generated for each record.
-   *
-   * @param name possibly full pathname to the file
-   * @param ilist included files (as JFile)
-   * @param rlist List of records defined within this file
-   * @param destDir output directory
-   */
-  void genCode(String name, ArrayList<JFile> ilist,
-               ArrayList<JRecord> rlist, String destDir, ArrayList<String> options)
-    throws IOException {
-    for (Iterator<JRecord> iter = rlist.iterator(); iter.hasNext();) {
-      JRecord rec = iter.next();
-      rec.genJavaCode(destDir, options);
+
+    JavaGenerator() {
     }
-  }
+
+    /**
+     * Generate Java code for records. This method is only a front-end to
+     * JRecord, since one file is generated for each record.
+     * 
+     * @param name
+     *            possibly full pathname to the file
+     * @param ilist
+     *            included files (as JFile)
+     * @param rlist
+     *            List of records defined within this file
+     * @param destDir
+     *            output directory
+     */
+    void genCode(String name, ArrayList<JFile> ilist, ArrayList<JRecord> rlist, String destDir,
+            ArrayList<String> options) throws IOException {
+        for (Iterator<JRecord> iter = rlist.iterator(); iter.hasNext();) {
+            JRecord rec = iter.next();
+            rec.genJavaCode(destDir, options);
+        }
+    }
 }

@@ -25,49 +25,43 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocalFileSystem;
 import org.apache.hadoop.fs.Path;
 
-
 class IndexRecord {
-  final long startOffset;
-  final long rawLength;
-  final long partLength;
-  
-  public IndexRecord(long startOffset, long rawLength, long partLength) {
-    this.startOffset = startOffset;
-    this.rawLength = rawLength;
-    this.partLength = partLength;
-  }
+    final long startOffset;
+    final long rawLength;
+    final long partLength;
 
-  public static IndexRecord[] readIndexFile(Path indexFileName, 
-                                            JobConf job) 
-  throws IOException {
-
-    FileSystem  localFs = FileSystem.getLocal(job);
-    FileSystem rfs = ((LocalFileSystem)localFs).getRaw();
-
-    FSDataInputStream indexInputStream = rfs.open(indexFileName);
-    long length = rfs.getFileStatus(indexFileName).getLen();
-    IFileInputStream checksumIn = 
-      new IFileInputStream(indexInputStream,length);
-
-    int numEntries = (int) length/MapTask.MAP_OUTPUT_INDEX_RECORD_LENGTH;
-
-    IndexRecord[] indexRecordArray = new IndexRecord[numEntries];
-    
-    DataInputStream wrapper = new DataInputStream(checksumIn);
-
-    try {
-      for (int i= 0; i < numEntries; i++) {
-        long startOffset = wrapper.readLong();
-        long rawLength = wrapper.readLong();
-        long partLength = wrapper.readLong();
-        indexRecordArray[i] = 
-          new IndexRecord(startOffset, rawLength, partLength);
-      }
+    public IndexRecord(long startOffset, long rawLength, long partLength) {
+        this.startOffset = startOffset;
+        this.rawLength = rawLength;
+        this.partLength = partLength;
     }
-    finally {
-      //This would internally call checkumIn.close
-      wrapper.close();
+
+    public static IndexRecord[] readIndexFile(Path indexFileName, JobConf job) throws IOException {
+
+        FileSystem localFs = FileSystem.getLocal(job);
+        FileSystem rfs = ((LocalFileSystem) localFs).getRaw();
+
+        FSDataInputStream indexInputStream = rfs.open(indexFileName);
+        long length = rfs.getFileStatus(indexFileName).getLen();
+        IFileInputStream checksumIn = new IFileInputStream(indexInputStream, length);
+
+        int numEntries = (int) length / MapTask.MAP_OUTPUT_INDEX_RECORD_LENGTH;
+
+        IndexRecord[] indexRecordArray = new IndexRecord[numEntries];
+
+        DataInputStream wrapper = new DataInputStream(checksumIn);
+
+        try {
+            for (int i = 0; i < numEntries; i++) {
+                long startOffset = wrapper.readLong();
+                long rawLength = wrapper.readLong();
+                long partLength = wrapper.readLong();
+                indexRecordArray[i] = new IndexRecord(startOffset, rawLength, partLength);
+            }
+        } finally {
+            // This would internally call checkumIn.close
+            wrapper.close();
+        }
+        return indexRecordArray;
     }
-    return indexRecordArray;
-  }
 }

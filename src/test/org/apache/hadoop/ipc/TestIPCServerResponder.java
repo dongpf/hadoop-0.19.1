@@ -32,119 +32,113 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.net.NetUtils;
 
 /**
- * This test provokes partial writes in the server, which is 
- * serving multiple clients.
+ * This test provokes partial writes in the server, which is serving multiple
+ * clients.
  */
 public class TestIPCServerResponder extends TestCase {
 
-  public static final Log LOG = 
-            LogFactory.getLog(TestIPCServerResponder.class);
+    public static final Log LOG = LogFactory.getLog(TestIPCServerResponder.class);
 
-  private static Configuration conf = new Configuration();
+    private static Configuration conf = new Configuration();
 
-  public TestIPCServerResponder(final String name) {
-    super(name);
-  }
-
-  private static final Random RANDOM = new Random();
-
-  private static final String ADDRESS = "0.0.0.0";
-
-  private static final int BYTE_COUNT = 1024;
-  private static final byte[] BYTES = new byte[BYTE_COUNT];
-  static {
-    for (int i = 0; i < BYTE_COUNT; i++)
-      BYTES[i] = (byte) ('a' + (i % 26));
-  }
-
-  private static class TestServer extends Server {
-
-    private boolean sleep;
-
-    public TestServer(final int handlerCount, final boolean sleep) 
-                                              throws IOException {
-      super(ADDRESS, 0, BytesWritable.class, handlerCount, conf);
-      // Set the buffer size to half of the maximum parameter/result size 
-      // to force the socket to block
-      this.setSocketSendBufSize(BYTE_COUNT / 2);
-      this.sleep = sleep;
+    public TestIPCServerResponder(final String name) {
+        super(name);
     }
 
-    @Override
-    public Writable call(final Writable param, final long receivedTime) 
-                                               throws IOException {
-      if (sleep) {
-        try {
-          Thread.sleep(RANDOM.nextInt(20)); // sleep a bit
-        } catch (InterruptedException e) {}
-      }
-      return param;
-    }
-  }
+    private static final Random RANDOM = new Random();
 
-  private static class Caller extends Thread {
+    private static final String ADDRESS = "0.0.0.0";
 
-    private Client client;
-    private int count;
-    private InetSocketAddress address;
-    private boolean failed;
-
-    public Caller(final Client client, final InetSocketAddress address, 
-                                       final int count) {
-      this.client = client;
-      this.address = address;
-      this.count = count;
+    private static final int BYTE_COUNT = 1024;
+    private static final byte[] BYTES = new byte[BYTE_COUNT];
+    static {
+        for (int i = 0; i < BYTE_COUNT; i++)
+            BYTES[i] = (byte) ('a' + (i % 26));
     }
 
-    @Override
-    public void run() {
-      for (int i = 0; i < count; i++) {
-        try {
-          int byteSize = RANDOM.nextInt(BYTE_COUNT);
-          byte[] bytes = new byte[byteSize];
-          System.arraycopy(BYTES, 0, bytes, 0, byteSize);
-          Writable param = new BytesWritable(bytes);
-          Writable value = client.call(param, address);
-          Thread.sleep(RANDOM.nextInt(20));
-        } catch (Exception e) {
-          LOG.fatal("Caught: " + e);
-          failed = true;
+    private static class TestServer extends Server {
+
+        private boolean sleep;
+
+        public TestServer(final int handlerCount, final boolean sleep) throws IOException {
+            super(ADDRESS, 0, BytesWritable.class, handlerCount, conf);
+            // Set the buffer size to half of the maximum parameter/result size
+            // to force the socket to block
+            this.setSocketSendBufSize(BYTE_COUNT / 2);
+            this.sleep = sleep;
         }
-      }
-    }
-  }
 
-  public void testServerResponder() throws Exception {
-    testServerResponder(10, true, 1, 10, 200);
-  }
-
-  public void testServerResponder(final int handlerCount, 
-                                  final boolean handlerSleep, 
-                                  final int clientCount,
-                                  final int callerCount,
-                                  final int callCount) throws Exception {
-    Server server = new TestServer(handlerCount, handlerSleep);
-    server.start();
-
-    InetSocketAddress address = NetUtils.getConnectAddress(server);
-    Client[] clients = new Client[clientCount];
-    for (int i = 0; i < clientCount; i++) {
-      clients[i] = new Client(BytesWritable.class, conf);
+        @Override
+        public Writable call(final Writable param, final long receivedTime) throws IOException {
+            if (sleep) {
+                try {
+                    Thread.sleep(RANDOM.nextInt(20)); // sleep a bit
+                } catch (InterruptedException e) {
+                }
+            }
+            return param;
+        }
     }
 
-    Caller[] callers = new Caller[callerCount];
-    for (int i = 0; i < callerCount; i++) {
-      callers[i] = new Caller(clients[i % clientCount], address, callCount);
-      callers[i].start();
+    private static class Caller extends Thread {
+
+        private Client client;
+        private int count;
+        private InetSocketAddress address;
+        private boolean failed;
+
+        public Caller(final Client client, final InetSocketAddress address, final int count) {
+            this.client = client;
+            this.address = address;
+            this.count = count;
+        }
+
+        @Override
+        public void run() {
+            for (int i = 0; i < count; i++) {
+                try {
+                    int byteSize = RANDOM.nextInt(BYTE_COUNT);
+                    byte[] bytes = new byte[byteSize];
+                    System.arraycopy(BYTES, 0, bytes, 0, byteSize);
+                    Writable param = new BytesWritable(bytes);
+                    Writable value = client.call(param, address);
+                    Thread.sleep(RANDOM.nextInt(20));
+                } catch (Exception e) {
+                    LOG.fatal("Caught: " + e);
+                    failed = true;
+                }
+            }
+        }
     }
-    for (int i = 0; i < callerCount; i++) {
-      callers[i].join();
-      assertFalse(callers[i].failed);
+
+    public void testServerResponder() throws Exception {
+        testServerResponder(10, true, 1, 10, 200);
     }
-    for (int i = 0; i < clientCount; i++) {
-      clients[i].stop();
+
+    public void testServerResponder(final int handlerCount, final boolean handlerSleep, final int clientCount,
+            final int callerCount, final int callCount) throws Exception {
+        Server server = new TestServer(handlerCount, handlerSleep);
+        server.start();
+
+        InetSocketAddress address = NetUtils.getConnectAddress(server);
+        Client[] clients = new Client[clientCount];
+        for (int i = 0; i < clientCount; i++) {
+            clients[i] = new Client(BytesWritable.class, conf);
+        }
+
+        Caller[] callers = new Caller[callerCount];
+        for (int i = 0; i < callerCount; i++) {
+            callers[i] = new Caller(clients[i % clientCount], address, callCount);
+            callers[i].start();
+        }
+        for (int i = 0; i < callerCount; i++) {
+            callers[i].join();
+            assertFalse(callers[i].failed);
+        }
+        for (int i = 0; i < clientCount; i++) {
+            clients[i].stop();
+        }
+        server.stop();
     }
-    server.stop();
-  }
 
 }

@@ -26,64 +26,62 @@ import org.apache.hadoop.io.WritableUtils;
 
 /**
  * This class provides an implementation of ResetableIterator. The
- * implementation uses an {@link java.util.ArrayList} to store elements
- * added to it, replaying them as requested.
- * Prefer {@link StreamBackedIterator}.
+ * implementation uses an {@link java.util.ArrayList} to store elements added to
+ * it, replaying them as requested. Prefer {@link StreamBackedIterator}.
  */
-public class ArrayListBackedIterator<X extends Writable>
-    implements ResetableIterator<X> {
+public class ArrayListBackedIterator<X extends Writable> implements ResetableIterator<X> {
 
-  private Iterator<X> iter;
-  private ArrayList<X> data;
-  private X hold = null;
+    private Iterator<X> iter;
+    private ArrayList<X> data;
+    private X hold = null;
 
-  public ArrayListBackedIterator() {
-    this(new ArrayList<X>());
-  }
-
-  public ArrayListBackedIterator(ArrayList<X> data) {
-    this.data = data;
-    this.iter = this.data.iterator();
-  }
-
-  public boolean hasNext() {
-    return iter.hasNext();
-  }
-
-  public boolean next(X val) throws IOException {
-    if (iter.hasNext()) {
-      WritableUtils.cloneInto(val, iter.next());
-      if (null == hold) {
-        hold = WritableUtils.clone(val, null);
-      } else {
-        WritableUtils.cloneInto(hold, val);
-      }
-      return true;
+    public ArrayListBackedIterator() {
+        this(new ArrayList<X>());
     }
-    return false;
-  }
 
-  public boolean replay(X val) throws IOException {
-    WritableUtils.cloneInto(val, hold);
-    return true;
-  }
+    public ArrayListBackedIterator(ArrayList<X> data) {
+        this.data = data;
+        this.iter = this.data.iterator();
+    }
 
-  public void reset() {
-    iter = data.iterator();
-  }
+    public boolean hasNext() {
+        return iter.hasNext();
+    }
 
-  public void add(X item) throws IOException {
-    data.add(WritableUtils.clone(item, null));
-  }
+    public boolean next(X val) throws IOException {
+        if (iter.hasNext()) {
+            WritableUtils.cloneInto(val, iter.next());
+            if (null == hold) {
+                hold = WritableUtils.clone(val, null);
+            } else {
+                WritableUtils.cloneInto(hold, val);
+            }
+            return true;
+        }
+        return false;
+    }
 
-  public void close() throws IOException {
-    iter = null;
-    data = null;
-  }
+    public boolean replay(X val) throws IOException {
+        WritableUtils.cloneInto(val, hold);
+        return true;
+    }
 
-  public void clear() {
-    data.clear();
-    reset();
-  }
+    public void reset() {
+        iter = data.iterator();
+    }
+
+    public void add(X item) throws IOException {
+        data.add(WritableUtils.clone(item, null));
+    }
+
+    public void close() throws IOException {
+        iter = null;
+        data = null;
+    }
+
+    public void clear() {
+        data.clear();
+        reset();
+    }
 
 }

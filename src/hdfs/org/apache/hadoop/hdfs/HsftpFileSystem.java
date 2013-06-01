@@ -27,34 +27,33 @@ import java.net.URL;
 
 import org.apache.hadoop.fs.Path;
 
-/** An implementation of a protocol for accessing filesystems over HTTPS.
- * The following implementation provides a limited, read-only interface
- * to a filesystem over HTTPS.
+/**
+ * An implementation of a protocol for accessing filesystems over HTTPS. The
+ * following implementation provides a limited, read-only interface to a
+ * filesystem over HTTPS.
+ * 
  * @see org.apache.hadoop.hdfs.server.namenode.ListPathsServlet
  * @see org.apache.hadoop.hdfs.server.namenode.FileDataServlet
  */
 public class HsftpFileSystem extends HftpFileSystem {
 
-  @Override
-  protected HttpURLConnection openConnection(String path, String query)
-      throws IOException {
-    try {
-      final URL url = new URI("https", null, nnAddr.getHostName(),
-          nnAddr.getPort(), path, query, null).toURL();
-      return (HttpURLConnection)url.openConnection();
-    } catch (URISyntaxException e) {
-      throw (IOException)new IOException().initCause(e);
+    @Override
+    protected HttpURLConnection openConnection(String path, String query) throws IOException {
+        try {
+            final URL url = new URI("https", null, nnAddr.getHostName(), nnAddr.getPort(), path, query, null).toURL();
+            return (HttpURLConnection) url.openConnection();
+        } catch (URISyntaxException e) {
+            throw (IOException) new IOException().initCause(e);
+        }
     }
-  }
 
-  @Override
-  public URI getUri() {
-    try {
-      return new URI("hsftp", null, nnAddr.getHostName(), nnAddr.getPort(),
-                     null, null, null);
-    } catch (URISyntaxException e) {
-      return null;
+    @Override
+    public URI getUri() {
+        try {
+            return new URI("hsftp", null, nnAddr.getHostName(), nnAddr.getPort(), null, null, null);
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
-  }
 
 }

@@ -37,24 +37,21 @@ import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.examples.WordCount;
 
 /**
- * This is an example Hadoop Map/Reduce application being used for 
+ * This is an example Hadoop Map/Reduce application being used for
  * TestMiniMRClasspath. Uses the WordCount examples in hadoop.
  */
 public class ClassWordCount {
-  
-  /**
-   * Counts the words in each line.
-   * For each line of input, break the line into words and emit them as
-   * (<b>word</b>, <b>1</b>).
-   */
-  public static class MapClass extends WordCount.MapClass
-    implements Mapper<LongWritable, Text, Text, IntWritable> {
-  }
-  
-  /**
-   * A reducer class that just emits the sum of the input values.
-   */
-  public static class Reduce extends WordCount.Reduce
-    implements Reducer<Text, IntWritable, Text, IntWritable> {
-  }
+
+    /**
+     * Counts the words in each line. For each line of input, break the line
+     * into words and emit them as (<b>word</b>, <b>1</b>).
+     */
+    public static class MapClass extends WordCount.MapClass implements Mapper<LongWritable, Text, Text, IntWritable> {
+    }
+
+    /**
+     * A reducer class that just emits the sum of the input values.
+     */
+    public static class Reduce extends WordCount.Reduce implements Reducer<Text, IntWritable, Text, IntWritable> {
+    }
 }

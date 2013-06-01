@@ -28,28 +28,30 @@ import org.apache.lucene.index.IndexFileNameFilter;
  */
 class LuceneIndexFileNameFilter implements PathFilter {
 
-  private static final LuceneIndexFileNameFilter singleton =
-      new LuceneIndexFileNameFilter();
+    private static final LuceneIndexFileNameFilter singleton = new LuceneIndexFileNameFilter();
 
-  /**
-   * Get a static instance.
-   * @return the static instance
-   */
-  public static LuceneIndexFileNameFilter getFilter() {
-    return singleton;
-  }
+    /**
+     * Get a static instance.
+     * 
+     * @return the static instance
+     */
+    public static LuceneIndexFileNameFilter getFilter() {
+        return singleton;
+    }
 
-  private final IndexFileNameFilter luceneFilter;
+    private final IndexFileNameFilter luceneFilter;
 
-  private LuceneIndexFileNameFilter() {
-    luceneFilter = IndexFileNameFilter.getFilter();
-  }
+    private LuceneIndexFileNameFilter() {
+        luceneFilter = IndexFileNameFilter.getFilter();
+    }
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.fs.PathFilter#accept(org.apache.hadoop.fs.Path)
-   */
-  public boolean accept(Path path) {
-    return luceneFilter.accept(null, path.getName());
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.hadoop.fs.PathFilter#accept(org.apache.hadoop.fs.Path)
+     */
+    public boolean accept(Path path) {
+        return luceneFilter.accept(null, path.getName());
+    }
 
 }

@@ -34,32 +34,36 @@ import org.apache.hadoop.fs.TestTrash;
  */
 public class TestHDFSTrash extends TestTrash {
 
-  private static MiniDFSCluster cluster = null;
-  public static Test suite() {
-    TestSetup setup = new TestSetup(new TestSuite(TestHDFSTrash.class)) {
-      protected void setUp() throws Exception {
-        Configuration conf = new Configuration();
-        cluster = new MiniDFSCluster(conf, 2, true, null);
-      }
-      protected void tearDown() throws Exception {
-        if (cluster != null) { cluster.shutdown(); }
-      }
-    };
-    return setup;
-  }
+    private static MiniDFSCluster cluster = null;
 
-  /**
-   * Tests Trash on HDFS
-   */
-  public void testTrash() throws IOException {
-    trashShell(cluster.getFileSystem(), new Path("/"));
-  }
+    public static Test suite() {
+        TestSetup setup = new TestSetup(new TestSuite(TestHDFSTrash.class)) {
+            protected void setUp() throws Exception {
+                Configuration conf = new Configuration();
+                cluster = new MiniDFSCluster(conf, 2, true, null);
+            }
 
-  public void testNonDefaultFS() throws IOException {
-    FileSystem fs = cluster.getFileSystem();
-    Configuration conf = fs.getConf();
-    conf.set("fs.default.name", fs.getUri().toString());
-    trashNonDefaultFS(conf);
-  }
+            protected void tearDown() throws Exception {
+                if (cluster != null) {
+                    cluster.shutdown();
+                }
+            }
+        };
+        return setup;
+    }
+
+    /**
+     * Tests Trash on HDFS
+     */
+    public void testTrash() throws IOException {
+        trashShell(cluster.getFileSystem(), new Path("/"));
+    }
+
+    public void testNonDefaultFS() throws IOException {
+        FileSystem fs = cluster.getFileSystem();
+        Configuration conf = fs.getConf();
+        conf.set("fs.default.name", fs.getUri().toString());
+        trashNonDefaultFS(conf);
+    }
 
 }

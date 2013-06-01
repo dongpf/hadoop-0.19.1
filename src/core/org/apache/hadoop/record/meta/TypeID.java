@@ -21,82 +21,81 @@ package org.apache.hadoop.record.meta;
 import java.io.IOException;
 import org.apache.hadoop.record.RecordOutput;
 
-/** 
- * Represents typeID for basic types. 
+/**
+ * Represents typeID for basic types.
  */
 public class TypeID {
 
-  /**
-   * constants representing the IDL types we support
-   */
-  public static final class RIOType {
-    public static final byte BOOL   = 1;
-    public static final byte BUFFER = 2;
-    public static final byte BYTE   = 3;
-    public static final byte DOUBLE = 4;
-    public static final byte FLOAT  = 5;
-    public static final byte INT    = 6;
-    public static final byte LONG   = 7;
-    public static final byte MAP    = 8;
-    public static final byte STRING = 9;
-    public static final byte STRUCT = 10;
-    public static final byte VECTOR = 11;
-  }
+    /**
+     * constants representing the IDL types we support
+     */
+    public static final class RIOType {
+        public static final byte BOOL = 1;
+        public static final byte BUFFER = 2;
+        public static final byte BYTE = 3;
+        public static final byte DOUBLE = 4;
+        public static final byte FLOAT = 5;
+        public static final byte INT = 6;
+        public static final byte LONG = 7;
+        public static final byte MAP = 8;
+        public static final byte STRING = 9;
+        public static final byte STRUCT = 10;
+        public static final byte VECTOR = 11;
+    }
 
-  /**
-   * Constant classes for the basic types, so we can share them.
-   */
-  public static final TypeID BoolTypeID = new TypeID(RIOType.BOOL);
-  public static final TypeID BufferTypeID = new TypeID(RIOType.BUFFER);
-  public static final TypeID ByteTypeID = new TypeID(RIOType.BYTE);
-  public static final TypeID DoubleTypeID = new TypeID(RIOType.DOUBLE);
-  public static final TypeID FloatTypeID = new TypeID(RIOType.FLOAT);
-  public static final TypeID IntTypeID = new TypeID(RIOType.INT);
-  public static final TypeID LongTypeID = new TypeID(RIOType.LONG);
-  public static final TypeID StringTypeID = new TypeID(RIOType.STRING);
-  
-  protected byte typeVal;
+    /**
+     * Constant classes for the basic types, so we can share them.
+     */
+    public static final TypeID BoolTypeID = new TypeID(RIOType.BOOL);
+    public static final TypeID BufferTypeID = new TypeID(RIOType.BUFFER);
+    public static final TypeID ByteTypeID = new TypeID(RIOType.BYTE);
+    public static final TypeID DoubleTypeID = new TypeID(RIOType.DOUBLE);
+    public static final TypeID FloatTypeID = new TypeID(RIOType.FLOAT);
+    public static final TypeID IntTypeID = new TypeID(RIOType.INT);
+    public static final TypeID LongTypeID = new TypeID(RIOType.LONG);
+    public static final TypeID StringTypeID = new TypeID(RIOType.STRING);
 
-  /**
-   * Create a TypeID object 
-   */
-  TypeID(byte typeVal) {
-    this.typeVal = typeVal;
-  }
+    protected byte typeVal;
 
-  /**
-   * Get the type value. One of the constants in RIOType.
-   */
-  public byte getTypeVal() {
-    return typeVal;
-  }
+    /**
+     * Create a TypeID object
+     */
+    TypeID(byte typeVal) {
+        this.typeVal = typeVal;
+    }
 
-  /**
-   * Serialize the TypeID object
-   */
-  void write(RecordOutput rout, String tag) throws IOException {
-    rout.writeByte(typeVal, tag);
-  }
-  
-  /**
-   * Two base typeIDs are equal if they refer to the same type
-   */
-  public boolean equals(Object o) {
-    if (this == o) 
-      return true;
-    if (!(o instanceof TypeID))
-      return false;
-    TypeID oTypeID = (TypeID) o;
-    return (this.typeVal == oTypeID.typeVal);
-  }
-  
-  /**
-   * We use a basic hashcode implementation, since this class will likely not
-   * be used as a hashmap key 
-   */
-  public int hashCode() {
-    // See 'Effectve Java' by Joshua Bloch
-    return 37*17+(int)typeVal;
-  }
+    /**
+     * Get the type value. One of the constants in RIOType.
+     */
+    public byte getTypeVal() {
+        return typeVal;
+    }
+
+    /**
+     * Serialize the TypeID object
+     */
+    void write(RecordOutput rout, String tag) throws IOException {
+        rout.writeByte(typeVal, tag);
+    }
+
+    /**
+     * Two base typeIDs are equal if they refer to the same type
+     */
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof TypeID))
+            return false;
+        TypeID oTypeID = (TypeID) o;
+        return (this.typeVal == oTypeID.typeVal);
+    }
+
+    /**
+     * We use a basic hashcode implementation, since this class will likely not
+     * be used as a hashmap key
+     */
+    public int hashCode() {
+        // See 'Effectve Java' by Joshua Bloch
+        return 37 * 17 + (int) typeVal;
+    }
 }
-

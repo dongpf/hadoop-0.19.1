@@ -20,54 +20,61 @@ package org.apache.hadoop.io;
 
 import java.io.*;
 
-/** A WritableComparable for longs in a variable-length format. Such values take
- *  between one and five bytes.  Smaller values take fewer bytes.
- *  
- *  @see org.apache.hadoop.io.WritableUtils#readVLong(DataInput)
+/**
+ * A WritableComparable for longs in a variable-length format. Such values take
+ * between one and five bytes. Smaller values take fewer bytes.
+ * 
+ * @see org.apache.hadoop.io.WritableUtils#readVLong(DataInput)
  */
 public class VLongWritable implements WritableComparable {
-  private long value;
+    private long value;
 
-  public VLongWritable() {}
+    public VLongWritable() {
+    }
 
-  public VLongWritable(long value) { set(value); }
+    public VLongWritable(long value) {
+        set(value);
+    }
 
-  /** Set the value of this LongWritable. */
-  public void set(long value) { this.value = value; }
+    /** Set the value of this LongWritable. */
+    public void set(long value) {
+        this.value = value;
+    }
 
-  /** Return the value of this LongWritable. */
-  public long get() { return value; }
+    /** Return the value of this LongWritable. */
+    public long get() {
+        return value;
+    }
 
-  public void readFields(DataInput in) throws IOException {
-    value = WritableUtils.readVLong(in);
-  }
+    public void readFields(DataInput in) throws IOException {
+        value = WritableUtils.readVLong(in);
+    }
 
-  public void write(DataOutput out) throws IOException {
-    WritableUtils.writeVLong(out, value);
-  }
+    public void write(DataOutput out) throws IOException {
+        WritableUtils.writeVLong(out, value);
+    }
 
-  /** Returns true if <code>o</code> is a VLongWritable with the same value. */
-  public boolean equals(Object o) {
-    if (!(o instanceof VLongWritable))
-      return false;
-    VLongWritable other = (VLongWritable)o;
-    return this.value == other.value;
-  }
+    /** Returns true if <code>o</code> is a VLongWritable with the same value. */
+    public boolean equals(Object o) {
+        if (!(o instanceof VLongWritable))
+            return false;
+        VLongWritable other = (VLongWritable) o;
+        return this.value == other.value;
+    }
 
-  public int hashCode() {
-    return (int)value;
-  }
+    public int hashCode() {
+        return (int) value;
+    }
 
-  /** Compares two VLongWritables. */
-  public int compareTo(Object o) {
-    long thisValue = this.value;
-    long thatValue = ((VLongWritable)o).value;
-    return (thisValue < thatValue ? -1 : (thisValue == thatValue ? 0 : 1));
-  }
+    /** Compares two VLongWritables. */
+    public int compareTo(Object o) {
+        long thisValue = this.value;
+        long thatValue = ((VLongWritable) o).value;
+        return (thisValue < thatValue ? -1 : (thisValue == thatValue ? 0 : 1));
+    }
 
-  public String toString() {
-    return Long.toString(value);
-  }
+    public String toString() {
+        return Long.toString(value);
+    }
 
 }
-

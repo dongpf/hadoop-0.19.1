@@ -23,61 +23,61 @@ import java.util.*;
 
 import org.apache.hadoop.record.RecordOutput;
 
-/** 
- * Represents typeID for a Map 
+/**
+ * Represents typeID for a Map
  */
 public class MapTypeID extends TypeID {
-  
-  private TypeID typeIDKey; 
-  private TypeID typeIDValue; 
-  
-  public MapTypeID(TypeID typeIDKey, TypeID typeIDValue) {
-    super(RIOType.MAP);
-    this.typeIDKey = typeIDKey;
-    this.typeIDValue = typeIDValue;
-  }
-  
-  /**
-   * get the TypeID of the map's key element
-   */
-  public TypeID getKeyTypeID() {
-    return this.typeIDKey;
-  }
-  
-  /**
-   * get the TypeID of the map's value element
-   */
-  public TypeID getValueTypeID() {
-    return this.typeIDValue;
-  }
-  
-  void write(RecordOutput rout, String tag) throws IOException {
-    rout.writeByte(typeVal, tag);
-    typeIDKey.write(rout, tag);
-    typeIDValue.write(rout, tag);
-  }
-  
-  /**
-   * Two map  typeIDs are equal if their constituent elements have the 
-   * same type
-   */
-  public boolean equals(Object o) {
-    if (this == o) 
-      return true;
-    if (!(o instanceof MapTypeID))
-      return false;
-    MapTypeID mti = (MapTypeID) o;
-    if (!this.typeIDKey.equals(mti.typeIDKey))
-      return false;
-    return this.typeIDValue.equals(mti.typeIDValue);
-  }
-  
-  /**
-   * We use a basic hashcode implementation, since this class will likely not
-   * be used as a hashmap key 
-   */
-  public int hashCode() {
-    return 37*17+typeIDKey.hashCode() + 37*17+typeIDValue.hashCode();
-  }
-  
+
+    private TypeID typeIDKey;
+    private TypeID typeIDValue;
+
+    public MapTypeID(TypeID typeIDKey, TypeID typeIDValue) {
+        super(RIOType.MAP);
+        this.typeIDKey = typeIDKey;
+        this.typeIDValue = typeIDValue;
+    }
+
+    /**
+     * get the TypeID of the map's key element
+     */
+    public TypeID getKeyTypeID() {
+        return this.typeIDKey;
+    }
+
+    /**
+     * get the TypeID of the map's value element
+     */
+    public TypeID getValueTypeID() {
+        return this.typeIDValue;
+    }
+
+    void write(RecordOutput rout, String tag) throws IOException {
+        rout.writeByte(typeVal, tag);
+        typeIDKey.write(rout, tag);
+        typeIDValue.write(rout, tag);
+    }
+
+    /**
+     * Two map typeIDs are equal if their constituent elements have the same
+     * type
+     */
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof MapTypeID))
+            return false;
+        MapTypeID mti = (MapTypeID) o;
+        if (!this.typeIDKey.equals(mti.typeIDKey))
+            return false;
+        return this.typeIDValue.equals(mti.typeIDValue);
+    }
+
+    /**
+     * We use a basic hashcode implementation, since this class will likely not
+     * be used as a hashmap key
+     */
+    public int hashCode() {
+        return 37 * 17 + typeIDKey.hashCode() + 37 * 17 + typeIDValue.hashCode();
+    }
+
 }

@@ -29,25 +29,25 @@ import org.apache.hadoop.conf.Configuration;
 import junit.framework.TestCase;
 
 public class TestDataNodeMetrics extends TestCase {
-  
-  public void testDataNodeMetrics() throws Exception {
-    Configuration conf = new Configuration();
-    conf.setBoolean(SimulatedFSDataset.CONFIG_PROPERTY_SIMULATED, true);
-    MiniDFSCluster cluster = new MiniDFSCluster(conf, 1, true, null);
-    try {
-      FileSystem fs = cluster.getFileSystem();
-      final long LONG_FILE_LEN = Integer.MAX_VALUE+1L; 
-      DFSTestUtil.createFile(fs, new Path("/tmp.txt"),
-          LONG_FILE_LEN, (short)1, 1L);
-      List<DataNode> datanodes = cluster.getDataNodes();
-      assertEquals(datanodes.size(), 1);
-      DataNode datanode = datanodes.get(0);
-      DataNodeMetrics metrics = datanode.getMetrics();
-      DataNodeStatistics statistics = new DataNodeStatistics(
-          metrics, datanode.dnRegistration.storageID);
-      assertEquals(LONG_FILE_LEN, statistics.getBytesWritten());
-    } finally {
-      if (cluster != null) {cluster.shutdown();}
+
+    public void testDataNodeMetrics() throws Exception {
+        Configuration conf = new Configuration();
+        conf.setBoolean(SimulatedFSDataset.CONFIG_PROPERTY_SIMULATED, true);
+        MiniDFSCluster cluster = new MiniDFSCluster(conf, 1, true, null);
+        try {
+            FileSystem fs = cluster.getFileSystem();
+            final long LONG_FILE_LEN = Integer.MAX_VALUE + 1L;
+            DFSTestUtil.createFile(fs, new Path("/tmp.txt"), LONG_FILE_LEN, (short) 1, 1L);
+            List<DataNode> datanodes = cluster.getDataNodes();
+            assertEquals(datanodes.size(), 1);
+            DataNode datanode = datanodes.get(0);
+            DataNodeMetrics metrics = datanode.getMetrics();
+            DataNodeStatistics statistics = new DataNodeStatistics(metrics, datanode.dnRegistration.storageID);
+            assertEquals(LONG_FILE_LEN, statistics.getBytesWritten());
+        } finally {
+            if (cluster != null) {
+                cluster.shutdown();
+            }
+        }
     }
-  }
 }

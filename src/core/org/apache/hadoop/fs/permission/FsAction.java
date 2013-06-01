@@ -21,48 +21,45 @@ package org.apache.hadoop.fs.permission;
  * File system actions, e.g. read, write, etc.
  */
 public enum FsAction {
-  //POSIX style
-  NONE(0, "---"),
-  EXECUTE(1, "--x"),
-  WRITE(2, "-w-"),
-  WRITE_EXECUTE(3, "-wx"),
-  READ(4, "r--"),
-  READ_EXECUTE(5, "r-x"),
-  READ_WRITE(6, "rw-"),
-  ALL(7, "rwx");
+    // POSIX style
+    NONE(0, "---"), EXECUTE(1, "--x"), WRITE(2, "-w-"), WRITE_EXECUTE(3, "-wx"), READ(4, "r--"), READ_EXECUTE(5, "r-x"), READ_WRITE(
+            6, "rw-"), ALL(7, "rwx");
 
-  //constants
-  /** Octal representation */
-  public final int INDEX;
-  /** Symbolic representation */
-  public final String SYMBOL;
+    // constants
+    /** Octal representation */
+    public final int INDEX;
+    /** Symbolic representation */
+    public final String SYMBOL;
 
-  private FsAction(int v, String s) {
-    INDEX = v;
-    SYMBOL = s;
-  }
-
-  /**
-   * Return true if this action implies that action.
-   * @param that
-   */
-  public boolean implies(FsAction that) {
-    if (that != null) {
-      return (this.INDEX & that.INDEX) == that.INDEX;
+    private FsAction(int v, String s) {
+        INDEX = v;
+        SYMBOL = s;
     }
-    return false;
-  }
 
-  /** AND operation. */
-  public FsAction and(FsAction that) {
-    return values()[this.INDEX & that.INDEX];
-  }
-  /** OR operation. */
-  public FsAction or(FsAction that) {
-    return values()[this.INDEX | that.INDEX];
-  }
-  /** NOT operation. */
-  public FsAction not() {
-    return values()[7 - INDEX];
-  }
+    /**
+     * Return true if this action implies that action.
+     * 
+     * @param that
+     */
+    public boolean implies(FsAction that) {
+        if (that != null) {
+            return (this.INDEX & that.INDEX) == that.INDEX;
+        }
+        return false;
+    }
+
+    /** AND operation. */
+    public FsAction and(FsAction that) {
+        return values()[this.INDEX & that.INDEX];
+    }
+
+    /** OR operation. */
+    public FsAction or(FsAction that) {
+        return values()[this.INDEX | that.INDEX];
+    }
+
+    /** NOT operation. */
+    public FsAction not() {
+        return values()[7 - INDEX];
+    }
 }

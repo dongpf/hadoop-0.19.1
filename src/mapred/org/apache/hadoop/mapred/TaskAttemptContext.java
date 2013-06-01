@@ -21,36 +21,35 @@ import org.apache.hadoop.util.Progressable;
 
 public class TaskAttemptContext extends JobContext {
 
-  private JobConf conf;
-  private TaskAttemptID taskid;
-  
-  TaskAttemptContext(JobConf conf, TaskAttemptID taskid) {
-    this(conf, taskid, Reporter.NULL);
-  }
-  
-  TaskAttemptContext(JobConf conf, TaskAttemptID taskid,
-                     Progressable progress) {
-    super(conf, progress);
-    this.conf = conf;
-    this.taskid = taskid;
-  }
-  
-  /**
-   * Get the taskAttemptID.
-   *  
-   * @return TaskAttemptID
-   */
-  public TaskAttemptID getTaskAttemptID() {
-    return taskid;
-  }
-  
-  /**
-   * Get the job Configuration.
-   * 
-   * @return JobConf
-   */
-  public JobConf getJobConf() {
-    return conf;
-  }
+    private JobConf conf;
+    private TaskAttemptID taskid;
+
+    TaskAttemptContext(JobConf conf, TaskAttemptID taskid) {
+        this(conf, taskid, Reporter.NULL);
+    }
+
+    TaskAttemptContext(JobConf conf, TaskAttemptID taskid, Progressable progress) {
+        super(conf, progress);
+        this.conf = conf;
+        this.taskid = taskid;
+    }
+
+    /**
+     * Get the taskAttemptID.
+     * 
+     * @return TaskAttemptID
+     */
+    public TaskAttemptID getTaskAttemptID() {
+        return taskid;
+    }
+
+    /**
+     * Get the job Configuration.
+     * 
+     * @return JobConf
+     */
+    public JobConf getJobConf() {
+        return conf;
+    }
 
 }

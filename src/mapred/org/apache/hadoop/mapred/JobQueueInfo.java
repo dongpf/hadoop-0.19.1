@@ -25,94 +25,95 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 
 /**
- * Class that contains the information regarding the Job Queues which are 
+ * Class that contains the information regarding the Job Queues which are
  * maintained by the Hadoop Map/Reduce framework.
  * 
  */
 
 public class JobQueueInfo implements Writable {
 
-  private String queueName = "";
-  //The scheduling Information object is read back as String.
-  //Once the scheduling information is set there is no way to recover it.
-  private String schedulingInfo; 
-  
-  
-  /**
-   * Default constructor for Job Queue Info.
-   * 
-   */
-  public JobQueueInfo() {
-    
-  }
-  /**
-   * Construct a new JobQueueInfo object using the queue name and the
-   * scheduling information passed.
-   * 
-   * @param queueName Name of the job queue
-   * @param schedulingInfo Scheduling Information associated with the job
-   * queue
-   */
-  public JobQueueInfo(String queueName, String schedulingInfo) {
-    this.queueName = queueName;
-    this.schedulingInfo = schedulingInfo;
-  }
-  
-  
-  /**
-   * Set the queue name of the JobQueueInfo
-   * 
-   * @param queueName Name of the job queue.
-   */
-  public void setQueueName(String queueName) {
-    this.queueName = queueName;
-  }
+    private String queueName = "";
+    // The scheduling Information object is read back as String.
+    // Once the scheduling information is set there is no way to recover it.
+    private String schedulingInfo;
 
-  /**
-   * Get the queue name from JobQueueInfo
-   * 
-   * @return queue name
-   */
-  public String getQueueName() {
-    return queueName;
-  }
+    /**
+     * Default constructor for Job Queue Info.
+     * 
+     */
+    public JobQueueInfo() {
 
-  /**
-   * Set the scheduling information associated to particular job queue
-   * 
-   * @param schedulingInfo
-   */
-  public void setSchedulingInfo(String schedulingInfo) {
-    this.schedulingInfo = schedulingInfo;
-  }
-
-  /**
-   * Gets the scheduling information associated to particular job queue.
-   * If nothing is set would return <b>"N/A"</b>
-   * 
-   * @return Scheduling information associated to particular Job Queue
-   */
-  public String getSchedulingInfo() {
-    if(schedulingInfo != null) {
-      return schedulingInfo;
-    }else {
-      return "N/A";
     }
-  }
-  
-  @Override
-  public void readFields(DataInput in) throws IOException {
-    queueName = Text.readString(in);
-    schedulingInfo = Text.readString(in);
-  }
 
-  @Override
-  public void write(DataOutput out) throws IOException {
-    Text.writeString(out, queueName);
-    if(schedulingInfo!= null) {
-      Text.writeString(out, schedulingInfo);
-    }else {
-      Text.writeString(out, "N/A");
+    /**
+     * Construct a new JobQueueInfo object using the queue name and the
+     * scheduling information passed.
+     * 
+     * @param queueName
+     *            Name of the job queue
+     * @param schedulingInfo
+     *            Scheduling Information associated with the job queue
+     */
+    public JobQueueInfo(String queueName, String schedulingInfo) {
+        this.queueName = queueName;
+        this.schedulingInfo = schedulingInfo;
     }
-  }
+
+    /**
+     * Set the queue name of the JobQueueInfo
+     * 
+     * @param queueName
+     *            Name of the job queue.
+     */
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
+    }
+
+    /**
+     * Get the queue name from JobQueueInfo
+     * 
+     * @return queue name
+     */
+    public String getQueueName() {
+        return queueName;
+    }
+
+    /**
+     * Set the scheduling information associated to particular job queue
+     * 
+     * @param schedulingInfo
+     */
+    public void setSchedulingInfo(String schedulingInfo) {
+        this.schedulingInfo = schedulingInfo;
+    }
+
+    /**
+     * Gets the scheduling information associated to particular job queue. If
+     * nothing is set would return <b>"N/A"</b>
+     * 
+     * @return Scheduling information associated to particular Job Queue
+     */
+    public String getSchedulingInfo() {
+        if (schedulingInfo != null) {
+            return schedulingInfo;
+        } else {
+            return "N/A";
+        }
+    }
+
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        queueName = Text.readString(in);
+        schedulingInfo = Text.readString(in);
+    }
+
+    @Override
+    public void write(DataOutput out) throws IOException {
+        Text.writeString(out, queueName);
+        if (schedulingInfo != null) {
+            Text.writeString(out, schedulingInfo);
+        } else {
+            Text.writeString(out, "N/A");
+        }
+    }
 }

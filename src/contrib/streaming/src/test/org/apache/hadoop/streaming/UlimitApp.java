@@ -20,26 +20,25 @@ package org.apache.hadoop.streaming;
 
 import java.io.*;
 
-/** 
- *  The UlimitApp discards the input
- *  and exec's ulimit -v to know the ulimit value.
- *  And writes the output to the standard out. 
- *  @see {@link TestUlimit}
+/**
+ * The UlimitApp discards the input and exec's ulimit -v to know the ulimit
+ * value. And writes the output to the standard out.
+ * 
+ * @see {@link TestUlimit}
  */
 public class UlimitApp {
-  public static void main(String args[]) throws IOException{
-    BufferedReader in = new BufferedReader(
-                            new InputStreamReader(System.in));
-    String line = null;
-    while ((line = in.readLine()) != null) {}
+    public static void main(String args[]) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+        String line = null;
+        while ((line = in.readLine()) != null) {
+        }
 
-    Process process = Runtime.getRuntime().exec(new String[]{
-                                 "bash", "-c", "ulimit -v"});
-    InputStream is = process.getInputStream();
-    InputStreamReader isr = new InputStreamReader(is);
-    BufferedReader br = new BufferedReader(isr);
-    while ((line = br.readLine()) != null) {
-      System.out.println(line);
+        Process process = Runtime.getRuntime().exec(new String[] { "bash", "-c", "ulimit -v" });
+        InputStream is = process.getInputStream();
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        while ((line = br.readLine()) != null) {
+            System.out.println(line);
+        }
     }
-  }
 }

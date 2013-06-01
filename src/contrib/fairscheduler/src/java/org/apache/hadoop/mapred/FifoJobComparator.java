@@ -25,18 +25,18 @@ import java.util.Comparator;
  * in the default scheduler in Hadoop.
  */
 public class FifoJobComparator implements Comparator<JobInProgress> {
-  public int compare(JobInProgress j1, JobInProgress j2) {
-    int res = j1.getPriority().compareTo(j2.getPriority());
-    if (res == 0) {
-      if (j1.getStartTime() < j2.getStartTime()) {
-        res = -1;
-      } else {
-        res = (j1.getStartTime() == j2.getStartTime() ? 0 : 1);
-      }
+    public int compare(JobInProgress j1, JobInProgress j2) {
+        int res = j1.getPriority().compareTo(j2.getPriority());
+        if (res == 0) {
+            if (j1.getStartTime() < j2.getStartTime()) {
+                res = -1;
+            } else {
+                res = (j1.getStartTime() == j2.getStartTime() ? 0 : 1);
+            }
+        }
+        if (res == 0) {
+            res = j1.hashCode() - j2.hashCode();
+        }
+        return res;
     }
-    if (res == 0) {
-      res = j1.hashCode() - j2.hashCode();
-    }
-    return res;
-  }
 }

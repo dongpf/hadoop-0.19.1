@@ -33,32 +33,31 @@ import org.apache.hadoop.mapred.Reporter;
 
 public class ValueCountReduce implements Reducer {
 
-  /**
-   * @param args
-   */
-  public static void main(String[] args) {
-    // TODO Auto-generated method stub
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
 
-  }
-
-  public void reduce(Object arg0, Iterator arg1, OutputCollector arg2, Reporter arg3) throws IOException {
-    int count = 0;
-    while (arg1.hasNext()) {
-      count += 1;
-      arg1.next();
     }
-    arg2.collect(arg0, new Text("" + count));
-  }
 
-  public void configure(JobConf arg0) {
-    // TODO Auto-generated method stub
-    
-  }
+    public void reduce(Object arg0, Iterator arg1, OutputCollector arg2, Reporter arg3) throws IOException {
+        int count = 0;
+        while (arg1.hasNext()) {
+            count += 1;
+            arg1.next();
+        }
+        arg2.collect(arg0, new Text("" + count));
+    }
 
-  public void close() throws IOException {
-    // TODO Auto-generated method stub
-    
-  }
+    public void configure(JobConf arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    public void close() throws IOException {
+        // TODO Auto-generated method stub
+
+    }
 
 }
-

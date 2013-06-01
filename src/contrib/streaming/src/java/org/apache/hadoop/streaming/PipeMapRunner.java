@@ -28,11 +28,9 @@ import java.io.IOException;
 import org.apache.hadoop.util.ReflectionUtils;
 
 public class PipeMapRunner<K1, V1, K2, V2> extends MapRunner<K1, V1, K2, V2> {
-  public void run(RecordReader<K1, V1> input, OutputCollector<K2, V2> output,
-                  Reporter reporter)
-         throws IOException {
-    PipeMapper pipeMapper = (PipeMapper)getMapper();
-    pipeMapper.startOutputThreads(output, reporter);
-    super.run(input, output, reporter);
-  }
+    public void run(RecordReader<K1, V1> input, OutputCollector<K2, V2> output, Reporter reporter) throws IOException {
+        PipeMapper pipeMapper = (PipeMapper) getMapper();
+        pipeMapper.startOutputThreads(output, reporter);
+        super.run(input, output, reporter);
+    }
 }

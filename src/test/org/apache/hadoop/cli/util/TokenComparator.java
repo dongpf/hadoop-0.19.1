@@ -21,7 +21,7 @@ package org.apache.hadoop.cli.util;
 import java.util.StringTokenizer;
 
 /**
- * Comparator for the Command line tests. 
+ * Comparator for the Command line tests.
  * 
  * This comparator compares each token in the expected output and returns true
  * if all tokens are in the actual output
@@ -29,21 +29,21 @@ import java.util.StringTokenizer;
  */
 public class TokenComparator extends ComparatorBase {
 
-  @Override
-  public boolean compare(String actual, String expected) {
-    boolean compareOutput = true;
-    
-    StringTokenizer tokenizer = new StringTokenizer(expected, ",\n\r");
-    
-    while (tokenizer.hasMoreTokens()) {
-      String token = tokenizer.nextToken();
-      if (actual.indexOf(token) != -1) {
-        compareOutput &= true;
-      } else {
-        compareOutput &= false;
-      }
+    @Override
+    public boolean compare(String actual, String expected) {
+        boolean compareOutput = true;
+
+        StringTokenizer tokenizer = new StringTokenizer(expected, ",\n\r");
+
+        while (tokenizer.hasMoreTokens()) {
+            String token = tokenizer.nextToken();
+            if (actual.indexOf(token) != -1) {
+                compareOutput &= true;
+            } else {
+                compareOutput &= false;
+            }
+        }
+
+        return compareOutput;
     }
-    
-    return compareOutput;
-  }
 }

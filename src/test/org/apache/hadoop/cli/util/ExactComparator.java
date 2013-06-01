@@ -21,14 +21,14 @@ package org.apache.hadoop.cli.util;
 /**
  * Comparator for the Command line tests.
  * 
- * This comparator compares the actual to the expected and
- * returns true only if they are the same
+ * This comparator compares the actual to the expected and returns true only if
+ * they are the same
  * 
  */
 public class ExactComparator extends ComparatorBase {
 
-  @Override
-  public boolean compare(String actual, String expected) {
-    return actual.equals(expected);
-  }
+    @Override
+    public boolean compare(String actual, String expected) {
+        return actual.equals(expected);
+    }
 }

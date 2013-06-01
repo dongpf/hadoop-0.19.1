@@ -30,41 +30,41 @@ import java.util.Iterator;
  */
 public class ArrayListBackedIterator implements ResetableIterator {
 
-  private Iterator iter;
+    private Iterator iter;
 
-  private ArrayList<Object> data;
+    private ArrayList<Object> data;
 
-  public ArrayListBackedIterator() {
-    this(new ArrayList<Object>());
-  }
+    public ArrayListBackedIterator() {
+        this(new ArrayList<Object>());
+    }
 
-  public ArrayListBackedIterator(ArrayList<Object> data) {
-    this.data = data;
-    this.iter = this.data.iterator();
-  }
+    public ArrayListBackedIterator(ArrayList<Object> data) {
+        this.data = data;
+        this.iter = this.data.iterator();
+    }
 
-  public void add(Object item) {
-    this.data.add(item);
-  }
+    public void add(Object item) {
+        this.data.add(item);
+    }
 
-  public boolean hasNext() {
-    return this.iter.hasNext();
-  }
+    public boolean hasNext() {
+        return this.iter.hasNext();
+    }
 
-  public Object next() {
-    return this.iter.next();
-  }
+    public Object next() {
+        return this.iter.next();
+    }
 
-  public void remove() {
+    public void remove() {
 
-  }
+    }
 
-  public void reset() {
-    this.iter = this.data.iterator();
-  }
+    public void reset() {
+        this.iter = this.data.iterator();
+    }
 
-  public void close() throws IOException {
-    this.iter = null;
-    this.data = null;
-  }
+    public void close() throws IOException {
+        this.iter = null;
+        this.data = null;
+    }
 }

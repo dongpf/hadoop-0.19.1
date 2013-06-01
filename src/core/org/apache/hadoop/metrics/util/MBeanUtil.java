@@ -25,63 +25,59 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.InstanceAlreadyExistsException;
 
-
 /**
- * This util class provides a method to register an MBean using
- * our standard naming convention as described in the doc
- *  for {link {@link #registerMBean(String, String, Object)}
- *
+ * This util class provides a method to register an MBean using our standard
+ * naming convention as described in the doc for {link
+ * {@link #registerMBean(String, String, Object)}
+ * 
  */
 public class MBeanUtil {
-	
-  /**
-   * Register the mbean using out standard MBeanName format
-   * "hadoop.dfs:service=<serviceName>,name=<nameName>"
-   * Where the <serviceName> and <nameName> are the supplied parameters
-   *    
-   * @param serviceName
-   * @param nameName
-   * @param theMbean - the MBean to register
-   * @return the named used to register the MBean
-   */	
-  static public ObjectName registerMBean(final String serviceName, 
-		  							final String nameName,
-		  							final Object theMbean) {
-    final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-    ObjectName name = getMBeanName(serviceName, nameName);
-    try {
-      mbs.registerMBean(theMbean, name);
-      return name;
-    } catch (InstanceAlreadyExistsException ie) {
-      // Ignore if instance already exists 
-    } catch (Exception e) {
-      e.printStackTrace();
+
+    /**
+     * Register the mbean using out standard MBeanName format
+     * "hadoop.dfs:service=<serviceName>,name=<nameName>" Where the
+     * <serviceName> and <nameName> are the supplied parameters
+     * 
+     * @param serviceName
+     * @param nameName
+     * @param theMbean
+     *            - the MBean to register
+     * @return the named used to register the MBean
+     */
+    static public ObjectName registerMBean(final String serviceName, final String nameName, final Object theMbean) {
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        ObjectName name = getMBeanName(serviceName, nameName);
+        try {
+            mbs.registerMBean(theMbean, name);
+            return name;
+        } catch (InstanceAlreadyExistsException ie) {
+            // Ignore if instance already exists
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
-    return null;
-  }
-  
-  static public void unregisterMBean(ObjectName mbeanName) {
-    final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-    if (mbeanName == null) 
-        return;
-    try {
-      mbs.unregisterMBean(mbeanName);
-    } catch (InstanceNotFoundException e ) {
-      // ignore
-    } catch (Exception e) {
-      e.printStackTrace();
-    } 
-  }
-  
-  static private ObjectName getMBeanName(final String serviceName,
-		  								 final String nameName) {
-    ObjectName name = null;
-    try {
-      name = new ObjectName("hadoop.dfs:" +
-                  "service=" + serviceName + ",name=" + nameName);
-    } catch (MalformedObjectNameException e) {
-      e.printStackTrace();
+
+    static public void unregisterMBean(ObjectName mbeanName) {
+        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+        if (mbeanName == null)
+            return;
+        try {
+            mbs.unregisterMBean(mbeanName);
+        } catch (InstanceNotFoundException e) {
+            // ignore
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-    return name;
-  }
+
+    static private ObjectName getMBeanName(final String serviceName, final String nameName) {
+        ObjectName name = null;
+        try {
+            name = new ObjectName("hadoop.dfs:" + "service=" + serviceName + ",name=" + nameName);
+        } catch (MalformedObjectNameException e) {
+            e.printStackTrace();
+        }
+        return name;
+    }
 }

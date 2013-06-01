@@ -34,74 +34,76 @@ import org.apache.hadoop.mapred.SkipBadRecords;
 /**
  * An adaptor to run a C++ mapper.
  */
-class PipesMapRunner<K1 extends WritableComparable, V1 extends Writable,
-    K2 extends WritableComparable, V2 extends Writable>
-    extends MapRunner<K1, V1, K2, V2> {
-  private JobConf job;
+class PipesMapRunner<K1 extends WritableComparable, V1 extends Writable, K2 extends WritableComparable, V2 extends Writable>
+        extends MapRunner<K1, V1, K2, V2> {
+    private JobConf job;
 
-  /**
-   * Get the new configuration.
-   * @param job the job's configuration
-   */
-  public void configure(JobConf job) {
-    this.job = job;
-    //disable the auto increment of the counter. For pipes, no of processed 
-    //records could be different(equal or less) than the no of records input.
-    SkipBadRecords.setAutoIncrMapperProcCount(job, false);
-  }
-
-  /**
-   * Run the map task.
-   * @param input the set of inputs
-   * @param output the object to collect the outputs of the map
-   * @param reporter the object to update with status
-   */
-  @SuppressWarnings("unchecked")
-  public void run(RecordReader<K1, V1> input, OutputCollector<K2, V2> output,
-                  Reporter reporter) throws IOException {
-    Application<K1, V1, K2, V2> application = null;
-    try {
-      RecordReader<FloatWritable, NullWritable> fakeInput = 
-        (!Submitter.getIsJavaRecordReader(job) && 
-         !Submitter.getIsJavaMapper(job)) ? 
-	  (RecordReader<FloatWritable, NullWritable>) input : null;
-      application = new Application<K1, V1, K2, V2>(job, fakeInput, output, 
-                                                    reporter,
-          (Class<? extends K2>) job.getOutputKeyClass(), 
-          (Class<? extends V2>) job.getOutputValueClass());
-    } catch (InterruptedException ie) {
-      throw new RuntimeException("interrupted", ie);
+    /**
+     * Get the new configuration.
+     * 
+     * @param job
+     *            the job's configuration
+     */
+    public void configure(JobConf job) {
+        this.job = job;
+        // disable the auto increment of the counter. For pipes, no of processed
+        // records could be different(equal or less) than the no of records
+        // input.
+        SkipBadRecords.setAutoIncrMapperProcCount(job, false);
     }
-    DownwardProtocol<K1, V1> downlink = application.getDownlink();
-    boolean isJavaInput = Submitter.getIsJavaRecordReader(job);
-    downlink.runMap(reporter.getInputSplit(), 
-                    job.getNumReduceTasks(), isJavaInput);
-    boolean skipping = job.getBoolean("mapred.skip.on", false);
-    try {
-      if (isJavaInput) {
-        // allocate key & value instances that are re-used for all entries
-        K1 key = input.createKey();
-        V1 value = input.createValue();
-        downlink.setInputTypes(key.getClass().getName(),
-                               value.getClass().getName());
-        
-        while (input.next(key, value)) {
-          // map pair to output
-          downlink.mapItem(key, value);
-          if(skipping) {
-            //flush the streams on every record input if running in skip mode
-            //so that we don't buffer other records surrounding a bad record.
-            downlink.flush();
-          }
+
+    /**
+     * Run the map task.
+     * 
+     * @param input
+     *            the set of inputs
+     * @param output
+     *            the object to collect the outputs of the map
+     * @param reporter
+     *            the object to update with status
+     */
+    @SuppressWarnings("unchecked")
+    public void run(RecordReader<K1, V1> input, OutputCollector<K2, V2> output, Reporter reporter) throws IOException {
+        Application<K1, V1, K2, V2> application = null;
+        try {
+            RecordReader<FloatWritable, NullWritable> fakeInput = (!Submitter.getIsJavaRecordReader(job) && !Submitter
+                    .getIsJavaMapper(job)) ? (RecordReader<FloatWritable, NullWritable>) input : null;
+            application = new Application<K1, V1, K2, V2>(job, fakeInput, output, reporter,
+                    (Class<? extends K2>) job.getOutputKeyClass(), (Class<? extends V2>) job.getOutputValueClass());
+        } catch (InterruptedException ie) {
+            throw new RuntimeException("interrupted", ie);
         }
-        downlink.endOfInput();
-      }
-      application.waitForFinish();
-    } catch (Throwable t) {
-      application.abort(t);
-    } finally {
-      application.cleanup();
+        DownwardProtocol<K1, V1> downlink = application.getDownlink();
+        boolean isJavaInput = Submitter.getIsJavaRecordReader(job);
+        downlink.runMap(reporter.getInputSplit(), job.getNumReduceTasks(), isJavaInput);
+        boolean skipping = job.getBoolean("mapred.skip.on", false);
+        try {
+            if (isJavaInput) {
+                // allocate key & value instances that are re-used for all
+                // entries
+                K1 key = input.createKey();
+                V1 value = input.createValue();
+                downlink.setInputTypes(key.getClass().getName(), value.getClass().getName());
+
+                while (input.next(key, value)) {
+                    // map pair to output
+                    downlink.mapItem(key, value);
+                    if (skipping) {
+                        // flush the streams on every record input if running in
+                        // skip mode
+                        // so that we don't buffer other records surrounding a
+                        // bad record.
+                        downlink.flush();
+                    }
+                }
+                downlink.endOfInput();
+            }
+            application.waitForFinish();
+        } catch (Throwable t) {
+            application.abort(t);
+        } finally {
+            application.cleanup();
+        }
     }
-  }
-  
+
 }

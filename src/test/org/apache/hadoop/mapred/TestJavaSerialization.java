@@ -34,118 +34,108 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.serializer.JavaSerializationComparator;
 
 public class TestJavaSerialization extends ClusterMapReduceTestCase {
-  
-  static class WordCountMapper extends MapReduceBase implements
-      Mapper<LongWritable, Text, String, Long> {
 
-    public void map(LongWritable key, Text value,
-        OutputCollector<String, Long> output, Reporter reporter)
-        throws IOException {
-      StringTokenizer st = new StringTokenizer(value.toString());
-      while (st.hasMoreTokens()) {
-        output.collect(st.nextToken(), 1L);
-      }
+    static class WordCountMapper extends MapReduceBase implements Mapper<LongWritable, Text, String, Long> {
+
+        public void map(LongWritable key, Text value, OutputCollector<String, Long> output, Reporter reporter)
+                throws IOException {
+            StringTokenizer st = new StringTokenizer(value.toString());
+            while (st.hasMoreTokens()) {
+                output.collect(st.nextToken(), 1L);
+            }
+        }
+
     }
 
-  }
-  
-  static class SumReducer<K> extends MapReduceBase implements
-      Reducer<K, Long, K, Long> {
-    
-    public void reduce(K key, Iterator<Long> values,
-        OutputCollector<K, Long> output, Reporter reporter)
-      throws IOException {
+    static class SumReducer<K> extends MapReduceBase implements Reducer<K, Long, K, Long> {
 
-      long sum = 0;
-      while (values.hasNext()) {
-        sum += values.next();
-      }
-      output.collect(key, sum);
+        public void reduce(K key, Iterator<Long> values, OutputCollector<K, Long> output, Reporter reporter)
+                throws IOException {
+
+            long sum = 0;
+            while (values.hasNext()) {
+                sum += values.next();
+            }
+            output.collect(key, sum);
+        }
+
     }
-    
-  }
-  
-  public void testMapReduceJob() throws Exception {
-    OutputStream os = getFileSystem().create(new Path(getInputDir(),
-        "text.txt"));
-    Writer wr = new OutputStreamWriter(os);
-    wr.write("b a\n");
-    wr.close();
 
-    JobConf conf = createJobConf();
-    conf.setJobName("JavaSerialization");
-    
-    conf.set("io.serializations",
-    "org.apache.hadoop.io.serializer.JavaSerialization," +
-    "org.apache.hadoop.io.serializer.WritableSerialization");
+    public void testMapReduceJob() throws Exception {
+        OutputStream os = getFileSystem().create(new Path(getInputDir(), "text.txt"));
+        Writer wr = new OutputStreamWriter(os);
+        wr.write("b a\n");
+        wr.close();
 
-    conf.setInputFormat(TextInputFormat.class);
+        JobConf conf = createJobConf();
+        conf.setJobName("JavaSerialization");
 
-    conf.setOutputKeyClass(String.class);
-    conf.setOutputValueClass(Long.class);
-    conf.setOutputKeyComparatorClass(JavaSerializationComparator.class);
+        conf.set("io.serializations", "org.apache.hadoop.io.serializer.JavaSerialization,"
+                + "org.apache.hadoop.io.serializer.WritableSerialization");
 
-    conf.setMapperClass(WordCountMapper.class);
-    conf.setReducerClass(SumReducer.class);
+        conf.setInputFormat(TextInputFormat.class);
 
-    FileInputFormat.setInputPaths(conf, getInputDir());
+        conf.setOutputKeyClass(String.class);
+        conf.setOutputValueClass(Long.class);
+        conf.setOutputKeyComparatorClass(JavaSerializationComparator.class);
 
-    FileOutputFormat.setOutputPath(conf, getOutputDir());
+        conf.setMapperClass(WordCountMapper.class);
+        conf.setReducerClass(SumReducer.class);
 
-    JobClient.runJob(conf);
+        FileInputFormat.setInputPaths(conf, getInputDir());
 
-    Path[] outputFiles = FileUtil.stat2Paths(
-                           getFileSystem().listStatus(getOutputDir(),
-                           new OutputLogFilter()));
-    assertEquals(1, outputFiles.length);
-    InputStream is = getFileSystem().open(outputFiles[0]);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    assertEquals("a\t1", reader.readLine());
-    assertEquals("b\t1", reader.readLine());
-    assertNull(reader.readLine());
-    reader.close();
-  }
+        FileOutputFormat.setOutputPath(conf, getOutputDir());
 
-  /**
-   * HADOOP-4466:
-   * This test verifies the JavSerialization impl can write to SequenceFiles. by virtue other
-   * SequenceFileOutputFormat is not coupled to Writable types, if so, the job will fail.
-   *
-   */
-  public void testWriteToSequencefile() throws Exception {
-    OutputStream os = getFileSystem().create(new Path(getInputDir(),
-        "text.txt"));
-    Writer wr = new OutputStreamWriter(os);
-    wr.write("b a\n");
-    wr.close();
+        JobClient.runJob(conf);
 
-    JobConf conf = createJobConf();
-    conf.setJobName("JavaSerialization");
+        Path[] outputFiles = FileUtil.stat2Paths(getFileSystem().listStatus(getOutputDir(), new OutputLogFilter()));
+        assertEquals(1, outputFiles.length);
+        InputStream is = getFileSystem().open(outputFiles[0]);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        assertEquals("a\t1", reader.readLine());
+        assertEquals("b\t1", reader.readLine());
+        assertNull(reader.readLine());
+        reader.close();
+    }
 
-    conf.set("io.serializations",
-    "org.apache.hadoop.io.serializer.JavaSerialization," +
-    "org.apache.hadoop.io.serializer.WritableSerialization");
+    /**
+     * HADOOP-4466: This test verifies the JavSerialization impl can write to
+     * SequenceFiles. by virtue other SequenceFileOutputFormat is not coupled to
+     * Writable types, if so, the job will fail.
+     * 
+     */
+    public void testWriteToSequencefile() throws Exception {
+        OutputStream os = getFileSystem().create(new Path(getInputDir(), "text.txt"));
+        Writer wr = new OutputStreamWriter(os);
+        wr.write("b a\n");
+        wr.close();
 
-    conf.setInputFormat(TextInputFormat.class);
-    conf.setOutputFormat(SequenceFileOutputFormat.class); // test we can write to sequence files
+        JobConf conf = createJobConf();
+        conf.setJobName("JavaSerialization");
 
-    conf.setOutputKeyClass(String.class);
-    conf.setOutputValueClass(Long.class);
-    conf.setOutputKeyComparatorClass(JavaSerializationComparator.class);
+        conf.set("io.serializations", "org.apache.hadoop.io.serializer.JavaSerialization,"
+                + "org.apache.hadoop.io.serializer.WritableSerialization");
 
-    conf.setMapperClass(WordCountMapper.class);
-    conf.setReducerClass(SumReducer.class);
+        conf.setInputFormat(TextInputFormat.class);
+        conf.setOutputFormat(SequenceFileOutputFormat.class); // test we can
+                                                              // write to
+                                                              // sequence files
 
-    FileInputFormat.setInputPaths(conf, getInputDir());
+        conf.setOutputKeyClass(String.class);
+        conf.setOutputValueClass(Long.class);
+        conf.setOutputKeyComparatorClass(JavaSerializationComparator.class);
 
-    FileOutputFormat.setOutputPath(conf, getOutputDir());
+        conf.setMapperClass(WordCountMapper.class);
+        conf.setReducerClass(SumReducer.class);
 
-    JobClient.runJob(conf);
+        FileInputFormat.setInputPaths(conf, getInputDir());
 
-    Path[] outputFiles = FileUtil.stat2Paths(
-                           getFileSystem().listStatus(getOutputDir(),
-                           new OutputLogFilter()));
-    assertEquals(1, outputFiles.length);
-}
+        FileOutputFormat.setOutputPath(conf, getOutputDir());
+
+        JobClient.runJob(conf);
+
+        Path[] outputFiles = FileUtil.stat2Paths(getFileSystem().listStatus(getOutputDir(), new OutputLogFilter()));
+        assertEquals(1, outputFiles.length);
+    }
 
 }

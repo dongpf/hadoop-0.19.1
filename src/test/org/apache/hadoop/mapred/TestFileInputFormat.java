@@ -29,61 +29,54 @@ import org.apache.hadoop.hdfs.MiniDFSCluster;
 
 public class TestFileInputFormat extends TestCase {
 
-  public void testLocality() throws Exception {
-    JobConf conf = new JobConf();
-    MiniDFSCluster dfs = null;
-    try {
-      dfs = new MiniDFSCluster(conf, 4, true,
-                               new String[]{"/rack0", "/rack0", 
-                                             "/rack1", "/rack1"},
-                               new String[]{"host0", "host1", 
-                                            "host2", "host3"});
-      FileSystem fs = dfs.getFileSystem();
-      System.out.println("FileSystem " + fs.getUri());
-      Path path = new Path("/foo/bar");
-      // create a multi-block file on hdfs
-      DataOutputStream out = fs.create(path, true, 4096, 
-                                       (short) 2, 512, null);
-      for(int i=0; i < 1000; ++i) {
-        out.writeChars("Hello\n");
-      }
-      out.close();
-      System.out.println("Wrote file");
+    public void testLocality() throws Exception {
+        JobConf conf = new JobConf();
+        MiniDFSCluster dfs = null;
+        try {
+            dfs = new MiniDFSCluster(conf, 4, true, new String[] { "/rack0", "/rack0", "/rack1", "/rack1" },
+                    new String[] { "host0", "host1", "host2", "host3" });
+            FileSystem fs = dfs.getFileSystem();
+            System.out.println("FileSystem " + fs.getUri());
+            Path path = new Path("/foo/bar");
+            // create a multi-block file on hdfs
+            DataOutputStream out = fs.create(path, true, 4096, (short) 2, 512, null);
+            for (int i = 0; i < 1000; ++i) {
+                out.writeChars("Hello\n");
+            }
+            out.close();
+            System.out.println("Wrote file");
 
-      // split it using a file input format
-      TextInputFormat.addInputPath(conf, path);
-      TextInputFormat inFormat = new TextInputFormat();
-      inFormat.configure(conf);
-      InputSplit[] splits = inFormat.getSplits(conf, 1);
-      FileStatus fileStatus = fs.getFileStatus(path);
-      BlockLocation[] locations = 
-        fs.getFileBlockLocations(fileStatus, 0, fileStatus.getLen());
-      System.out.println("Made splits");
+            // split it using a file input format
+            TextInputFormat.addInputPath(conf, path);
+            TextInputFormat inFormat = new TextInputFormat();
+            inFormat.configure(conf);
+            InputSplit[] splits = inFormat.getSplits(conf, 1);
+            FileStatus fileStatus = fs.getFileStatus(path);
+            BlockLocation[] locations = fs.getFileBlockLocations(fileStatus, 0, fileStatus.getLen());
+            System.out.println("Made splits");
 
-      // make sure that each split is a block and the locations match
-      for(int i=0; i < splits.length; ++i) {
-        FileSplit fileSplit = (FileSplit) splits[i];
-        System.out.println("File split: " + fileSplit);
-        for (String h: fileSplit.getLocations()) {
-          System.out.println("Location: " + h);
+            // make sure that each split is a block and the locations match
+            for (int i = 0; i < splits.length; ++i) {
+                FileSplit fileSplit = (FileSplit) splits[i];
+                System.out.println("File split: " + fileSplit);
+                for (String h : fileSplit.getLocations()) {
+                    System.out.println("Location: " + h);
+                }
+                System.out.println("Block: " + locations[i]);
+                assertEquals(locations[i].getOffset(), fileSplit.getStart());
+                assertEquals(locations[i].getLength(), fileSplit.getLength());
+                String[] blockLocs = locations[i].getHosts();
+                String[] splitLocs = fileSplit.getLocations();
+                assertEquals(2, blockLocs.length);
+                assertEquals(2, splitLocs.length);
+                assertTrue((blockLocs[0].equals(splitLocs[0]) && blockLocs[1].equals(splitLocs[1]))
+                        || (blockLocs[1].equals(splitLocs[0]) && blockLocs[0].equals(splitLocs[1])));
+            }
+        } finally {
+            if (dfs != null) {
+                dfs.shutdown();
+            }
         }
-        System.out.println("Block: " + locations[i]);
-        assertEquals(locations[i].getOffset(), fileSplit.getStart());
-        assertEquals(locations[i].getLength(), fileSplit.getLength());
-        String[] blockLocs = locations[i].getHosts();
-        String[] splitLocs = fileSplit.getLocations();
-        assertEquals(2, blockLocs.length);
-        assertEquals(2, splitLocs.length);
-        assertTrue((blockLocs[0].equals(splitLocs[0]) && 
-                    blockLocs[1].equals(splitLocs[1])) ||
-                   (blockLocs[1].equals(splitLocs[0]) &&
-                    blockLocs[0].equals(splitLocs[1])));
-      }
-    } finally {
-      if (dfs != null) {
-        dfs.shutdown();
-      }
     }
-  }
 
 }

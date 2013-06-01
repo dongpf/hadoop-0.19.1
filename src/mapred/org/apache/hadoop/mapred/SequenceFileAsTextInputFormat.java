@@ -23,23 +23,21 @@ import java.io.IOException;
 import org.apache.hadoop.io.Text;
 
 /**
- * This class is similar to SequenceFileInputFormat, except it generates SequenceFileAsTextRecordReader 
- * which converts the input keys and values to their String forms by calling toString() method. 
+ * This class is similar to SequenceFileInputFormat, except it generates
+ * SequenceFileAsTextRecordReader which converts the input keys and values to
+ * their String forms by calling toString() method.
  */
-public class SequenceFileAsTextInputFormat
-  extends SequenceFileInputFormat<Text, Text> {
+public class SequenceFileAsTextInputFormat extends SequenceFileInputFormat<Text, Text> {
 
-  public SequenceFileAsTextInputFormat() {
-    super();
-  }
+    public SequenceFileAsTextInputFormat() {
+        super();
+    }
 
-  public RecordReader<Text, Text> getRecordReader(InputSplit split,
-                                                  JobConf job,
-                                                  Reporter reporter)
-    throws IOException {
+    public RecordReader<Text, Text> getRecordReader(InputSplit split, JobConf job, Reporter reporter)
+            throws IOException {
 
-    reporter.setStatus(split.toString());
+        reporter.setStatus(split.toString());
 
-    return new SequenceFileAsTextRecordReader(job, (FileSplit) split);
-  }
+        return new SequenceFileAsTextRecordReader(job, (FileSplit) split);
+    }
 }

@@ -36,72 +36,66 @@ import org.apache.hadoop.mapred.lib.IdentityMapper;
 
 public class TestJobName extends ClusterMapReduceTestCase {
 
-  public void testComplexName() throws Exception {
-    OutputStream os = getFileSystem().create(new Path(getInputDir(),
-        "text.txt"));
-    Writer wr = new OutputStreamWriter(os);
-    wr.write("b a\n");
-    wr.close();
+    public void testComplexName() throws Exception {
+        OutputStream os = getFileSystem().create(new Path(getInputDir(), "text.txt"));
+        Writer wr = new OutputStreamWriter(os);
+        wr.write("b a\n");
+        wr.close();
 
-    JobConf conf = createJobConf();
-    conf.setJobName("[name][some other value that gets truncated internally that this test attempts to aggravate]");
+        JobConf conf = createJobConf();
+        conf.setJobName("[name][some other value that gets truncated internally that this test attempts to aggravate]");
 
-    conf.setInputFormat(TextInputFormat.class);
+        conf.setInputFormat(TextInputFormat.class);
 
-    conf.setOutputKeyClass(LongWritable.class);
-    conf.setOutputValueClass(Text.class);
+        conf.setOutputKeyClass(LongWritable.class);
+        conf.setOutputValueClass(Text.class);
 
-    conf.setMapperClass(IdentityMapper.class);
+        conf.setMapperClass(IdentityMapper.class);
 
-    FileInputFormat.setInputPaths(conf, getInputDir());
+        FileInputFormat.setInputPaths(conf, getInputDir());
 
-    FileOutputFormat.setOutputPath(conf, getOutputDir());
+        FileOutputFormat.setOutputPath(conf, getOutputDir());
 
-    JobClient.runJob(conf);
+        JobClient.runJob(conf);
 
-    Path[] outputFiles = FileUtil.stat2Paths(
-                           getFileSystem().listStatus(getOutputDir(),
-                           new OutputLogFilter()));
-    assertEquals(1, outputFiles.length);
-    InputStream is = getFileSystem().open(outputFiles[0]);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    assertEquals("0\tb a", reader.readLine());
-    assertNull(reader.readLine());
-    reader.close();
-  }
+        Path[] outputFiles = FileUtil.stat2Paths(getFileSystem().listStatus(getOutputDir(), new OutputLogFilter()));
+        assertEquals(1, outputFiles.length);
+        InputStream is = getFileSystem().open(outputFiles[0]);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        assertEquals("0\tb a", reader.readLine());
+        assertNull(reader.readLine());
+        reader.close();
+    }
 
-  public void testComplexNameWithRegex() throws Exception {
-    OutputStream os = getFileSystem().create(new Path(getInputDir(),
-        "text.txt"));
-    Writer wr = new OutputStreamWriter(os);
-    wr.write("b a\n");
-    wr.close();
+    public void testComplexNameWithRegex() throws Exception {
+        OutputStream os = getFileSystem().create(new Path(getInputDir(), "text.txt"));
+        Writer wr = new OutputStreamWriter(os);
+        wr.write("b a\n");
+        wr.close();
 
-    JobConf conf = createJobConf();
-    conf.setJobName("name \\Evalue]");
+        JobConf conf = createJobConf();
+        conf.setJobName("name \\Evalue]");
 
-    conf.setInputFormat(TextInputFormat.class);
+        conf.setInputFormat(TextInputFormat.class);
 
-    conf.setOutputKeyClass(LongWritable.class);
-    conf.setOutputValueClass(Text.class);
+        conf.setOutputKeyClass(LongWritable.class);
+        conf.setOutputValueClass(Text.class);
 
-    conf.setMapperClass(IdentityMapper.class);
+        conf.setMapperClass(IdentityMapper.class);
 
-    FileInputFormat.setInputPaths(conf, getInputDir());
+        FileInputFormat.setInputPaths(conf, getInputDir());
 
-    FileOutputFormat.setOutputPath(conf, getOutputDir());
+        FileOutputFormat.setOutputPath(conf, getOutputDir());
 
-    JobClient.runJob(conf);
+        JobClient.runJob(conf);
 
-    Path[] outputFiles = FileUtil.stat2Paths(
-                           getFileSystem().listStatus(getOutputDir(),
-                           new OutputLogFilter()));
-    assertEquals(1, outputFiles.length);
-    InputStream is = getFileSystem().open(outputFiles[0]);
-    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    assertEquals("0\tb a", reader.readLine());
-    assertNull(reader.readLine());
-    reader.close();
-  }
+        Path[] outputFiles = FileUtil.stat2Paths(getFileSystem().listStatus(getOutputDir(), new OutputLogFilter()));
+        assertEquals(1, outputFiles.length);
+        InputStream is = getFileSystem().open(outputFiles[0]);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        assertEquals("0\tb a", reader.readLine());
+        assertNull(reader.readLine());
+        reader.close();
+    }
 
 }

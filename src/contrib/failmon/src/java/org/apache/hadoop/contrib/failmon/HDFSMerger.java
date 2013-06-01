@@ -45,110 +45,109 @@ import org.apache.hadoop.fs.FSDataInputStream;
 
 public class HDFSMerger {
 
-  Configuration hadoopConf;
-  FileSystem hdfs;
-  
-  String hdfsDir;
-  
-  FileStatus [] inputFiles;
+    Configuration hadoopConf;
+    FileSystem hdfs;
 
-  Path outputFilePath;
-  FSDataOutputStream outputFile;
-    
-  boolean compress;
+    String hdfsDir;
 
-  FileWriter fw;
+    FileStatus[] inputFiles;
 
-  BufferedWriter writer;
+    Path outputFilePath;
+    FSDataOutputStream outputFile;
 
-  public HDFSMerger() throws IOException {
+    boolean compress;
 
-    String hadoopConfPath; 
+    FileWriter fw;
 
-    if (Environment.getProperty("hadoop.conf.path") == null)
-      hadoopConfPath = "../../../conf";
-    else
-      hadoopConfPath = Environment.getProperty("hadoop.conf.path");
+    BufferedWriter writer;
 
-    // Read the configuration for the Hadoop environment
-    Configuration hadoopConf = new Configuration();
-    hadoopConf.addResource(new Path(hadoopConfPath + "/hadoop-default.xml"));
-    hadoopConf.addResource(new Path(hadoopConfPath + "/hadoop-site.xml"));
-    
-    // determine the local output file name
-    if (Environment.getProperty("local.tmp.filename") == null)
-      Environment.setProperty("local.tmp.filename", "failmon.dat");
-    
-    // determine the upload location
-    hdfsDir = Environment.getProperty("hdfs.upload.dir");
-    if (hdfsDir == null)
-      hdfsDir = "/failmon";
+    public HDFSMerger() throws IOException {
 
-    hdfs = FileSystem.get(hadoopConf);
-    
-    Path hdfsDirPath = new Path(hadoopConf.get("fs.default.name") + hdfsDir);
+        String hadoopConfPath;
 
-    try {
-      if (!hdfs.getFileStatus(hdfsDirPath).isDir()) {
-	Environment.logInfo("HDFSMerger: Not an HDFS directory: " + hdfsDirPath.toString());
-	System.exit(0);
-      }
-    } catch (FileNotFoundException e) {
-      Environment.logInfo("HDFSMerger: Directory not found: " + hdfsDirPath.toString());
+        if (Environment.getProperty("hadoop.conf.path") == null)
+            hadoopConfPath = "../../../conf";
+        else
+            hadoopConfPath = Environment.getProperty("hadoop.conf.path");
+
+        // Read the configuration for the Hadoop environment
+        Configuration hadoopConf = new Configuration();
+        hadoopConf.addResource(new Path(hadoopConfPath + "/hadoop-default.xml"));
+        hadoopConf.addResource(new Path(hadoopConfPath + "/hadoop-site.xml"));
+
+        // determine the local output file name
+        if (Environment.getProperty("local.tmp.filename") == null)
+            Environment.setProperty("local.tmp.filename", "failmon.dat");
+
+        // determine the upload location
+        hdfsDir = Environment.getProperty("hdfs.upload.dir");
+        if (hdfsDir == null)
+            hdfsDir = "/failmon";
+
+        hdfs = FileSystem.get(hadoopConf);
+
+        Path hdfsDirPath = new Path(hadoopConf.get("fs.default.name") + hdfsDir);
+
+        try {
+            if (!hdfs.getFileStatus(hdfsDirPath).isDir()) {
+                Environment.logInfo("HDFSMerger: Not an HDFS directory: " + hdfsDirPath.toString());
+                System.exit(0);
+            }
+        } catch (FileNotFoundException e) {
+            Environment.logInfo("HDFSMerger: Directory not found: " + hdfsDirPath.toString());
+        }
+
+        inputFiles = hdfs.listStatus(hdfsDirPath);
+
+        outputFilePath = new Path(hdfsDirPath.toString() + "/" + "merge-" + Calendar.getInstance().getTimeInMillis()
+                + ".dat");
+        outputFile = hdfs.create(outputFilePath);
+
+        for (FileStatus fstatus : inputFiles) {
+            appendFile(fstatus.getPath());
+            hdfs.delete(fstatus.getPath());
+        }
+
+        outputFile.close();
+
+        Environment.logInfo("HDFS file merging complete!");
     }
 
-    inputFiles = hdfs.listStatus(hdfsDirPath);
+    private void appendFile(Path inputPath) throws IOException {
 
-    outputFilePath = new Path(hdfsDirPath.toString() + "/" + "merge-"
-			  + Calendar.getInstance().getTimeInMillis() + ".dat");
-    outputFile = hdfs.create(outputFilePath);
-    
-    for (FileStatus fstatus : inputFiles) {
-      appendFile(fstatus.getPath());
-      hdfs.delete(fstatus.getPath());
+        FSDataInputStream anyInputFile = hdfs.open(inputPath);
+        InputStream inputFile;
+        byte buffer[] = new byte[4096];
+
+        if (inputPath.toString().endsWith(LocalStore.COMPRESSION_SUFFIX)) {
+            // the file is compressed
+            inputFile = new ZipInputStream(anyInputFile);
+            ((ZipInputStream) inputFile).getNextEntry();
+        } else {
+            inputFile = anyInputFile;
+        }
+
+        try {
+            int bytesRead = 0;
+            while ((bytesRead = inputFile.read(buffer)) > 0) {
+                outputFile.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            Environment.logInfo("Error while copying file:" + inputPath.toString());
+        } finally {
+            inputFile.close();
+        }
     }
 
-    outputFile.close();
+    public static void main(String[] args) {
 
-    Environment.logInfo("HDFS file merging complete!");
-  }
+        Environment.prepare("./conf/failmon.properties");
 
-  private void appendFile (Path inputPath) throws IOException {
-    
-    FSDataInputStream anyInputFile = hdfs.open(inputPath);
-    InputStream inputFile;
-    byte buffer[] = new byte[4096];
-    
-    if (inputPath.toString().endsWith(LocalStore.COMPRESSION_SUFFIX)) {
-      // the file is compressed
-      inputFile = new ZipInputStream(anyInputFile);
-      ((ZipInputStream) inputFile).getNextEntry();
-    } else {
-      inputFile = anyInputFile;
+        try {
+            new HDFSMerger();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
-    
-    try {
-      int bytesRead = 0;
-      while ((bytesRead = inputFile.read(buffer)) > 0) {
-	outputFile.write(buffer, 0, bytesRead);
-      }
-    } catch (IOException e) {
-      Environment.logInfo("Error while copying file:" + inputPath.toString());
-    } finally {
-      inputFile.close();
-    }    
-  }
-
-  
-  public static void main(String [] args) {
-
-    Environment.prepare("./conf/failmon.properties");
-
-    try {
-      new HDFSMerger();
-    } catch (IOException e) {
-      e.printStackTrace();
-      }
-
-  }
 }

@@ -20,89 +20,98 @@ package org.apache.hadoop.hdfs.server.namenode.metrics;
 /**
  * 
  * This Interface defines the methods to get the status of a the FSNamesystem of
- * a name node.
- * It is also used for publishing via JMX (hence we follow the JMX naming
- * convention.)
+ * a name node. It is also used for publishing via JMX (hence we follow the JMX
+ * naming convention.)
  * 
  * <p>
- * Name Node runtime statistic  info is report in another MBean
+ * Name Node runtime statistic info is report in another MBean
+ * 
  * @see org.apache.hadoop.hdfs.server.namenode.metrics.NameNodeStatisticsMBean
- *
+ * 
  */
 public interface FSNamesystemMBean {
 
-  /**
-   * The state of the file system: Safemode or Operational
-   * @return the state
-   */
-  public String getFSState();
-  
-  
-  /**
-   * Number of allocated blocks in the system
-   * @return -  number of allocated blocks
-   */
-  public long getBlocksTotal();
+    /**
+     * The state of the file system: Safemode or Operational
+     * 
+     * @return the state
+     */
+    public String getFSState();
 
-  /**
-   * Total storage capacity
-   * @return -  total capacity in bytes
-   */
-  public long getCapacityTotal();
+    /**
+     * Number of allocated blocks in the system
+     * 
+     * @return - number of allocated blocks
+     */
+    public long getBlocksTotal();
 
+    /**
+     * Total storage capacity
+     * 
+     * @return - total capacity in bytes
+     */
+    public long getCapacityTotal();
 
-  /**
-   * Free (unused) storage capacity
-   * @return -  free capacity in bytes
-   */
-  public long getCapacityRemaining();
- 
-  /**
-   * Used storage capacity
-   * @return -  used capacity in bytes
-   */
-  public long getCapacityUsed();
- 
+    /**
+     * Free (unused) storage capacity
+     * 
+     * @return - free capacity in bytes
+     */
+    public long getCapacityRemaining();
 
-  /**
-   * Total number of files and directories
-   * @return -  num of files and directories
-   */
-  public long getFilesTotal();
- 
-  /**
-   * Blocks pending to be replicated
-   * @return -  num of blocks to be replicated
-   */
-  public long getPendingReplicationBlocks();
- 
-  /**
-   * Blocks under replicated 
-   * @return -  num of blocks under replicated
-   */
-  public long getUnderReplicatedBlocks();
- 
-  /**
-   * Blocks scheduled for replication
-   * @return -  num of blocks scheduled for replication
-   */
-  public long getScheduledReplicationBlocks();
+    /**
+     * Used storage capacity
+     * 
+     * @return - used capacity in bytes
+     */
+    public long getCapacityUsed();
 
-  /**
-   * Total Load on the FSNamesystem
-   * @return -  total load of FSNamesystem
-   */
-  public int getTotalLoad();
+    /**
+     * Total number of files and directories
+     * 
+     * @return - num of files and directories
+     */
+    public long getFilesTotal();
 
-  /**
-   * Number of Live data nodes
-   * @return number of live data nodes
-   */
-  public int numLiveDataNodes();
-  
-  /**
-   * Number of dead data nodes
-   * @return number of dead data nodes
-   */
-  public int numDeadDataNodes();
+    /**
+     * Blocks pending to be replicated
+     * 
+     * @return - num of blocks to be replicated
+     */
+    public long getPendingReplicationBlocks();
+
+    /**
+     * Blocks under replicated
+     * 
+     * @return - num of blocks under replicated
+     */
+    public long getUnderReplicatedBlocks();
+
+    /**
+     * Blocks scheduled for replication
+     * 
+     * @return - num of blocks scheduled for replication
+     */
+    public long getScheduledReplicationBlocks();
+
+    /**
+     * Total Load on the FSNamesystem
+     * 
+     * @return - total load of FSNamesystem
+     */
+    public int getTotalLoad();
+
+    /**
+     * Number of Live data nodes
+     * 
+     * @return number of live data nodes
+     */
+    public int numLiveDataNodes();
+
+    /**
+     * Number of dead data nodes
+     * 
+     * @return number of dead data nodes
+     */
+    public int numDeadDataNodes();
 }

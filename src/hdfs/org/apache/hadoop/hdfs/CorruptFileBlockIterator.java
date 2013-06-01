@@ -26,81 +26,81 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.RemoteIterator;
 
 /**
- * Provides an iterator interface for listCorruptFileBlocks.
- * This class is used by DistributedFileSystem and Hdfs.
+ * Provides an iterator interface for listCorruptFileBlocks. This class is used
+ * by DistributedFileSystem and Hdfs.
  */
 public class CorruptFileBlockIterator implements RemoteIterator<Path> {
-  private final DFSClient dfs;
-  private String path;
+    private final DFSClient dfs;
+    private String path;
 
-  private String[] files = null;
-  private int fileIdx = 0;
-  private String cookie = null;
-  private Path nextPath = null;
+    private String[] files = null;
+    private int fileIdx = 0;
+    private String cookie = null;
+    private Path nextPath = null;
 
-  private int callsMade = 0;
+    private int callsMade = 0;
 
-  public CorruptFileBlockIterator(DFSClient dfs, Path path) throws IOException {
-    this.dfs = dfs;
-    this.path = path2String(path);
-    loadNext();
-  }
-
-  /**
-   * @return the number of calls made to the DFSClient.
-   * This is for debugging and testing purposes.
-   */
-  public int getCallsMade() {
-    return callsMade;
-  }
-
-  private String path2String(Path path) {
-    return path.toUri().getPath();
-  }
-
-  private Path string2Path(String string) {
-    return new Path(string);
-  }
-
-  private void loadNext() throws IOException {
-    if (files == null || fileIdx >= files.length) {
-      CorruptFileBlocks cfb = dfs.listCorruptFileBlocks(path, cookie);
-      files = cfb.getFiles();
-      cookie = cfb.getCookie();
-      fileIdx = 0;
-      callsMade++;
+    public CorruptFileBlockIterator(DFSClient dfs, Path path) throws IOException {
+        this.dfs = dfs;
+        this.path = path2String(path);
+        loadNext();
     }
 
-    if (fileIdx >= files.length) {
-      // received an empty response
-      // there are no more corrupt file blocks
-      nextPath = null;
-    } else {
-      nextPath = string2Path(files[fileIdx]);
-      fileIdx++;
-    }
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public boolean hasNext() {
-    return nextPath != null;
-  }
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override
-  public Path next() throws IOException {
-    if (!hasNext()) {
-      throw new NoSuchElementException("No more corrupt file blocks");
+    /**
+     * @return the number of calls made to the DFSClient. This is for debugging
+     *         and testing purposes.
+     */
+    public int getCallsMade() {
+        return callsMade;
     }
 
-    Path result = nextPath;
-    loadNext();
+    private String path2String(Path path) {
+        return path.toUri().getPath();
+    }
 
-    return result;
-  }
+    private Path string2Path(String string) {
+        return new Path(string);
+    }
+
+    private void loadNext() throws IOException {
+        if (files == null || fileIdx >= files.length) {
+            CorruptFileBlocks cfb = dfs.listCorruptFileBlocks(path, cookie);
+            files = cfb.getFiles();
+            cookie = cfb.getCookie();
+            fileIdx = 0;
+            callsMade++;
+        }
+
+        if (fileIdx >= files.length) {
+            // received an empty response
+            // there are no more corrupt file blocks
+            nextPath = null;
+        } else {
+            nextPath = string2Path(files[fileIdx]);
+            fileIdx++;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasNext() {
+        return nextPath != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Path next() throws IOException {
+        if (!hasNext()) {
+            throw new NoSuchElementException("No more corrupt file blocks");
+        }
+
+        Path result = nextPath;
+        loadNext();
+
+        return result;
+    }
 }

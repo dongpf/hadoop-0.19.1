@@ -19,28 +19,28 @@ package org.apache.hadoop.mapred;
 
 class JobTrackerInstrumentation {
 
-  protected final JobTracker tracker;
-  
-  public JobTrackerInstrumentation(JobTracker jt, JobConf conf) {
-    tracker = jt;
-  }
+    protected final JobTracker tracker;
 
-  public void launchMap(TaskAttemptID taskAttemptID)
-  { }
+    public JobTrackerInstrumentation(JobTracker jt, JobConf conf) {
+        tracker = jt;
+    }
 
-  public void completeMap(TaskAttemptID taskAttemptID)
-  { }
+    public void launchMap(TaskAttemptID taskAttemptID) {
+    }
 
-  public void launchReduce(TaskAttemptID taskAttemptID)
-  { }
+    public void completeMap(TaskAttemptID taskAttemptID) {
+    }
 
-  public void completeReduce(TaskAttemptID taskAttemptID)
-  {  }
-  
-  public void submitJob(JobConf conf, JobID id) 
-  { }
-    
-  public void completeJob(JobConf conf, JobID id) 
-  { }
+    public void launchReduce(TaskAttemptID taskAttemptID) {
+    }
+
+    public void completeReduce(TaskAttemptID taskAttemptID) {
+    }
+
+    public void submitJob(JobConf conf, JobID id) {
+    }
+
+    public void completeJob(JobConf conf, JobID id) {
+    }
 
 }

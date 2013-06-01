@@ -23,28 +23,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Comparator for the Command line tests. 
+ * Comparator for the Command line tests.
  * 
  * This comparator searches for the regular expression specified in 'expected'
- * in the string 'actual' and returns true if the regular expression match is 
+ * in the string 'actual' and returns true if the regular expression match is
  * done
  * 
  */
 public class RegexpComparator extends ComparatorBase {
 
-  @Override
-  public boolean compare(String actual, String expected) {
-    boolean success = false;
-    Pattern p = Pattern.compile(expected);
-    
-    StringTokenizer tokenizer = new StringTokenizer(actual, "\n\r");
-    while (tokenizer.hasMoreTokens() && !success) {
-      String actualToken = tokenizer.nextToken();
-      Matcher m = p.matcher(actualToken);
-      success = m.matches();
+    @Override
+    public boolean compare(String actual, String expected) {
+        boolean success = false;
+        Pattern p = Pattern.compile(expected);
+
+        StringTokenizer tokenizer = new StringTokenizer(actual, "\n\r");
+        while (tokenizer.hasMoreTokens() && !success) {
+            String actualToken = tokenizer.nextToken();
+            Matcher m = p.matcher(actualToken);
+            success = m.matches();
+        }
+
+        return success;
     }
-    
-    return success;
-  }
 
 }

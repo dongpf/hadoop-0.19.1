@@ -28,16 +28,13 @@ import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.mapred.MapReduceBase;
 
 /** Performs no reduction, writing all input values directly to the output. */
-public class IdentityReducer<K, V>
-    extends MapReduceBase implements Reducer<K, V, K, V> {
+public class IdentityReducer<K, V> extends MapReduceBase implements Reducer<K, V, K, V> {
 
-  /** Writes all keys and values directly to output. */
-  public void reduce(K key, Iterator<V> values,
-                     OutputCollector<K, V> output, Reporter reporter)
-    throws IOException {
-    while (values.hasNext()) {
-      output.collect(key, values.next());
+    /** Writes all keys and values directly to output. */
+    public void reduce(K key, Iterator<V> values, OutputCollector<K, V> output, Reporter reporter) throws IOException {
+        while (values.hasNext()) {
+            output.collect(key, values.next());
+        }
     }
-  }
-	
+
 }

@@ -18,11 +18,12 @@
 package org.apache.hadoop.hdfs.server.common;
 
 public final class Util {
-  /**
-   * Current system time.
-   * @return current time in msec.
-   */
-  public static long now() {
-    return System.currentTimeMillis();
-  }
+    /**
+     * Current system time.
+     * 
+     * @return current time in msec.
+     */
+    public static long now() {
+        return System.currentTimeMillis();
+    }
 }

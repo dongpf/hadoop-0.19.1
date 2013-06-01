@@ -20,5 +20,5 @@ package org.apache.hadoop.io;
 
 /** @deprecated use java.io.Closeable */
 @Deprecated
-public interface Closeable extends java.io.Closeable{
+public interface Closeable extends java.io.Closeable {
 }

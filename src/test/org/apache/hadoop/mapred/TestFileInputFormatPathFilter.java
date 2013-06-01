@@ -32,115 +32,110 @@ import java.util.HashSet;
 
 public class TestFileInputFormatPathFilter extends TestCase {
 
-  public static class DummyFileInputFormat extends FileInputFormat {
+    public static class DummyFileInputFormat extends FileInputFormat {
 
-    public RecordReader getRecordReader(InputSplit split, JobConf job,
-                                        Reporter reporter) throws IOException {
-      return null;
+        public RecordReader getRecordReader(InputSplit split, JobConf job, Reporter reporter) throws IOException {
+            return null;
+        }
+
     }
 
-  }
+    private static FileSystem localFs = null;
 
-  private static FileSystem localFs = null;
-
-  static {
-    try {
-      localFs = FileSystem.getLocal(new JobConf());
-    } catch (IOException e) {
-      throw new RuntimeException("init failure", e);
-    }
-  }
-
-  private static Path workDir =
-      new Path(new Path(System.getProperty("test.build.data", "."), "data"),
-          "TestFileInputFormatPathFilter");
-
-
-  public void setUp() throws Exception {
-    tearDown();
-    localFs.mkdirs(workDir);
-  }
-
-  public void tearDown() throws Exception {
-    if (localFs.exists(workDir)) {
-      localFs.delete(workDir, true);
-    }
-  }
-
-  protected Path createFile(String fileName) throws IOException {
-    Path file = new Path(workDir, fileName);
-    Writer writer = new OutputStreamWriter(localFs.create(file));
-    writer.write("");
-    writer.close();
-    return localFs.makeQualified(file);
-  }
-
-  protected Set<Path> createFiles() throws IOException {
-    Set<Path> files = new HashSet<Path>();
-    files.add(createFile("a"));
-    files.add(createFile("b"));
-    files.add(createFile("aa"));
-    files.add(createFile("bb"));
-    files.add(createFile("_hello"));
-    files.add(createFile(".hello"));
-    return files;
-  }
-
-
-  public static class TestPathFilter implements PathFilter {
-
-    public boolean accept(Path path) {
-      return path.getName().length() == 1;
-    }
-  }
-
-  private void _testInputFiles(boolean withFilter, boolean withGlob) throws Exception {
-    Set<Path> createdFiles = createFiles();
-    JobConf conf = new JobConf();
-
-    Path inputDir = (withGlob) ? new Path(workDir, "a*") : workDir;
-    FileInputFormat.setInputPaths(conf, inputDir);
-    conf.setInputFormat(DummyFileInputFormat.class);
-
-    if (withFilter) {
-      FileInputFormat.setInputPathFilter(conf, TestPathFilter.class);
+    static {
+        try {
+            localFs = FileSystem.getLocal(new JobConf());
+        } catch (IOException e) {
+            throw new RuntimeException("init failure", e);
+        }
     }
 
-    DummyFileInputFormat inputFormat =
-        (DummyFileInputFormat) conf.getInputFormat();
-    Set<Path> computedFiles = new HashSet<Path>();
-    for (FileStatus file : inputFormat.listStatus(conf)) {
-      computedFiles.add(file.getPath());
+    private static Path workDir = new Path(new Path(System.getProperty("test.build.data", "."), "data"),
+            "TestFileInputFormatPathFilter");
+
+    public void setUp() throws Exception {
+        tearDown();
+        localFs.mkdirs(workDir);
     }
 
-    createdFiles.remove(localFs.makeQualified(new Path(workDir, "_hello")));
-    createdFiles.remove(localFs.makeQualified(new Path(workDir, ".hello")));
-    
-    if (withFilter) {
-      createdFiles.remove(localFs.makeQualified(new Path(workDir, "aa")));
-      createdFiles.remove(localFs.makeQualified(new Path(workDir, "bb")));
+    public void tearDown() throws Exception {
+        if (localFs.exists(workDir)) {
+            localFs.delete(workDir, true);
+        }
     }
 
-    if (withGlob) {
-      createdFiles.remove(localFs.makeQualified(new Path(workDir, "b")));
-      createdFiles.remove(localFs.makeQualified(new Path(workDir, "bb")));
+    protected Path createFile(String fileName) throws IOException {
+        Path file = new Path(workDir, fileName);
+        Writer writer = new OutputStreamWriter(localFs.create(file));
+        writer.write("");
+        writer.close();
+        return localFs.makeQualified(file);
     }
-    assertEquals(createdFiles, computedFiles);
-  }
 
-  public void testWithoutPathFilterWithoutGlob() throws Exception {
-    _testInputFiles(false, false);
-  }
+    protected Set<Path> createFiles() throws IOException {
+        Set<Path> files = new HashSet<Path>();
+        files.add(createFile("a"));
+        files.add(createFile("b"));
+        files.add(createFile("aa"));
+        files.add(createFile("bb"));
+        files.add(createFile("_hello"));
+        files.add(createFile(".hello"));
+        return files;
+    }
 
-  public void testWithoutPathFilterWithGlob() throws Exception {
-    _testInputFiles(false, true);
-  }
+    public static class TestPathFilter implements PathFilter {
 
-  public void testWithPathFilterWithoutGlob() throws Exception {
-    _testInputFiles(true, false);
-  }
+        public boolean accept(Path path) {
+            return path.getName().length() == 1;
+        }
+    }
 
-  public void testWithPathFilterWithGlob() throws Exception {
-    _testInputFiles(true, true);
-  }
+    private void _testInputFiles(boolean withFilter, boolean withGlob) throws Exception {
+        Set<Path> createdFiles = createFiles();
+        JobConf conf = new JobConf();
+
+        Path inputDir = (withGlob) ? new Path(workDir, "a*") : workDir;
+        FileInputFormat.setInputPaths(conf, inputDir);
+        conf.setInputFormat(DummyFileInputFormat.class);
+
+        if (withFilter) {
+            FileInputFormat.setInputPathFilter(conf, TestPathFilter.class);
+        }
+
+        DummyFileInputFormat inputFormat = (DummyFileInputFormat) conf.getInputFormat();
+        Set<Path> computedFiles = new HashSet<Path>();
+        for (FileStatus file : inputFormat.listStatus(conf)) {
+            computedFiles.add(file.getPath());
+        }
+
+        createdFiles.remove(localFs.makeQualified(new Path(workDir, "_hello")));
+        createdFiles.remove(localFs.makeQualified(new Path(workDir, ".hello")));
+
+        if (withFilter) {
+            createdFiles.remove(localFs.makeQualified(new Path(workDir, "aa")));
+            createdFiles.remove(localFs.makeQualified(new Path(workDir, "bb")));
+        }
+
+        if (withGlob) {
+            createdFiles.remove(localFs.makeQualified(new Path(workDir, "b")));
+            createdFiles.remove(localFs.makeQualified(new Path(workDir, "bb")));
+        }
+        assertEquals(createdFiles, computedFiles);
+    }
+
+    public void testWithoutPathFilterWithoutGlob() throws Exception {
+        _testInputFiles(false, false);
+    }
+
+    public void testWithoutPathFilterWithGlob() throws Exception {
+        _testInputFiles(false, true);
+    }
+
+    public void testWithPathFilterWithoutGlob() throws Exception {
+        _testInputFiles(true, false);
+    }
+
+    public void testWithPathFilterWithGlob() throws Exception {
+        _testInputFiles(true, true);
+    }
 }

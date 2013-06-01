@@ -28,31 +28,41 @@ import org.apache.hadoop.contrib.index.mapred.Shard;
  */
 public class RoundRobinDistributionPolicy implements IDistributionPolicy {
 
-  private int numShards;
-  private int rr; // round-robin implementation
+    private int numShards;
+    private int rr; // round-robin implementation
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.contrib.index.mapred.IDistributionPolicy#init(org.apache.hadoop.contrib.index.mapred.Shard[])
-   */
-  public void init(Shard[] shards) {
-    numShards = shards.length;
-    rr = 0;
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.hadoop.contrib.index.mapred.IDistributionPolicy#init(org.apache
+     * .hadoop.contrib.index.mapred.Shard[])
+     */
+    public void init(Shard[] shards) {
+        numShards = shards.length;
+        rr = 0;
+    }
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.contrib.index.mapred.IDistributionPolicy#chooseShardForInsert(org.apache.hadoop.contrib.index.mapred.DocumentID)
-   */
-  public int chooseShardForInsert(DocumentID key) {
-    int chosen = rr;
-    rr = (rr + 1) % numShards;
-    return chosen;
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.hadoop.contrib.index.mapred.IDistributionPolicy#
+     * chooseShardForInsert(org.apache.hadoop.contrib.index.mapred.DocumentID)
+     */
+    public int chooseShardForInsert(DocumentID key) {
+        int chosen = rr;
+        rr = (rr + 1) % numShards;
+        return chosen;
+    }
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.contrib.index.mapred.IDistributionPolicy#chooseShardForDelete(org.apache.hadoop.contrib.index.mapred.DocumentID)
-   */
-  public int chooseShardForDelete(DocumentID key) {
-    // -1 represents all the shards
-    return -1;
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.hadoop.contrib.index.mapred.IDistributionPolicy#
+     * chooseShardForDelete(org.apache.hadoop.contrib.index.mapred.DocumentID)
+     */
+    public int chooseShardForDelete(DocumentID key) {
+        // -1 represents all the shards
+        return -1;
+    }
 }

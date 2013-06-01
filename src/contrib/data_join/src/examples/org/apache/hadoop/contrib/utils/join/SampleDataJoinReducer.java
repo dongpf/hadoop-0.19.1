@@ -24,35 +24,36 @@ import org.apache.hadoop.contrib.utils.join.DataJoinReducerBase;
 import org.apache.hadoop.contrib.utils.join.TaggedMapOutput;
 
 /**
- * This is a subclass of DataJoinReducerBase that is used to
- * demonstrate the functionality of INNER JOIN between 2 data
- * sources (TAB separated text files) based on the first column.
+ * This is a subclass of DataJoinReducerBase that is used to demonstrate the
+ * functionality of INNER JOIN between 2 data sources (TAB separated text files)
+ * based on the first column.
  */
 public class SampleDataJoinReducer extends DataJoinReducerBase {
 
-  /**
-   * 
-   * @param tags
-   *          a list of source tags
-   * @param values
-   *          a value per source
-   * @return combined value derived from values of the sources
-   */
-  protected TaggedMapOutput combine(Object[] tags, Object[] values) {
-    // eliminate rows which didnot match in one of the two tables (for INNER JOIN)
-    if (tags.length < 2)
-       return null;  
-    String joinedStr = ""; 
-    for (int i=0; i<tags.length; i++) {
-      if (i > 0)
-         joinedStr += "\t";
-      // strip first column as it is the key on which we joined
-      String line = ((Text) (((TaggedMapOutput) values[i]).getData())).toString();
-      String[] tokens = line.split("\\t", 2);
-      joinedStr += tokens[1];
+    /**
+     * 
+     * @param tags
+     *            a list of source tags
+     * @param values
+     *            a value per source
+     * @return combined value derived from values of the sources
+     */
+    protected TaggedMapOutput combine(Object[] tags, Object[] values) {
+        // eliminate rows which didnot match in one of the two tables (for INNER
+        // JOIN)
+        if (tags.length < 2)
+            return null;
+        String joinedStr = "";
+        for (int i = 0; i < tags.length; i++) {
+            if (i > 0)
+                joinedStr += "\t";
+            // strip first column as it is the key on which we joined
+            String line = ((Text) (((TaggedMapOutput) values[i]).getData())).toString();
+            String[] tokens = line.split("\\t", 2);
+            joinedStr += tokens[1];
+        }
+        TaggedMapOutput retv = new SampleTaggedMapOutput(new Text(joinedStr));
+        retv.setTag((Text) tags[0]);
+        return retv;
     }
-    TaggedMapOutput retv = new SampleTaggedMapOutput(new Text(joinedStr));
-    retv.setTag((Text) tags[0]); 
-    return retv;
-  }
 }

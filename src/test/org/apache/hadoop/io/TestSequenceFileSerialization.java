@@ -27,43 +27,40 @@ import org.apache.hadoop.io.SequenceFile.Reader;
 import org.apache.hadoop.io.SequenceFile.Writer;
 
 public class TestSequenceFileSerialization extends TestCase {
-  
-  private Configuration conf;
-  private FileSystem fs;
-  
-  @Override
-  protected void setUp() throws Exception {
-    conf = new Configuration();
-    conf.set("io.serializations",
-        "org.apache.hadoop.io.serializer.JavaSerialization");
-    fs = FileSystem.getLocal(conf);  
-  }
-  
-  @Override
-  protected void tearDown() throws Exception {
-    fs.close();
-  }
-  
-  public void testJavaSerialization() throws Exception {
-    Path file = new Path(System.getProperty("test.build.data",".") +
-        "/test.seq");
-    
-    fs.delete(file, true);
-    Writer writer = SequenceFile.createWriter(fs, conf, file, Long.class,
-        String.class);
-    
-    writer.append(1L, "one");
-    writer.append(2L, "two");
-    
-    writer.close();
-    
-    Reader reader = new Reader(fs, file, conf);
-    assertEquals(1L, reader.next((Object) null));
-    assertEquals("one", reader.getCurrentValue((Object) null));
-    assertEquals(2L, reader.next((Object) null));
-    assertEquals("two", reader.getCurrentValue((Object) null));
-    assertNull(reader.next((Object) null));
-    reader.close();
-    
-  }
+
+    private Configuration conf;
+    private FileSystem fs;
+
+    @Override
+    protected void setUp() throws Exception {
+        conf = new Configuration();
+        conf.set("io.serializations", "org.apache.hadoop.io.serializer.JavaSerialization");
+        fs = FileSystem.getLocal(conf);
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        fs.close();
+    }
+
+    public void testJavaSerialization() throws Exception {
+        Path file = new Path(System.getProperty("test.build.data", ".") + "/test.seq");
+
+        fs.delete(file, true);
+        Writer writer = SequenceFile.createWriter(fs, conf, file, Long.class, String.class);
+
+        writer.append(1L, "one");
+        writer.append(2L, "two");
+
+        writer.close();
+
+        Reader reader = new Reader(fs, file, conf);
+        assertEquals(1L, reader.next((Object) null));
+        assertEquals("one", reader.getCurrentValue((Object) null));
+        assertEquals(2L, reader.next((Object) null));
+        assertEquals("two", reader.getCurrentValue((Object) null));
+        assertNull(reader.next((Object) null));
+        reader.close();
+
+    }
 }

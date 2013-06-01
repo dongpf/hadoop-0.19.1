@@ -19,35 +19,33 @@
 package org.apache.hadoop.contrib.failmon;
 
 /**********************************************************
- * Represents objects that monitor specific hardware resources and
- * can query them to get EventRecords describing the state of these
- * resources.
- *
+ * Represents objects that monitor specific hardware resources and can query
+ * them to get EventRecords describing the state of these resources.
+ * 
  **********************************************************/
 
 public interface Monitored {
-  /**
-   * Get an array of all EventRecords that can be extracted for
-   * the represented hardware component.
-   * 
-   * @return The array of EventRecords
-   */
-  public EventRecord[] monitor();
-  
-  /**
-   * Inserts all EventRecords that can be extracted for
-   * the represented hardware component into a LocalStore.
-   * 
-   * @param ls the LocalStore into which the EventRecords 
-   * are to be stored.
-   */
-  public void monitor(LocalStore ls);
-  
-  /**
-   * Return a String with information about the implementing
-   * class 
-   * 
-   * @return A String describing the implementing class
-   */
-  public String getInfo();
+    /**
+     * Get an array of all EventRecords that can be extracted for the
+     * represented hardware component.
+     * 
+     * @return The array of EventRecords
+     */
+    public EventRecord[] monitor();
+
+    /**
+     * Inserts all EventRecords that can be extracted for the represented
+     * hardware component into a LocalStore.
+     * 
+     * @param ls
+     *            the LocalStore into which the EventRecords are to be stored.
+     */
+    public void monitor(LocalStore ls);
+
+    /**
+     * Return a String with information about the implementing class
+     * 
+     * @return A String describing the implementing class
+     */
+    public String getInfo();
 }

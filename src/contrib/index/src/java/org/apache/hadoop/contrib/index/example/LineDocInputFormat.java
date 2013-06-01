@@ -31,16 +31,20 @@ import org.apache.hadoop.mapred.Reporter;
 /**
  * An InputFormat for LineDoc for plain text files where each line is a doc.
  */
-public class LineDocInputFormat extends
-    FileInputFormat<DocumentID, LineDocTextAndOp> {
+public class LineDocInputFormat extends FileInputFormat<DocumentID, LineDocTextAndOp> {
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.mapred.FileInputFormat#getRecordReader(org.apache.hadoop.mapred.InputSplit, org.apache.hadoop.mapred.JobConf, org.apache.hadoop.mapred.Reporter)
-   */
-  public RecordReader<DocumentID, LineDocTextAndOp> getRecordReader(
-      InputSplit split, JobConf job, Reporter reporter) throws IOException {
-    reporter.setStatus(split.toString());
-    return new LineDocRecordReader(job, (FileSplit) split);
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.hadoop.mapred.FileInputFormat#getRecordReader(org.apache.hadoop
+     * .mapred.InputSplit, org.apache.hadoop.mapred.JobConf,
+     * org.apache.hadoop.mapred.Reporter)
+     */
+    public RecordReader<DocumentID, LineDocTextAndOp> getRecordReader(InputSplit split, JobConf job, Reporter reporter)
+            throws IOException {
+        reporter.setStatus(split.toString());
+        return new LineDocRecordReader(job, (FileSplit) split);
+    }
 
 }

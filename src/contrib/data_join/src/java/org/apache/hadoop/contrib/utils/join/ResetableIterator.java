@@ -30,9 +30,9 @@ import java.util.Iterator;
  * 
  */
 public interface ResetableIterator extends Iterator {
-  public void reset();
+    public void reset();
 
-  public void add(Object item);
+    public void add(Object item);
 
-  public void close() throws IOException;
+    public void close() throws IOException;
 }

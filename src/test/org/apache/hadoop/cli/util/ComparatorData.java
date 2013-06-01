@@ -21,88 +21,93 @@ package org.apache.hadoop.cli.util;
 import java.util.Vector;
 
 /**
- *
+ * 
  * Class to store CLI Test Comparators Data
  */
 public class ComparatorData {
-  private String expectedOutput = null;
-  private String actualOutput = null;
-  private boolean testResult = false;
-  private int exitCode = 0;
-  private String comparatorType = null;
-  
-  public ComparatorData() {
+    private String expectedOutput = null;
+    private String actualOutput = null;
+    private boolean testResult = false;
+    private int exitCode = 0;
+    private String comparatorType = null;
 
-  }
+    public ComparatorData() {
 
-  /**
-   * @return the expectedOutput
-   */
-  public String getExpectedOutput() {
-    return expectedOutput;
-  }
+    }
 
-  /**
-   * @param expectedOutput the expectedOutput to set
-   */
-  public void setExpectedOutput(String expectedOutput) {
-    this.expectedOutput = expectedOutput;
-  }
+    /**
+     * @return the expectedOutput
+     */
+    public String getExpectedOutput() {
+        return expectedOutput;
+    }
 
-  /**
-   * @return the actualOutput
-   */
-  public String getActualOutput() {
-    return actualOutput;
-  }
+    /**
+     * @param expectedOutput
+     *            the expectedOutput to set
+     */
+    public void setExpectedOutput(String expectedOutput) {
+        this.expectedOutput = expectedOutput;
+    }
 
-  /**
-   * @param actualOutput the actualOutput to set
-   */
-  public void setActualOutput(String actualOutput) {
-    this.actualOutput = actualOutput;
-  }
+    /**
+     * @return the actualOutput
+     */
+    public String getActualOutput() {
+        return actualOutput;
+    }
 
-  /**
-   * @return the testResult
-   */
-  public boolean getTestResult() {
-    return testResult;
-  }
+    /**
+     * @param actualOutput
+     *            the actualOutput to set
+     */
+    public void setActualOutput(String actualOutput) {
+        this.actualOutput = actualOutput;
+    }
 
-  /**
-   * @param testResult the testResult to set
-   */
-  public void setTestResult(boolean testResult) {
-    this.testResult = testResult;
-  }
+    /**
+     * @return the testResult
+     */
+    public boolean getTestResult() {
+        return testResult;
+    }
 
-  /**
-   * @return the exitCode
-   */
-  public int getExitCode() {
-    return exitCode;
-  }
+    /**
+     * @param testResult
+     *            the testResult to set
+     */
+    public void setTestResult(boolean testResult) {
+        this.testResult = testResult;
+    }
 
-  /**
-   * @param exitCode the exitCode to set
-   */
-  public void setExitCode(int exitCode) {
-    this.exitCode = exitCode;
-  }
+    /**
+     * @return the exitCode
+     */
+    public int getExitCode() {
+        return exitCode;
+    }
 
-  /**
-   * @return the comparatorType
-   */
-  public String getComparatorType() {
-    return comparatorType;
-  }
+    /**
+     * @param exitCode
+     *            the exitCode to set
+     */
+    public void setExitCode(int exitCode) {
+        this.exitCode = exitCode;
+    }
 
-  /**
-   * @param comparatorType the comparatorType to set
-   */
-  public void setComparatorType(String comparatorType) {
-    this.comparatorType = comparatorType;
-  }
+    /**
+     * @return the comparatorType
+     */
+    public String getComparatorType() {
+        return comparatorType;
+    }
+
+    /**
+     * @param comparatorType
+     *            the comparatorType to set
+     */
+    public void setComparatorType(String comparatorType) {
+        this.comparatorType = comparatorType;
+    }
 
 }

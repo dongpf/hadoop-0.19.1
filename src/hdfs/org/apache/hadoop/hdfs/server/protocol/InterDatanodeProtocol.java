@@ -25,23 +25,24 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.hdfs.protocol.Block;
 import org.apache.hadoop.ipc.VersionedProtocol;
 
-/** An inter-datanode protocol for updating generation stamp
+/**
+ * An inter-datanode protocol for updating generation stamp
  */
 public interface InterDatanodeProtocol extends VersionedProtocol {
-  public static final Log LOG = LogFactory.getLog(InterDatanodeProtocol.class);
+    public static final Log LOG = LogFactory.getLog(InterDatanodeProtocol.class);
 
-  /**
-   * 3: added a finalize parameter to updateBlock
-   */
-  public static final long versionID = 3L;
+    /**
+     * 3: added a finalize parameter to updateBlock
+     */
+    public static final long versionID = 3L;
 
-  /** @return the BlockMetaDataInfo of a block;
-   *  null if the block is not found 
-   */
-  BlockMetaDataInfo getBlockMetaDataInfo(Block block) throws IOException;
+    /**
+     * @return the BlockMetaDataInfo of a block; null if the block is not found
+     */
+    BlockMetaDataInfo getBlockMetaDataInfo(Block block) throws IOException;
 
-  /**
-   * Update the block to the new generation stamp and length.  
-   */
-  void updateBlock(Block oldblock, Block newblock, boolean finalize) throws IOException;
+    /**
+     * Update the block to the new generation stamp and length.
+     */
+    void updateBlock(Block oldblock, Block newblock, boolean finalize) throws IOException;
 }

@@ -22,30 +22,30 @@ package org.apache.hadoop.mapred;
  * 
  *******************************/
 interface MRConstants {
-  //
-  // Timeouts, constants
-  //
-  public static final int HEARTBEAT_INTERVAL_MIN = 5 * 1000;
-  
-  public static final int CLUSTER_INCREMENT = 50;
+    //
+    // Timeouts, constants
+    //
+    public static final int HEARTBEAT_INTERVAL_MIN = 5 * 1000;
 
-  public static final long COUNTER_UPDATE_INTERVAL = 60 * 1000;
+    public static final int CLUSTER_INCREMENT = 50;
 
-  //
-  // Result codes
-  //
-  public static int SUCCESS = 0;
-  public static int FILE_NOT_FOUND = -1;
-  
-  /**
-   * The custom http header used for the map output length.
-   */
-  public static final String MAP_OUTPUT_LENGTH = "Map-Output-Length";
+    public static final long COUNTER_UPDATE_INTERVAL = 60 * 1000;
 
-  /**
-   * The custom http header used for the "raw" map output length.
-   */
-  public static final String RAW_MAP_OUTPUT_LENGTH = "Raw-Map-Output-Length";
+    //
+    // Result codes
+    //
+    public static int SUCCESS = 0;
+    public static int FILE_NOT_FOUND = -1;
 
-  public static final String WORKDIR = "work";
+    /**
+     * The custom http header used for the map output length.
+     */
+    public static final String MAP_OUTPUT_LENGTH = "Map-Output-Length";
+
+    /**
+     * The custom http header used for the "raw" map output length.
+     */
+    public static final String RAW_MAP_OUTPUT_LENGTH = "Raw-Map-Output-Length";
+
+    public static final String WORKDIR = "work";
 }

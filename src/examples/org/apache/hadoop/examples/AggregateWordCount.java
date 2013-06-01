@@ -40,38 +40,35 @@ import org.apache.hadoop.mapred.lib.aggregate.ValueAggregatorJob;
  */
 public class AggregateWordCount {
 
-  public static class WordCountPlugInClass extends
-      ValueAggregatorBaseDescriptor {
-    @Override
-    public ArrayList<Entry<Text, Text>> generateKeyValPairs(Object key,
-                                                            Object val) {
-      String countType = LONG_VALUE_SUM;
-      ArrayList<Entry<Text, Text>> retv = new ArrayList<Entry<Text, Text>>();
-      String line = val.toString();
-      StringTokenizer itr = new StringTokenizer(line);
-      while (itr.hasMoreTokens()) {
-        Entry<Text, Text> e = generateEntry(countType, itr.nextToken(), ONE);
-        if (e != null) {
-          retv.add(e);
+    public static class WordCountPlugInClass extends ValueAggregatorBaseDescriptor {
+        @Override
+        public ArrayList<Entry<Text, Text>> generateKeyValPairs(Object key, Object val) {
+            String countType = LONG_VALUE_SUM;
+            ArrayList<Entry<Text, Text>> retv = new ArrayList<Entry<Text, Text>>();
+            String line = val.toString();
+            StringTokenizer itr = new StringTokenizer(line);
+            while (itr.hasMoreTokens()) {
+                Entry<Text, Text> e = generateEntry(countType, itr.nextToken(), ONE);
+                if (e != null) {
+                    retv.add(e);
+                }
+            }
+            return retv;
         }
-      }
-      return retv;
     }
-  }
 
-  /**
-   * The main driver for word count map/reduce program. Invoke this method to
-   * submit the map/reduce job.
-   * 
-   * @throws IOException
-   *           When there is communication problems with the job tracker.
-   */
-  @SuppressWarnings("unchecked")
-  public static void main(String[] args) throws IOException {
-    JobConf conf = ValueAggregatorJob.createValueAggregatorJob(args
-        , new Class[] {WordCountPlugInClass.class});
-   
-    JobClient.runJob(conf);
-  }
+    /**
+     * The main driver for word count map/reduce program. Invoke this method to
+     * submit the map/reduce job.
+     * 
+     * @throws IOException
+     *             When there is communication problems with the job tracker.
+     */
+    @SuppressWarnings("unchecked")
+    public static void main(String[] args) throws IOException {
+        JobConf conf = ValueAggregatorJob.createValueAggregatorJob(args, new Class[] { WordCountPlugInClass.class });
+
+        JobClient.runJob(conf);
+    }
 
 }

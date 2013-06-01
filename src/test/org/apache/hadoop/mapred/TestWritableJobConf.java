@@ -34,68 +34,66 @@ import org.apache.hadoop.util.GenericsUtil;
 
 public class TestWritableJobConf extends TestCase {
 
-  private static final Configuration CONF = new Configuration();
+    private static final Configuration CONF = new Configuration();
 
-  private <K> K serDeser(K conf) throws Exception {
-    SerializationFactory factory = new SerializationFactory(CONF);
-    Serializer<K> serializer =
-      factory.getSerializer(GenericsUtil.getClass(conf));
-    Deserializer<K> deserializer =
-      factory.getDeserializer(GenericsUtil.getClass(conf));
+    private <K> K serDeser(K conf) throws Exception {
+        SerializationFactory factory = new SerializationFactory(CONF);
+        Serializer<K> serializer = factory.getSerializer(GenericsUtil.getClass(conf));
+        Deserializer<K> deserializer = factory.getDeserializer(GenericsUtil.getClass(conf));
 
-    DataOutputBuffer out = new DataOutputBuffer();
-    serializer.open(out);
-    serializer.serialize(conf);
-    serializer.close();
+        DataOutputBuffer out = new DataOutputBuffer();
+        serializer.open(out);
+        serializer.serialize(conf);
+        serializer.close();
 
-    DataInputBuffer in = new DataInputBuffer();
-    in.reset(out.getData(), out.getLength());
-    deserializer.open(in);
-    K after = deserializer.deserialize(null);
-    deserializer.close();
-    return after;
-  }
-
-  private void assertEquals(Configuration conf1, Configuration conf2) {
-    assertEquals(conf1.size(), conf2.size());
-
-    Iterator<Map.Entry<String, String>> iterator1 = conf1.iterator();
-    Map<String, String> map1 = new HashMap<String,String>();
-    while (iterator1.hasNext()) {
-      Map.Entry<String, String> entry = iterator1.next();
-      map1.put(entry.getKey(), entry.getValue());
+        DataInputBuffer in = new DataInputBuffer();
+        in.reset(out.getData(), out.getLength());
+        deserializer.open(in);
+        K after = deserializer.deserialize(null);
+        deserializer.close();
+        return after;
     }
 
-    Iterator<Map.Entry<String, String>> iterator2 = conf1.iterator();
-    Map<String, String> map2 = new HashMap<String,String>();
-    while (iterator2.hasNext()) {
-      Map.Entry<String, String> entry = iterator2.next();
-      map2.put(entry.getKey(), entry.getValue());
+    private void assertEquals(Configuration conf1, Configuration conf2) {
+        assertEquals(conf1.size(), conf2.size());
+
+        Iterator<Map.Entry<String, String>> iterator1 = conf1.iterator();
+        Map<String, String> map1 = new HashMap<String, String>();
+        while (iterator1.hasNext()) {
+            Map.Entry<String, String> entry = iterator1.next();
+            map1.put(entry.getKey(), entry.getValue());
+        }
+
+        Iterator<Map.Entry<String, String>> iterator2 = conf1.iterator();
+        Map<String, String> map2 = new HashMap<String, String>();
+        while (iterator2.hasNext()) {
+            Map.Entry<String, String> entry = iterator2.next();
+            map2.put(entry.getKey(), entry.getValue());
+        }
+
+        assertEquals(map1, map2);
     }
 
-    assertEquals(map1, map2);
-  }
+    public void testEmptyConfiguration() throws Exception {
+        JobConf conf = new JobConf();
+        Configuration deser = serDeser(conf);
+        assertEquals(conf, deser);
+    }
 
-  public void testEmptyConfiguration() throws Exception {
-    JobConf conf = new JobConf();
-    Configuration deser = serDeser(conf);
-    assertEquals(conf, deser);
-  }
+    public void testNonEmptyConfiguration() throws Exception {
+        JobConf conf = new JobConf();
+        conf.set("a", "A");
+        conf.set("b", "B");
+        Configuration deser = serDeser(conf);
+        assertEquals(conf, deser);
+    }
 
-  public void testNonEmptyConfiguration() throws Exception {
-    JobConf conf = new JobConf();
-    conf.set("a", "A");
-    conf.set("b", "B");
-    Configuration deser = serDeser(conf);
-    assertEquals(conf, deser);
-  }
+    public void testConfigurationWithDefaults() throws Exception {
+        JobConf conf = new JobConf(false);
+        conf.set("a", "A");
+        conf.set("b", "B");
+        Configuration deser = serDeser(conf);
+        assertEquals(conf, deser);
+    }
 
-  public void testConfigurationWithDefaults() throws Exception {
-    JobConf conf = new JobConf(false);
-    conf.set("a", "A");
-    conf.set("b", "B");
-    Configuration deser = serDeser(conf);
-    assertEquals(conf, deser);
-  }
-  
 }

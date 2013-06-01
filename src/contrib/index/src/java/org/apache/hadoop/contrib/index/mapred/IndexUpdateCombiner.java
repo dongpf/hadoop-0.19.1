@@ -32,46 +32,55 @@ import org.apache.hadoop.mapred.Reporter;
 /**
  * This combiner combines multiple intermediate forms into one intermediate
  * form. More specifically, the input intermediate forms are a single-document
- * ram index and/or a single delete term. An output intermediate form contains
- * a multi-document ram index and/or multiple delete terms.   
+ * ram index and/or a single delete term. An output intermediate form contains a
+ * multi-document ram index and/or multiple delete terms.
  */
 public class IndexUpdateCombiner extends MapReduceBase implements
-    Reducer<Shard, IntermediateForm, Shard, IntermediateForm> {
-  static final Log LOG = LogFactory.getLog(IndexUpdateCombiner.class);
+        Reducer<Shard, IntermediateForm, Shard, IntermediateForm> {
+    static final Log LOG = LogFactory.getLog(IndexUpdateCombiner.class);
 
-  IndexUpdateConfiguration iconf;
+    IndexUpdateConfiguration iconf;
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.mapred.Reducer#reduce(java.lang.Object, java.util.Iterator, org.apache.hadoop.mapred.OutputCollector, org.apache.hadoop.mapred.Reporter)
-   */
-  public void reduce(Shard key, Iterator<IntermediateForm> values,
-      OutputCollector<Shard, IntermediateForm> output, Reporter reporter)
-      throws IOException {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.hadoop.mapred.Reducer#reduce(java.lang.Object,
+     * java.util.Iterator, org.apache.hadoop.mapred.OutputCollector,
+     * org.apache.hadoop.mapred.Reporter)
+     */
+    public void reduce(Shard key, Iterator<IntermediateForm> values, OutputCollector<Shard, IntermediateForm> output,
+            Reporter reporter) throws IOException {
 
-    LOG.info("Construct a form writer for " + key);
-    IntermediateForm form = new IntermediateForm();
-    form.configure(iconf);
-    while (values.hasNext()) {
-      IntermediateForm singleDocForm = values.next();
-      form.process(singleDocForm);
+        LOG.info("Construct a form writer for " + key);
+        IntermediateForm form = new IntermediateForm();
+        form.configure(iconf);
+        while (values.hasNext()) {
+            IntermediateForm singleDocForm = values.next();
+            form.process(singleDocForm);
+        }
+        form.closeWriter();
+        LOG.info("Closed the form writer for " + key + ", form = " + form);
+
+        output.collect(key, form);
     }
-    form.closeWriter();
-    LOG.info("Closed the form writer for " + key + ", form = " + form);
 
-    output.collect(key, form);
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.hadoop.mapred.MapReduceBase#configure(org.apache.hadoop.mapred
+     * .JobConf)
+     */
+    public void configure(JobConf job) {
+        iconf = new IndexUpdateConfiguration(job);
+    }
 
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.mapred.MapReduceBase#configure(org.apache.hadoop.mapred.JobConf)
-   */
-  public void configure(JobConf job) {
-    iconf = new IndexUpdateConfiguration(job);
-  }
-
-  /* (non-Javadoc)
-   * @see org.apache.hadoop.mapred.MapReduceBase#close()
-   */
-  public void close() throws IOException {
-  }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.hadoop.mapred.MapReduceBase#close()
+     */
+    public void close() throws IOException {
+    }
 
 }

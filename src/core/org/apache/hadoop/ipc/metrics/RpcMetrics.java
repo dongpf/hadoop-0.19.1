@@ -32,75 +32,73 @@ import java.util.*;
 
 /**
  * 
- * This class is for maintaining  the various RPC statistics
- * and publishing them through the metrics interfaces.
- * This also registers the JMX MBean for RPC.
+ * This class is for maintaining the various RPC statistics and publishing them
+ * through the metrics interfaces. This also registers the JMX MBean for RPC.
  * <p>
  * This class has a number of metrics variables that are publicly accessible;
- * these variables (objects) have methods to update their values;
- * for example:
- *  <p> {@link #rpcQueueTime}.inc(time)
- *
+ * these variables (objects) have methods to update their values; for example:
+ * <p>
+ * {@link #rpcQueueTime}.inc(time)
+ * 
  */
 public class RpcMetrics implements Updater {
-  private MetricsRecord metricsRecord;
-  private static Log LOG = LogFactory.getLog(RpcMetrics.class);
-  RpcMgt rpcMgt;
-  
-  public RpcMetrics(String hostName, String port, Server server) {
-    MetricsContext context = MetricsUtil.getContext("rpc");
-    metricsRecord = MetricsUtil.createRecord(context, "metrics");
+    private MetricsRecord metricsRecord;
+    private static Log LOG = LogFactory.getLog(RpcMetrics.class);
+    RpcMgt rpcMgt;
 
-    metricsRecord.setTag("port", port);
+    public RpcMetrics(String hostName, String port, Server server) {
+        MetricsContext context = MetricsUtil.getContext("rpc");
+        metricsRecord = MetricsUtil.createRecord(context, "metrics");
 
-    LOG.info("Initializing RPC Metrics with hostName=" 
-        + hostName + ", port=" + port);
+        metricsRecord.setTag("port", port);
 
-    context.registerUpdater(this);
-    
-    // Need to clean up the interface to RpcMgt - don't need both metrics and server params
-    rpcMgt = new RpcMgt(hostName, port, this, server);
-  }
-  
-  
-  /**
-   * The metrics variables are public:
-   *  - they can be set directly by calling their set/inc methods
-   *  -they can also be read directly - e.g. JMX does this.
-   */
-  
-  public MetricsTimeVaryingRate rpcQueueTime = new MetricsTimeVaryingRate("RpcQueueTime");
-  public MetricsTimeVaryingRate rpcProcessingTime = new MetricsTimeVaryingRate("RpcProcessingTime");
+        LOG.info("Initializing RPC Metrics with hostName=" + hostName + ", port=" + port);
 
-  public Map <String, MetricsTimeVaryingRate> metricsList = Collections.synchronizedMap(new HashMap<String, MetricsTimeVaryingRate>());
+        context.registerUpdater(this);
 
-  
-  
-  /**
-   * Push the metrics to the monitoring subsystem on doUpdate() call.
-   */
-  public void doUpdates(MetricsContext context) {
-    rpcQueueTime.pushMetric(metricsRecord);
-    rpcProcessingTime.pushMetric(metricsRecord);
-
-    synchronized (metricsList) {
-	// Iterate through the rpcMetrics hashmap to propogate the different rpc metrics.
-	Set keys = metricsList.keySet();
-
-	Iterator keyIter = keys.iterator();
-
-	while (keyIter.hasNext()) {
-		Object key = keyIter.next();
-		MetricsTimeVaryingRate value = metricsList.get(key);
-
-		value.pushMetric(metricsRecord);
-	}
+        // Need to clean up the interface to RpcMgt - don't need both metrics
+        // and server params
+        rpcMgt = new RpcMgt(hostName, port, this, server);
     }
-    metricsRecord.update();
-  }
 
-  public void shutdown() {
-    if (rpcMgt != null) 
-      rpcMgt.shutdown();
-  }
+    /**
+     * The metrics variables are public: - they can be set directly by calling
+     * their set/inc methods -they can also be read directly - e.g. JMX does
+     * this.
+     */
+
+    public MetricsTimeVaryingRate rpcQueueTime = new MetricsTimeVaryingRate("RpcQueueTime");
+    public MetricsTimeVaryingRate rpcProcessingTime = new MetricsTimeVaryingRate("RpcProcessingTime");
+
+    public Map<String, MetricsTimeVaryingRate> metricsList = Collections
+            .synchronizedMap(new HashMap<String, MetricsTimeVaryingRate>());
+
+    /**
+     * Push the metrics to the monitoring subsystem on doUpdate() call.
+     */
+    public void doUpdates(MetricsContext context) {
+        rpcQueueTime.pushMetric(metricsRecord);
+        rpcProcessingTime.pushMetric(metricsRecord);
+
+        synchronized (metricsList) {
+            // Iterate through the rpcMetrics hashmap to propogate the different
+            // rpc metrics.
+            Set keys = metricsList.keySet();
+
+            Iterator keyIter = keys.iterator();
+
+            while (keyIter.hasNext()) {
+                Object key = keyIter.next();
+                MetricsTimeVaryingRate value = metricsList.get(key);
+
+                value.pushMetric(metricsRecord);
+            }
+        }
+        metricsRecord.update();
+    }
+
+    public void shutdown() {
+        if (rpcMgt != null)
+            rpcMgt.shutdown();
+    }
 }

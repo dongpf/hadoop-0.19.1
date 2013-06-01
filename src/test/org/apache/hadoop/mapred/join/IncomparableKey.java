@@ -23,9 +23,13 @@ import java.io.DataOutput;
 import org.apache.hadoop.io.WritableComparable;
 
 public class IncomparableKey implements WritableComparable {
-  public void write(DataOutput out) { }
-  public void readFields(DataInput in) { }
-  public int compareTo(Object o) {
-    throw new RuntimeException("Should never see this.");
-  }
+    public void write(DataOutput out) {
+    }
+
+    public void readFields(DataInput in) {
+    }
+
+    public int compareTo(Object o) {
+        throw new RuntimeException("Should never see this.");
+    }
 }

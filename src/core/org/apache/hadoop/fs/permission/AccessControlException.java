@@ -21,23 +21,25 @@ import java.io.IOException;
 
 @Deprecated
 public class AccessControlException extends IOException {
-  //Required by {@link java.io.Serializable}.
-  private static final long serialVersionUID = 1L;
+    // Required by {@link java.io.Serializable}.
+    private static final long serialVersionUID = 1L;
 
-  /**
-   * Default constructor is needed for unwrapping from 
-   * {@link org.apache.hadoop.ipc.RemoteException}.
-   */
-  public AccessControlException() {
-    super("Permission denied.");
-  }
+    /**
+     * Default constructor is needed for unwrapping from
+     * {@link org.apache.hadoop.ipc.RemoteException}.
+     */
+    public AccessControlException() {
+        super("Permission denied.");
+    }
 
-  /**
-   * Constructs an {@link AccessControlException}
-   * with the specified detail message.
-   * @param s the detail message.
-   */
-  public AccessControlException(String s) {
-    super(s);
-  }
+    /**
+     * Constructs an {@link AccessControlException} with the specified detail
+     * message.
+     * 
+     * @param s
+     *            the detail message.
+     */
+    public AccessControlException(String s) {
+        super(s);
+    }
 }

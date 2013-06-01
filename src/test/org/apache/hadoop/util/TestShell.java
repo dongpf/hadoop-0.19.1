@@ -24,65 +24,68 @@ import java.io.IOException;
 
 public class TestShell extends TestCase {
 
-  private static class Command extends Shell {
-    private int runCount = 0;
+    private static class Command extends Shell {
+        private int runCount = 0;
 
-    private Command(long interval) {
-      super(interval);
+        private Command(long interval) {
+            super(interval);
+        }
+
+        protected String[] getExecString() {
+            return new String[] { "echo", "hello" };
+        }
+
+        protected void parseExecResult(BufferedReader lines) throws IOException {
+            ++runCount;
+        }
+
+        public int getRunCount() {
+            return runCount;
+        }
     }
 
-    protected String[] getExecString() {
-      return new String[] {"echo", "hello"};
+    public void testInterval() throws IOException {
+        testInterval(Long.MIN_VALUE / 60000); // test a negative interval
+        testInterval(0L); // test a zero interval
+        testInterval(10L); // interval equal to 10mins
+        testInterval(System.currentTimeMillis() / 60000 + 60); // test a very
+                                                               // big interval
     }
 
-    protected void parseExecResult(BufferedReader lines) throws IOException {
-      ++runCount;
+    /**
+     * Assert that a string has a substring in it
+     * 
+     * @param string
+     *            string to search
+     * @param search
+     *            what to search for it
+     */
+    private void assertInString(String string, String search) {
+        assertNotNull("Empty String", string);
+        if (!string.contains(search)) {
+            fail("Did not find \"" + search + "\" in " + string);
+        }
     }
 
-    public int getRunCount() {
-      return runCount;
+    public void testShellCommandExecutorToString() throws Throwable {
+        Shell.ShellCommandExecutor sce = new Shell.ShellCommandExecutor(new String[] { "ls", "..", "arg 2" });
+        String command = sce.toString();
+        assertInString(command, "ls");
+        assertInString(command, " .. ");
+        assertInString(command, "\"arg 2\"");
     }
-  }
 
-  public void testInterval() throws IOException {
-    testInterval(Long.MIN_VALUE / 60000);  // test a negative interval
-    testInterval(0L);  // test a zero interval
-    testInterval(10L); // interval equal to 10mins
-    testInterval(System.currentTimeMillis() / 60000 + 60); // test a very big interval
-  }
+    private void testInterval(long interval) throws IOException {
+        Command command = new Command(interval);
 
-  /**
-   * Assert that a string has a substring in it
-   * @param string string to search
-   * @param search what to search for it
-   */
-  private void assertInString(String string, String search) {
-    assertNotNull("Empty String", string);
-    if (!string.contains(search)) {
-      fail("Did not find \"" + search + "\" in " + string);
+        command.run();
+        assertEquals(1, command.getRunCount());
+
+        command.run();
+        if (interval > 0) {
+            assertEquals(1, command.getRunCount());
+        } else {
+            assertEquals(2, command.getRunCount());
+        }
     }
-  }
-
-  public void testShellCommandExecutorToString() throws Throwable {
-    Shell.ShellCommandExecutor sce=new Shell.ShellCommandExecutor(
-            new String[] { "ls","..","arg 2"});
-    String command = sce.toString();
-    assertInString(command,"ls");
-    assertInString(command, " .. ");
-    assertInString(command, "\"arg 2\"");
-  }
-
-  private void testInterval(long interval) throws IOException {
-    Command command = new Command(interval);
-
-    command.run();
-    assertEquals(1, command.getRunCount());
-
-    command.run();
-    if (interval > 0) {
-      assertEquals(1, command.getRunCount());
-    } else {
-      assertEquals(2, command.getRunCount());
-    }
-  }
 }

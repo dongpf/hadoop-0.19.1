@@ -34,78 +34,75 @@ import org.apache.hadoop.util.ReflectionUtils;
  * {@link Writable#write(java.io.DataOutput)} and
  * {@link Writable#readFields(java.io.DataInput)}.
  */
-public class WritableSerialization extends Configured 
-  implements Serialization<Writable> {
-  
-  static class WritableDeserializer extends Configured 
-    implements Deserializer<Writable> {
+public class WritableSerialization extends Configured implements Serialization<Writable> {
 
-    private Class<?> writableClass;
-    private DataInputStream dataIn;
-    
-    public WritableDeserializer(Configuration conf, Class<?> c) {
-      setConf(conf);
-      this.writableClass = c;
-    }
-    
-    public void open(InputStream in) {
-      if (in instanceof DataInputStream) {
-        dataIn = (DataInputStream) in;
-      } else {
-        dataIn = new DataInputStream(in);
-      }
-    }
-    
-    public Writable deserialize(Writable w) throws IOException {
-      Writable writable;
-      if (w == null) {
-        writable 
-          = (Writable) ReflectionUtils.newInstance(writableClass, getConf());
-      } else {
-        writable = w;
-      }
-      writable.readFields(dataIn);
-      return writable;
-    }
+    static class WritableDeserializer extends Configured implements Deserializer<Writable> {
 
-    public void close() throws IOException {
-      dataIn.close();
-    }
-    
-  }
-  
-  static class WritableSerializer implements Serializer<Writable> {
+        private Class<?> writableClass;
+        private DataInputStream dataIn;
 
-    private DataOutputStream dataOut;
-    
-    public void open(OutputStream out) {
-      if (out instanceof DataOutputStream) {
-        dataOut = (DataOutputStream) out;
-      } else {
-        dataOut = new DataOutputStream(out);
-      }
+        public WritableDeserializer(Configuration conf, Class<?> c) {
+            setConf(conf);
+            this.writableClass = c;
+        }
+
+        public void open(InputStream in) {
+            if (in instanceof DataInputStream) {
+                dataIn = (DataInputStream) in;
+            } else {
+                dataIn = new DataInputStream(in);
+            }
+        }
+
+        public Writable deserialize(Writable w) throws IOException {
+            Writable writable;
+            if (w == null) {
+                writable = (Writable) ReflectionUtils.newInstance(writableClass, getConf());
+            } else {
+                writable = w;
+            }
+            writable.readFields(dataIn);
+            return writable;
+        }
+
+        public void close() throws IOException {
+            dataIn.close();
+        }
+
     }
 
-    public void serialize(Writable w) throws IOException {
-      w.write(dataOut);
+    static class WritableSerializer implements Serializer<Writable> {
+
+        private DataOutputStream dataOut;
+
+        public void open(OutputStream out) {
+            if (out instanceof DataOutputStream) {
+                dataOut = (DataOutputStream) out;
+            } else {
+                dataOut = new DataOutputStream(out);
+            }
+        }
+
+        public void serialize(Writable w) throws IOException {
+            w.write(dataOut);
+        }
+
+        public void close() throws IOException {
+            dataOut.close();
+        }
+
     }
 
-    public void close() throws IOException {
-      dataOut.close();
+    public boolean accept(Class<?> c) {
+        return Writable.class.isAssignableFrom(c);
     }
 
-  }
+    public Deserializer<Writable> getDeserializer(Class<Writable> c) {
+        return new WritableDeserializer(getConf(), c);
+    }
 
-  public boolean accept(Class<?> c) {
-    return Writable.class.isAssignableFrom(c);
-  }
-
-  public Deserializer<Writable> getDeserializer(Class<Writable> c) {
-    return new WritableDeserializer(getConf(), c);
-  }
-
-  public Serializer<Writable> getSerializer(Class<Writable> c) {
-    return new WritableSerializer();
-  }
+    public Serializer<Writable> getSerializer(Class<Writable> c) {
+        return new WritableSerializer();
+    }
 
 }

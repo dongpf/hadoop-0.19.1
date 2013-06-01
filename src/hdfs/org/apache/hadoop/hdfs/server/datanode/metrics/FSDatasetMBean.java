@@ -21,41 +21,44 @@ import java.io.IOException;
 
 /**
  * 
- * This Interface defines the methods to get the status of a the FSDataset of
- * a data node.
- * It is also used for publishing via JMX (hence we follow the JMX naming
- * convention.) 
+ * This Interface defines the methods to get the status of a the FSDataset of a
+ * data node. It is also used for publishing via JMX (hence we follow the JMX
+ * naming convention.)
  * <p>
- * Data Node runtime statistic  info is report in another MBean
+ * Data Node runtime statistic info is report in another MBean
+ * 
  * @see org.apache.hadoop.hdfs.server.datanode.metrics.DataNodeStatisticsMBean
- *
+ * 
  */
 public interface FSDatasetMBean {
-  
-  /**
-   * Returns the total space (in bytes) used by dfs datanode
-   * @return  the total space used by dfs datanode
-   * @throws IOException
-   */  
-  public long getDfsUsed() throws IOException;
-    
-  /**
-   * Returns total capacity (in bytes) of storage (used and unused)
-   * @return  total capacity of storage (used and unused)
-   * @throws IOException
-   */
-  public long getCapacity() throws IOException;
 
-  /**
-   * Returns the amount of free storage space (in bytes)
-   * @return The amount of free storage space
-   * @throws IOException
-   */
-  public long getRemaining() throws IOException;
-  
-  /**
-   * Returns the storage id of the underlying storage
-   */
-  public String getStorageInfo();
+    /**
+     * Returns the total space (in bytes) used by dfs datanode
+     * 
+     * @return the total space used by dfs datanode
+     * @throws IOException
+     */
+    public long getDfsUsed() throws IOException;
+
+    /**
+     * Returns total capacity (in bytes) of storage (used and unused)
+     * 
+     * @return total capacity of storage (used and unused)
+     * @throws IOException
+     */
+    public long getCapacity() throws IOException;
+
+    /**
+     * Returns the amount of free storage space (in bytes)
+     * 
+     * @return The amount of free storage space
+     * @throws IOException
+     */
+    public long getRemaining() throws IOException;
+
+    /**
+     * Returns the storage id of the underlying storage
+     */
+    public String getStorageInfo();
 
 }

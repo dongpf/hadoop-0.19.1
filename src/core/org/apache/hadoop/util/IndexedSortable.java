@@ -23,14 +23,14 @@ package org.apache.hadoop.util;
  */
 public interface IndexedSortable {
 
-  /**
-   * Compare items at the given addresses consistent with the semantics of
-   * {@link java.util.Comparable#compare}.
-   */
-  int compare(int i, int j);
+    /**
+     * Compare items at the given addresses consistent with the semantics of
+     * {@link java.util.Comparable#compare}.
+     */
+    int compare(int i, int j);
 
-  /**
-   * Swap items at the given addresses.
-   */
-  void swap(int i, int j);
+    /**
+     * Swap items at the given addresses.
+     */
+    void swap(int i, int j);
 }
